@@ -19,7 +19,9 @@ public class SettingStateTest {
 	public void changeASetting() {
 		NameSetting name = new NameSetting();
 		SettingState state = SettingState.FromSettings(name);
-		state = state.change(name, "Peter");
+		state = state.change()
+				.set(name, "Peter")
+				.build();
 		assertThat(state.get(name)).isEqualTo("Peter");
 	}
 }

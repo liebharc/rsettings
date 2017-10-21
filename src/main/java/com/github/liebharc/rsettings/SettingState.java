@@ -32,32 +32,15 @@ public class SettingState {
 		this.state = initState.build();
 	}
 	
-	private SettingState(
+	SettingState(
 			ImmutableList<Setting<?>> settings, 
 			ImmutableMap<Setting<?>, ?> state) {
 		this.settings = settings;
 		this.state = state;
 	}
 	
-	// TODO we are returning the base type here. Think if we can solve this with composition or 
-	// by providing a specialization in sub classes
-	public <T> SettingState change(Setting<T> setting, T value) {
-		if (!settings.contains(setting)) {
-			throw new IllegalArgumentException("Setting is not part of this state");
-		}
-		
-		ImmutableMap.Builder<Setting<?>, Object> newState = new ImmutableMap.Builder<Setting<?>, Object>();
-
-		// TODO Find a better way to replace an item
-		for (Setting<?> s : state.keySet()) {
-			// TODO double check if reference equality is what we want here
-			if (s == setting) {
-				newState.put(s, value);
-			} else {
-				newState.put(s, state.get(s));
-			}
-		}
-		return new SettingState(this.settings, newState.build());
+	public SettingStateBuilder change() {
+		return new SettingStateBuilder(settings, state);
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
