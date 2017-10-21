@@ -13,23 +13,27 @@ public class SettingState {
 		return new SettingState(immutable.build());
 	}
 	
-	private final ImmutableList<Setting<?>> settings;
-	
-    private final ImmutableMap<Setting<?>, ?> state;
-
-	public SettingState() {
-		settings = new ImmutableList.Builder<Setting<?>>().build();
-		state = new ImmutableMap.Builder<Setting<?>, Object>().build();
-	}
-	
-	public SettingState(ImmutableList<Setting<?>> settings) {
-		this.settings = settings;
+	private static ImmutableMap<Setting<?>, ?> createResetValues(ImmutableList<Setting<?>> settings) {
 		ImmutableMap.Builder<Setting<?>, Object> initState = new ImmutableMap.Builder<Setting<?>, Object>();
 		for (Setting<?> setting : settings) {
 			initState.put(setting, setting.getDefaultValue());
 		}
 		
-		this.state = initState.build();
+		return initState.build();
+	}
+	
+	private final ImmutableList<Setting<?>> settings;
+	
+    private final ImmutableMap<Setting<?>, ?> state;
+
+	public SettingState() {
+		this(
+			new ImmutableList.Builder<Setting<?>>().build(),
+		    new ImmutableMap.Builder<Setting<?>, Object>().build());
+	}
+	
+	public SettingState(ImmutableList<Setting<?>> settings) {
+		this(settings, createResetValues(settings));
 	}
 	
 	SettingState(
