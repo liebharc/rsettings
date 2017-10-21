@@ -25,6 +25,8 @@ public class SettingState {
 	private final ImmutableList<Setting<?>> settings;
 	
     private final ImmutableMap<Setting<?>, ?> state;
+    
+    private final PropertyDependencies dependencies;
 
 	public SettingState() {
 		this(
@@ -41,6 +43,10 @@ public class SettingState {
 			ImmutableMap<Setting<?>, ?> state) {
 		this.settings = settings;
 		this.state = state;
+		this.dependencies = new PropertyDependencies();
+		for (Setting<?> setting : settings) {
+			dependencies.register(setting);
+		}
 	}
 	
 	public SettingStateBuilder change() {
