@@ -60,6 +60,7 @@ public class SettingState {
 		return new SettingState(this.settings, newState.build());
 	}
 	
+	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
 	public <T> T get(Setting<T> value) {
 		return (T)state.get(value);
 	}
