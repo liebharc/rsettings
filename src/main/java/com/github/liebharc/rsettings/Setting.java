@@ -1,14 +1,8 @@
 package com.github.liebharc.rsettings;
 
-// TODO Create a read-only and read-write version of thIs class
-public abstract class Setting<T> {
-	private T defaultValue;
-	
+public abstract class Setting<T> extends ReadOnlySetting<T> {
+		
 	public Setting(T defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-	
-	public T getDefaultValue() {
-		return defaultValue;
+		super(defaultValue);
 	}
 }

@@ -9,29 +9,29 @@ import java.util.Optional;
 
 final class PropertyDependencies {
 	
-	private final List<Setting<?>> properties = new ArrayList<>();
+	private final List<ReadOnlySetting<?>> properties = new ArrayList<>();
 	
-	private final Map<Setting<?>, List<Setting<?>>> propertyDependencies = new HashMap<>();
+	private final Map<ReadOnlySetting<?>, List<ReadOnlySetting<?>>> propertyDependencies = new HashMap<>();
 	
 	public int getNumberOfProperties() {
 		return properties.size();
 	}
 	
-	public final <TProp extends Setting<TValue>, TValue> void register(TProp property) {
+	public final <TProp extends ReadOnlySetting<TValue>, TValue> void register(TProp property) {
 		properties.add(property);
 		propertyDependencies.put(property, new ArrayList<>());
-		List<Setting<?>> sources = findSources(property);
-		for (Setting<?> source : sources) {
+		List<ReadOnlySetting<?>> sources = findSources(property);
+		for (ReadOnlySetting<?> source : sources) {
 			propertyDependencies.get(source).add(property);
 		}
 	}
 	
-	public List<Setting<?>> getDependencies(Setting<?> property) {
+	public List<ReadOnlySetting<?>> getDependencies(Setting<?> property) {
 		return propertyDependencies.get(property);
 	}
 	
-	private List<Setting<?>> findSources(Setting<?> property) {
-		List<Setting<?>> result = new ArrayList<>();
+	private List<ReadOnlySetting<?>> findSources(ReadOnlySetting<?> property) {
+		List<ReadOnlySetting<?>> result = new ArrayList<>();
 		Constructor<?>[] constructors = property.getClass().getConstructors();
 		if (constructors.length != 1) {
 			throw new NetworkInitException(property.getClass().getName() + " must have exactly one constructor");
@@ -48,8 +48,8 @@ final class PropertyDependencies {
 		return result;
 	}
 	
-	private Setting<?> findPropertyOfType(Class<?> type) {
-		Optional<Setting<?>> instance = properties.stream().filter(p -> type.isInstance(p)).findFirst();
+	private ReadOnlySetting<?> findPropertyOfType(Class<?> type) {
+		Optional<ReadOnlySetting<?>> instance = properties.stream().filter(p -> type.isInstance(p)).findFirst();
 		if (instance.isPresent()) {
 			return instance.get();
 		}

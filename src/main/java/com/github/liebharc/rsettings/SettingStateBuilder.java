@@ -7,15 +7,15 @@ import java.util.Map.Entry;
 
 public class SettingStateBuilder  {
 	
-	private final ImmutableList<Setting<?>> settings;
+	private final ImmutableList<ReadOnlySetting<?>> settings;
 	
-    private final ImmutableMap<Setting<?>, ?> prevState;
+    private final ImmutableMap<ReadOnlySetting<?>, ?> prevState;
     
-    private Map<Setting<?>, Object> newState = new HashMap<>();
+    private Map<ReadOnlySetting<?>, Object> newState = new HashMap<>();
 
 	public SettingStateBuilder(
-			ImmutableList<Setting<?>> settings, 
-			ImmutableMap<Setting<?>, ?> state) {
+			ImmutableList<ReadOnlySetting<?>> settings, 
+			ImmutableMap<ReadOnlySetting<?>, ?> state) {
 		this.prevState =  state;
 		this.settings = settings;
 	}
@@ -35,10 +35,10 @@ public class SettingStateBuilder  {
 	}
 	
 	public SettingState build() {
-		ImmutableMap.Builder<Setting<?>, Object> combinedState = new ImmutableMap.Builder<Setting<?>, Object>();
+		ImmutableMap.Builder<ReadOnlySetting<?>, Object> combinedState = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
 
 		combinedState.putAll(newState);
-		for (Entry<Setting<?>, ?> settingValue : prevState.entrySet()) {
+		for (Entry<ReadOnlySetting<?>, ?> settingValue : prevState.entrySet()) {
 			if (!newState.containsKey(settingValue.getKey())) {
 				combinedState.put(settingValue);
 			}
