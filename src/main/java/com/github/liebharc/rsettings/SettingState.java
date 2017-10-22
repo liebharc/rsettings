@@ -2,8 +2,55 @@ package com.github.liebharc.rsettings;
 
 import com.google.common.collect.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 public class SettingState {
+	public class Builder {
+		
+		private final SettingState parent;
+		
+		private final List<ReadOnlySetting<?>> settings;
+		
+	    private final Map<ReadOnlySetting<?>, ?> prevState;
+	    
+	    private Map<ReadOnlySetting<?>, Object> newState = new HashMap<>();
+
+		public Builder(
+				SettingState parent,
+				List<ReadOnlySetting<?>> settings, 
+				Map<ReadOnlySetting<?>, ?> state) {
+			this.parent = parent;
+			this.prevState =  state;
+			this.settings = settings;
+		}
+
+		public <T> Builder set(Setting<T> setting, T value) {
+			if (!settings.contains(setting)) {
+				throw new IllegalArgumentException("Setting is not part of this state");
+			}
+			
+			if (newState.containsKey(setting)) {
+				newState.replace(setting, value);
+			} else {
+				newState.put(setting, value);
+			}
+			
+			return this;
+		}
+		
+		public SettingState build() throws CheckFailedException {
+			ImmutableMap.Builder<ReadOnlySetting<?>, Object> combinedState = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
+
+			combinedState.putAll(newState);
+			for (Entry<ReadOnlySetting<?>, ?> settingValue : prevState.entrySet()) {
+				if (!newState.containsKey(settingValue.getKey())) {
+					combinedState.put(settingValue);
+				}
+			}
+			
+			return new SettingState(parent, combinedState.build());
+		}
+	}
 	
 	public static SettingState FromSettings(ReadOnlySetting<?>... settings) {
 		ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<>();
@@ -58,8 +105,8 @@ public class SettingState {
 		this.dependencies = parent.dependencies;
 	}
 	
-	public SettingStateBuilder change() {
-		return new SettingStateBuilder(this, settings, state);
+	public Builder change() {
+		return new Builder(this, settings, state);
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
