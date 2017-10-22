@@ -41,7 +41,7 @@ public class SettingState {
 		
 		public SettingState build() throws CheckFailedException {
 			Map<ReadOnlySetting<?>, Object> combinedState = createCombinedState();
-			resolveDependencies(
+			propagateChanges(
 					combinedState, 
 					this.newState.keySet().stream().collect(Collectors.toList()));
 			return new SettingState(parent, makeImmutable(combinedState));
@@ -56,7 +56,7 @@ public class SettingState {
 			return combinedState;
 		}
 		
-		private void resolveDependencies(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
+		private void propagateChanges(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
 			if (settings.isEmpty()) {
 				return;
 			}
@@ -64,14 +64,16 @@ public class SettingState {
 			List<ReadOnlySetting<?>> settingDependencies = new ArrayList<>();
 			for (ReadOnlySetting<?> setting : settings) {
 				Optional<?> result = setting.update(new SettingState(this.parent, state));
-				if (result.isPresent()) {
+				if ((result.isPresent())) {
 					state.replace(setting, result.get());
 				}
 				
-				settingDependencies.addAll(dependencies.getDependencies(setting));
+				if (!ObjectHelper.NullSafeEquals(state.get(setting), prevState.get(setting))) {
+					settingDependencies.addAll(dependencies.getDependencies(setting));
+				}
 			}
 			
-			resolveDependencies(state, settingDependencies);
+			propagateChanges(state, settingDependencies);
 		}
 		
 		private Map<ReadOnlySetting<?>, Object> makeImmutable(Map<ReadOnlySetting<?>, Object> state) {
