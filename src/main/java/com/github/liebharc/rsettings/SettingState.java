@@ -38,7 +38,7 @@ public class SettingState {
 		this(settings, createResetValues(settings));
 	}
 	
-	SettingState(
+	private SettingState(
 			ImmutableList<ReadOnlySetting<?>> settings, 
 			ImmutableMap<ReadOnlySetting<?>, ?> state) {
 		this.settings = settings;
@@ -49,8 +49,16 @@ public class SettingState {
 		}
 	}
 	
+	SettingState(
+			SettingState parent, 
+			ImmutableMap<ReadOnlySetting<?>, ?> state) {
+		this.settings = parent.settings;
+		this.state = state;
+		this.dependencies = parent.dependencies;
+	}
+	
 	public SettingStateBuilder change() {
-		return new SettingStateBuilder(settings, state);
+		return new SettingStateBuilder(this, settings, state);
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that

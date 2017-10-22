@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 
 public class SettingStateBuilder  {
 	
+	private final SettingState parent;
+	
 	private final ImmutableList<ReadOnlySetting<?>> settings;
 	
     private final ImmutableMap<ReadOnlySetting<?>, ?> prevState;
@@ -14,8 +16,10 @@ public class SettingStateBuilder  {
     private Map<ReadOnlySetting<?>, Object> newState = new HashMap<>();
 
 	public SettingStateBuilder(
+			SettingState parent,
 			ImmutableList<ReadOnlySetting<?>> settings, 
 			ImmutableMap<ReadOnlySetting<?>, ?> state) {
+		this.parent = parent;
 		this.prevState =  state;
 		this.settings = settings;
 	}
@@ -44,6 +48,6 @@ public class SettingStateBuilder  {
 			}
 		}
 		
-		return new SettingState(settings, combinedState.build());
+		return new SettingState(parent, combinedState.build());
 	}
 }
