@@ -13,7 +13,7 @@ public abstract class ReadOnlySetting<T> {
 		return defaultValue;
 	}
 	
-	public Optional<T> update() throws CheckFailedException {
+	public Optional<T> update(SettingState state) throws CheckFailedException {
 		return Optional.empty();
 	}
 }

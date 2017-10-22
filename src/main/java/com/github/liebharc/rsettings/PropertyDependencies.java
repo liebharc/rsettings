@@ -26,7 +26,7 @@ final class PropertyDependencies {
 		}
 	}
 	
-	public List<ReadOnlySetting<?>> getDependencies(Setting<?> property) {
+	public List<ReadOnlySetting<?>> getDependencies(ReadOnlySetting<?> property) {
 		return propertyDependencies.get(property);
 	}
 	

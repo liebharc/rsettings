@@ -3,6 +3,7 @@ package com.github.liebharc.rsettings;
 import com.google.common.collect.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class SettingState {
 	public class Builder {
@@ -39,16 +40,44 @@ public class SettingState {
 		}
 		
 		public SettingState build() throws CheckFailedException {
-			ImmutableMap.Builder<ReadOnlySetting<?>, Object> combinedState = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
+			Map<ReadOnlySetting<?>, Object> combinedState = createCombinedState();
+			resolveDependencies(
+					combinedState, 
+					this.newState.keySet().stream().collect(Collectors.toList()));
+			return new SettingState(parent, makeImmutable(combinedState));
+		}
 
-			combinedState.putAll(newState);
-			for (Entry<ReadOnlySetting<?>, ?> settingValue : prevState.entrySet()) {
-				if (!newState.containsKey(settingValue.getKey())) {
-					combinedState.put(settingValue);
-				}
+		private Map<ReadOnlySetting<?>, Object> createCombinedState() {
+			Map<ReadOnlySetting<?>, Object> combinedState = new HashMap<>();
+			combinedState.putAll(prevState);
+			for (Entry<ReadOnlySetting<?>, ?> settingValue : newState.entrySet()) {
+				combinedState.replace(settingValue.getKey(), settingValue.getValue());
+			}
+			return combinedState;
+		}
+		
+		private void resolveDependencies(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
+			if (settings.isEmpty()) {
+				return;
 			}
 			
-			return new SettingState(parent, combinedState.build());
+			List<ReadOnlySetting<?>> settingDependencies = new ArrayList<>();
+			for (ReadOnlySetting<?> setting : settings) {
+				Optional<?> result = setting.update(new SettingState(this.parent, state));
+				if (result.isPresent()) {
+					state.replace(setting, result.get());
+				}
+				
+				settingDependencies.addAll(dependencies.getDependencies(setting));
+			}
+			
+			resolveDependencies(state, settingDependencies);
+		}
+		
+		private Map<ReadOnlySetting<?>, Object> makeImmutable(Map<ReadOnlySetting<?>, Object> state) {
+			ImmutableMap.Builder<ReadOnlySetting<?>, Object> immutable = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
+			immutable.putAll(state);
+			return immutable.build();
 		}
 	}
 	

@@ -28,7 +28,7 @@ public class SettingStateTest {
 	@Test
 	public void dependencies() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm();
+		DistanceInKm km = new DistanceInKm(m);
 		SettingState state = SettingState.FromSettings(m, km);
 		state = state.change()
 				.set(m, 1000.0)
