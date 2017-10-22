@@ -1,7 +1,6 @@
 package com.github.liebharc.rsettings;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.*;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -9,16 +8,16 @@ public class SettingStateBuilder  {
 	
 	private final SettingState parent;
 	
-	private final ImmutableList<ReadOnlySetting<?>> settings;
+	private final List<ReadOnlySetting<?>> settings;
 	
-    private final ImmutableMap<ReadOnlySetting<?>, ?> prevState;
+    private final Map<ReadOnlySetting<?>, ?> prevState;
     
     private Map<ReadOnlySetting<?>, Object> newState = new HashMap<>();
 
 	public SettingStateBuilder(
 			SettingState parent,
-			ImmutableList<ReadOnlySetting<?>> settings, 
-			ImmutableMap<ReadOnlySetting<?>, ?> state) {
+			List<ReadOnlySetting<?>> settings, 
+			Map<ReadOnlySetting<?>, ?> state) {
 		this.parent = parent;
 		this.prevState =  state;
 		this.settings = settings;

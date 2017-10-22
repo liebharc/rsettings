@@ -1,6 +1,7 @@
 package com.github.liebharc.rsettings;
 
 import com.google.common.collect.*;
+import java.util.*;
 
 public class SettingState {
 	
@@ -13,7 +14,7 @@ public class SettingState {
 		return new SettingState(immutable.build());
 	}
 	
-	private static ImmutableMap<ReadOnlySetting<?>, ?> createResetValues(ImmutableList<ReadOnlySetting<?>> settings) {
+	private static Map<ReadOnlySetting<?>, ?> createResetValues(ImmutableList<ReadOnlySetting<?>> settings) {
 		ImmutableMap.Builder<ReadOnlySetting<?>, Object> initState = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
 		for (ReadOnlySetting<?> setting : settings) {
 			initState.put(setting, setting.getDefaultValue());
@@ -22,9 +23,9 @@ public class SettingState {
 		return initState.build();
 	}
 	
-	private final ImmutableList<ReadOnlySetting<?>> settings;
+	private final List<ReadOnlySetting<?>> settings;
 	
-    private final ImmutableMap<ReadOnlySetting<?>, ?> state;
+    private final Map<ReadOnlySetting<?>, ?> state;
     
     private final PropertyDependencies dependencies;
 
@@ -39,8 +40,8 @@ public class SettingState {
 	}
 	
 	private SettingState(
-			ImmutableList<ReadOnlySetting<?>> settings, 
-			ImmutableMap<ReadOnlySetting<?>, ?> state) {
+			List<ReadOnlySetting<?>> settings, 
+			Map<ReadOnlySetting<?>, ?> state) {
 		this.settings = settings;
 		this.state = state;
 		this.dependencies = new PropertyDependencies();
@@ -51,7 +52,7 @@ public class SettingState {
 	
 	SettingState(
 			SettingState parent, 
-			ImmutableMap<ReadOnlySetting<?>, ?> state) {
+			Map<ReadOnlySetting<?>, ?> state) {
 		this.settings = parent.settings;
 		this.state = state;
 		this.dependencies = parent.dependencies;
