@@ -38,7 +38,7 @@ public class SettingStateBuilder  {
 		return this;
 	}
 	
-	public SettingState build() {
+	public SettingState build() throws CheckFailedException {
 		ImmutableMap.Builder<ReadOnlySetting<?>, Object> combinedState = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
 
 		combinedState.putAll(newState);

@@ -16,7 +16,7 @@ public class SettingStateTest {
 	}
 	
 	@Test
-	public void changeASetting() {
+	public void changeASetting() throws CheckFailedException {
 		NameSetting name = new NameSetting();
 		SettingState state = SettingState.FromSettings(name);
 		state = state.change()
@@ -26,7 +26,7 @@ public class SettingStateTest {
 	}
 	
 	@Test
-	public void dependencies() {
+	public void dependencies() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm();
 		SettingState state = SettingState.FromSettings(m, km);
