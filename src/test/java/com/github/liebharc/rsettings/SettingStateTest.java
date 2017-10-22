@@ -24,4 +24,16 @@ public class SettingStateTest {
 				.build();
 		assertThat(state.get(name)).isEqualTo("Peter");
 	}
+	
+	@Test
+	public void dependencies() {
+		DistanceInM m = new DistanceInM();
+		DistanceInKm km = new DistanceInKm();
+		SettingState state = SettingState.FromSettings(m, km);
+		state = state.change()
+				.set(m, 1000.0)
+				.build();
+		assertThat(state.get(m)).isEqualTo(1000.0);
+		assertThat(state.get(km)).isEqualTo(1.0);
+	}
 }
