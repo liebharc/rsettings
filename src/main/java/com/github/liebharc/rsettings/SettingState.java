@@ -141,7 +141,25 @@ public class SettingState {
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
-	public <T> T get(ReadOnlySetting<T> value) {
-		return (T)state.get(value);
+	public <T> T get(ReadOnlySetting<T> setting) {
+		return (T)state.get(setting);
+	}
+	
+	public <TValue extends Comparable<TValue>, 
+			TSetting extends ReadOnlySetting<TValue> & MinMaxLimited<TValue>> 
+				TValue getMin(TSetting setting) {
+		return setting.getMin(this);
+	}
+	
+	public <TValue extends Comparable<TValue>, 
+			TSetting extends ReadOnlySetting<TValue> & MinMaxLimited<TValue>> 
+				TValue getMax(TSetting setting) {
+		return setting.getMax(this);
+	}
+	
+	public <TValue, 
+			TSetting extends ReadOnlySetting<TValue> & CanBeDisabled> 
+				boolean isEnabled(TSetting setting) {
+		return setting.isEnabled(this);
 	}
 }

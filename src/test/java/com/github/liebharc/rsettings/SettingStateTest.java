@@ -36,4 +36,15 @@ public class SettingStateTest {
 		assertThat(state.get(m)).isEqualTo(1000.0);
 		assertThat(state.get(km)).isEqualTo(1.0);
 	}
+	
+	@Test
+	public void isEnabled() throws CheckFailedException {
+		DistanceInM m = new DistanceInM();
+		SettingState state = SettingState.FromSettings(m);
+		assertThat(state.isEnabled(m)).isFalse();
+		state = state.change()
+				.set(m, 1.0)
+				.build();
+		assertThat(state.isEnabled(m)).isTrue();
+	}
 }
