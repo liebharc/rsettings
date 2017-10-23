@@ -1,23 +1,7 @@
 package com.github.liebharc.rsettings.mutable;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.function.Consumer;
-
-import org.junit.*;
-
-import com.github.liebharc.rsettings.mutable.AutoTransaction;
-import com.github.liebharc.rsettings.mutable.ReadProperty;
-import com.github.liebharc.rsettings.mutableexample.*;
-import com.github.liebharc.rsettingsexample.mutable.CountProperty;
-import com.github.liebharc.rsettingsexample.mutable.DoubleCountProperty;
-import com.github.liebharc.rsettingsexample.mutable.EnableIfCountEquals5;
-import com.github.liebharc.rsettingsexample.mutable.ExampleNetwork;
-import com.github.liebharc.rsettingsexample.mutable.Interdependent2Property;
-import com.github.liebharc.rsettingsexample.mutable.InterdependentProperty;
-import com.github.liebharc.rsettingsexample.mutable.NameProperty;
 public class PropertyNetworkTest {
-
+	/*
 	@Test
 	public void createANetwork() {
 		ExampleNetwork network = new ExampleNetwork();
@@ -193,5 +177,5 @@ public class PropertyNetworkTest {
 			}
 		});
 		assertThat(property.getValue()).isEqualTo(0.5);
-	}
+	}*/
 }

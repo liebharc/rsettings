@@ -1,41 +1,50 @@
 package com.github.liebharc.rsettings.mutable;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.github.liebharc.rsettings.mutable.ReadProperty;
-import com.github.liebharc.rsettings.mutableexample.*;
-import com.github.liebharc.rsettingsexample.mutable.CountProperty;
-import com.github.liebharc.rsettingsexample.mutable.EnableIfCountEquals5;
+import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettingsexample.mutable.NameProperty;
 
 public class PropertyTest {
 
-	@Test
-	public void propertyCanBeConstructed() {
-		ReadProperty<?> property = new NameProperty();
-		assertThat(property.getValue()).isEqualTo("");
+	private static class NameSettingMut {
+		private CurrentSettingState state;
+		
+		private ReadWriteProperty<String> name;
+		
+		public NameSettingMut() {
+			NameProperty name = new NameProperty();
+			SettingState init = SettingState.FromSettings(name);
+			state = new CurrentSettingState(init);
+			this.name = new ReadWriteProperty<>(state, name);
+		}
+
+		public ReadWriteProperty<String> get() {
+			return name;
+		}
 	}
 	
 	@Test
-	public void resetValueTest() {
-		EnableIfCountEquals5 property = new EnableIfCountEquals5(new CountProperty());
-		assertThat(property.getValue()).isEqualTo("Hello");
+	public void propertyCanBeConstructed() {
+		NameSettingMut name = new NameSettingMut();
+		assertThat(name.get().getValue()).isEqualTo("");
 	}
 
 	@Test
-	public void propertyCanBeSet() {
-		NameProperty property = new NameProperty();
-		property.setValue("Peter");
-		assertThat(property.getValue()).isEqualTo("Peter");
+	public void resetValueTestSet() throws CheckFailedException {
+		NameSettingMut name = new NameSettingMut();
+		name.get().setValue("Peter");
+		assertThat(name.get().getValue()).isEqualTo("Peter");
 	}
 
 	@Test
-	public void propertyCanBeReset() {
-		NameProperty property = new NameProperty();
-		property.setValue("Peter");
-		property.Reset();
-		assertThat(property.getValue()).isEqualTo("");
+	public void propertyCanBeReset() throws CheckFailedException {
+		NameSettingMut name = new NameSettingMut();
+		name.get().setValue("Peter");
+		name.get().reset();
+		assertThat(name.get().getValue()).isEqualTo("");
 	}
 }

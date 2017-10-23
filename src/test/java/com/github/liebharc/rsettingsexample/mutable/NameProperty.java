@@ -1,18 +1,24 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.mutable.*;
+import java.util.Optional;
 
-public final class NameProperty extends ReadWriteProperty<String> {
+import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.immutable.Setting;
+import com.github.liebharc.rsettings.immutable.SettingState;
+
+public final class NameProperty extends Setting<String> {
 
 	public NameProperty() {
 		super("");
 	}
 	
 	@Override
-	protected void onSourceValueChanged() throws CheckFailedException {
-		String value = getValue();
+	public Optional<String> update(SettingState state) throws CheckFailedException {
+		String value = state.get(this);
 		if (value.equals("D'oh")) {
 			throw new CheckFailedException("Setting this value to \"D'oh\" will throw an exception.");
 		}
+		
+		return Optional.empty();
 	}
 }

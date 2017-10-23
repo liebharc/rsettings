@@ -1,31 +1,34 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.mutable.CheckFailedException;
-import com.github.liebharc.rsettings.mutable.Checks;
-import com.github.liebharc.rsettings.mutable.MinMaxProperty;
-import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
+import java.util.Optional;
+
+import com.github.liebharc.rsettings.CheckFailedException; 
+import com.github.liebharc.rsettings.Checks;
+import com.github.liebharc.rsettings.immutable.MinMaxLimited;
+import com.github.liebharc.rsettings.immutable.Setting;
+import com.github.liebharc.rsettings.immutable.SettingState;
 
 public class BoundedDoubleProperty 
-	extends ReadWriteProperty<Double> 
-	implements MinMaxProperty<Double> {
+	extends Setting<Double> 
+	implements MinMaxLimited<Double> {
 
 	public BoundedDoubleProperty() {
 		super(0.0);
 	}
 
 	@Override
-	public Double getMin() {
+	public Double getMin(SettingState state) {
 		return -1.0;
 	}
 
 	@Override
-	public Double getMax() {
+	public Double getMax(SettingState state) {
 		return 1.0;
 	}
 	
 	@Override
-	protected void onSourceValueChanged() throws CheckFailedException {
-		Checks.CheckMinMax(getValue(), getMin(), getMax());
-		super.onSourceValueChanged();
+	public Optional<Double> update(SettingState state) throws CheckFailedException {
+		Checks.CheckMinMax(state.get(this), getMin(state), getMax(state));
+		return super.update(state);
 	}
 }

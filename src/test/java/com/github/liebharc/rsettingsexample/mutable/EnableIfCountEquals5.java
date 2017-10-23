@@ -1,22 +1,22 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.mutable.CheckFailedException;
-import com.github.liebharc.rsettings.mutable.ReadProperty;
+import com.github.liebharc.rsettings.immutable.CanBeDisabled;
+import com.github.liebharc.rsettings.immutable.Setting;
+import com.github.liebharc.rsettings.immutable.SettingState;
 
-public final class EnableIfCountEquals5 extends ReadProperty<String> {
+public final class EnableIfCountEquals5 
+	extends Setting<String> 
+	implements CanBeDisabled {
 
 	private CountProperty count;
 	
 	public EnableIfCountEquals5(CountProperty count) {
-		super("Hello", false);
+		super("Hello");
 		this.count = count;
 	}
 
 	@Override
-	protected void onSourceValueChanged() throws CheckFailedException {
-		super.onSourceValueChanged();
-		
-		boolean countEquals5 = count.getValue() == 5;
-		setEnabled(countEquals5);
+	public boolean isEnabled(SettingState state) {
+		return state.get(count) == 5;
 	}
 }

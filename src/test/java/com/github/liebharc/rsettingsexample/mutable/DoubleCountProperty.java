@@ -1,10 +1,13 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.mutable.CheckFailedException;
-import com.github.liebharc.rsettings.mutable.OufOfRangeException;
-import com.github.liebharc.rsettings.mutable.ReadProperty;
+import java.util.Optional;
 
-public final class DoubleCountProperty extends ReadProperty<Integer> {
+import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.OufOfRangeException;
+import com.github.liebharc.rsettings.immutable.ReadOnlySetting;
+import com.github.liebharc.rsettings.immutable.SettingState;
+
+public final class DoubleCountProperty extends ReadOnlySetting<Integer> {
 	private CountProperty count;
 	
 	public DoubleCountProperty(CountProperty count) {
@@ -12,17 +15,16 @@ public final class DoubleCountProperty extends ReadProperty<Integer> {
 		this.count = count;
 	}
 
-	private static int doubleTheCount(CountProperty count) throws CheckFailedException {
-		if (count.getValue() < 0 || count.getValue() > 10) {
-			throw new OufOfRangeException(count.getValue(), 0, 10);
+	private static int doubleTheCount(int count) throws CheckFailedException {
+		if (count < 0 || count > 10) {
+			throw new OufOfRangeException(count, 0, 10);
 		}
 		
-		return 2 * count.getValue();
+		return 2 * count;
 	}
 	
 	@Override
-	protected void onSourceValueChanged() throws CheckFailedException {
-		super.onSourceValueChanged();
-		setValueInternal(doubleTheCount(this.count));
+	public Optional<Integer> update(SettingState state) throws CheckFailedException {
+		return Optional.of(doubleTheCount(state.get(count)));
 	}
 }
