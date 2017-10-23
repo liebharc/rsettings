@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.github.liebharc.rsettings.*;
 import com.github.liebharc.rsettingsexample.mutable.*;
 
-public class PropertyNetworkTest {
+public class SettingStateMutTest {
 	
 	@Test
 	public void createANetwork() {
@@ -16,7 +16,7 @@ public class PropertyNetworkTest {
 	}
 	
 	@Test
-	public void derivedPropertiesTest() throws CheckFailedException {
+	public void derivedSettingsTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		CountProperty count = network.getCount();
 		DoubleCountProperty doubleCount = network.getDoubleCount();
