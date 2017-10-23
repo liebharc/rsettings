@@ -10,10 +10,10 @@ import java.util.*;
  * The immutable version already solved the major issues which need to be addressed to get
  * a consistent state.
  */
-public class SettingStateMut {
+public class StateMut {
 	public class Builder {
 		
-		private final SettingState.Builder builder;
+		private final State.Builder builder;
 		
 		private Builder() {
 			builder = state.get().change();
@@ -28,15 +28,15 @@ public class SettingStateMut {
 		}
 		
 		public void complete() throws CheckFailedException {
-			SettingState newState = builder.build();
+			State newState = builder.build();
 			state.set(newState);
 		}
 	}
 	
 	private final CurrentSettingState state;
 	
-	public SettingStateMut() {
-		state = new CurrentSettingState(SettingState.FromSettings());
+	public StateMut() {
+		state = new CurrentSettingState(State.FromSettings());
 	}
 	
 	public <TValue, TSetting extends ReadSettingMut<TValue>> TSetting register(TSetting setting) {
@@ -51,7 +51,7 @@ public class SettingStateMut {
 	private void addToState(ReadSettingMut<?> setting) throws ConflictingUpdatesException {
 		List<ReadSetting<?>> allSettings = new ArrayList<>(state.get().listSettings());
 		allSettings.add(setting);
-		SettingState newState = SettingState.FromSettings(allSettings);
+		State newState = State.FromSettings(allSettings);
 		state.set(newState);
 		setting.setState(state);
 	}
@@ -60,7 +60,7 @@ public class SettingStateMut {
 		return new Builder();
 	}
 	
-	public SettingState getImmutableState() {
+	public State getImmutableState() {
 		return state.get();
 	}
 

@@ -5,7 +5,7 @@ import org.apache.commons.math3.exception.NullArgumentException;
 import com.github.liebharc.rsettings.events.Event;
 import com.github.liebharc.rsettings.events.EventPublisher;
 import com.github.liebharc.rsettings.immutable.ReadSetting;
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.immutable.State;
 
 public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 
@@ -35,11 +35,11 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 		});
 	}
 	
-	void updateState(SettingState state) throws ConflictingUpdatesException {
+	void updateState(State state) throws ConflictingUpdatesException {
 		this.state.set(state);
 	}
 	
-	protected SettingState getState() {
+	protected State getState() {
 		return this.state.get();
 	}
 	

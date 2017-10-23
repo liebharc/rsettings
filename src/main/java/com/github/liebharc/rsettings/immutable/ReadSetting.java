@@ -41,7 +41,7 @@ public abstract class ReadSetting<T> {
 	 * @throws CheckFailedException may be thrown by the implementation if the value is incorrect
 	 * or not consistent with the other values in the state.
 	 */
-	protected Optional<T> update(SettingState state) throws CheckFailedException {
+	protected Optional<T> update(State state) throws CheckFailedException {
 		return Optional.empty();
 	}
 	

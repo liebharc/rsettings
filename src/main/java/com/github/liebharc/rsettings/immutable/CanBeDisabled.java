@@ -8,5 +8,5 @@ package com.github.liebharc.rsettings.immutable;
  * if a disabled setting is changed. 
  */
 public interface CanBeDisabled {
-	boolean isEnabled(SettingState state);
+	boolean isEnabled(State state);
 }

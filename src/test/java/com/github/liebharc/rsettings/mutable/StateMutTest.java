@@ -18,7 +18,7 @@ import com.github.liebharc.rsettingsexample.mutable.Interdependent;
 import com.github.liebharc.rsettingsexample.mutable.Interdependent2;
 import com.github.liebharc.rsettingsexample.mutable.Name;
 
-public class SettingStateMutTest {
+public class StateMutTest {
 	
 	@Test
 	public void createANetwork() {
@@ -156,10 +156,10 @@ public class SettingStateMutTest {
 	public void conflictingChanges() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		Name name = network.getName();
-		SettingStateMut.Builder transaction1 = 
+		StateMut.Builder transaction1 = 
 				network.startTransaction()
 				.set(name, "Paul");
-		SettingStateMut.Builder transaction2 = 
+		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(name, "Fish");
 		transaction2.complete();
@@ -171,10 +171,10 @@ public class SettingStateMutTest {
 	public void conflictingChangesReverseCompleteOrder() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		Name name = network.getName();
-		SettingStateMut.Builder transaction1 = 
+		StateMut.Builder transaction1 = 
 				network.startTransaction()
 				.set(name, "Paul");
-		SettingStateMut.Builder transaction2 = 
+		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(name, "Fish");
 		transaction1.complete();
@@ -186,10 +186,10 @@ public class SettingStateMutTest {
 	@Ignore
 	public void twoUpdatesNoConflict() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		SettingStateMut.Builder transaction1 = 
+		StateMut.Builder transaction1 = 
 				network.startTransaction()
 				.set(network.getName(), "Paul");
-		SettingStateMut.Builder transaction2 = 
+		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(network.getCount(), 2);
 		transaction1.complete();

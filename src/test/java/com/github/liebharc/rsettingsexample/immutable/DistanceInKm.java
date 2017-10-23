@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.ReadSetting;
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.immutable.State;
 
 public class DistanceInKm extends ReadSetting<Double> {
 
@@ -16,7 +16,7 @@ public class DistanceInKm extends ReadSetting<Double> {
 	}
 	
 	@Override
-	public Optional<Double> update(SettingState state) throws CheckFailedException {
+	public Optional<Double> update(State state) throws CheckFailedException {
 		double m = state.get(distanceInM);
 		return Optional.of(m / 1000.0);
 	}

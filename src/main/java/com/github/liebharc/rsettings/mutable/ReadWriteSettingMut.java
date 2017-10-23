@@ -1,7 +1,7 @@
 package com.github.liebharc.rsettings.mutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.immutable.WriteableSetting;
 
 public abstract class ReadWriteSettingMut<T> 
@@ -13,7 +13,7 @@ public abstract class ReadWriteSettingMut<T>
 	}
 
 	public void setValue(T value) throws CheckFailedException {
-		SettingState newState = 
+		State newState = 
 				getState().change().
 				set(this, value).build();
 		updateState(newState);

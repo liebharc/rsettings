@@ -7,17 +7,17 @@ import com.github.liebharc.rsettings.immutable.*;
  * Manages the current version of the state. Makes sure that changes to the state a thread safe.
  */
 class CurrentSettingState {
-	private EventPublisher<SettingState> stateChanged = new EventPublisher<>();
+	private EventPublisher<State> stateChanged = new EventPublisher<>();
 	
 	private final Object lock = new Object();
 	
-	private SettingState current;
+	private State current;
 	
-	public CurrentSettingState(SettingState init) {
+	public CurrentSettingState(State init) {
 		current = init;
 	}
 	
-	public void set(SettingState state) throws ConflictingUpdatesException {
+	public void set(State state) throws ConflictingUpdatesException {
 		synchronized (lock) {
 			if (!state.isDirectlyDerivedFrom(current) && !state.isRoot()) {
 				throw new ConflictingUpdatesException();
@@ -28,13 +28,13 @@ class CurrentSettingState {
 		stateChanged.raise(state);
 	}
 	
-	public SettingState get() {
+	public State get() {
 		synchronized (lock) {
 			return current;
 		}
 	}
 	
-	public Event<SettingState> getStateChangedEvent() {
+	public Event<State> getStateChangedEvent() {
 		return stateChanged.getEvent();
 	}
 }

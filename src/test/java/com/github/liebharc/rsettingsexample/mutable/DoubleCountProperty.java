@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.OufOfRangeException;
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
 public final class DoubleCountProperty extends ReadSettingMut<Integer> {
@@ -24,7 +24,7 @@ public final class DoubleCountProperty extends ReadSettingMut<Integer> {
 	}
 	
 	@Override
-	public Optional<Integer> update(SettingState state) throws CheckFailedException {
+	public Optional<Integer> update(State state) throws CheckFailedException {
 		return Optional.of(doubleTheCount(state.get(count)));
 	}
 }

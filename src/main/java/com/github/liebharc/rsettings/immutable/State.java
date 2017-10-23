@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *   in a builder are considered to happen at the same time.
  * - A states consistency can be checked every time the @see Builder.build() routine is called.
  */
-public class SettingState {
+public class State {
 	private static class VersionedValue {
 		private long stateVersion;
 		private Object value;
@@ -37,7 +37,7 @@ public class SettingState {
 	
 	public class Builder {
 		
-		private final SettingState parent;
+		private final State parent;
 		
 		private final List<ReadSetting<?>> settings;
 		
@@ -48,7 +48,7 @@ public class SettingState {
 	    private Map<ReadSetting<?>, Object> newState = new HashMap<>();
 
 		public Builder(
-				SettingState parent,
+				State parent,
 				List<ReadSetting<?>> settings, 
 				Map<ReadSetting<?>, VersionedValue> state) {
 			this.parent = parent;
@@ -79,13 +79,13 @@ public class SettingState {
 			}
 		}
 		
-		public SettingState build() throws CheckFailedException {
+		public State build() throws CheckFailedException {
 			Map<ReadSetting<?>, VersionedValue> combinedState = createCombinedState();
 			List<ReadSetting<?>> allChanges =
 					propagateChanges(
 						combinedState, 
 						this.newState.keySet().stream().collect(Collectors.toList()));
-			return new SettingState(parent, makeImmutable(combinedState), allChanges);
+			return new State(parent, makeImmutable(combinedState), allChanges);
 		}
 
 		private Map<ReadSetting<?>, VersionedValue> createCombinedState() {
@@ -105,7 +105,7 @@ public class SettingState {
 			while (!settingsToResolve.isEmpty()) {
 				List<ReadSetting<?>> settingDependencies = new ArrayList<>();
 				for (ReadSetting<?> setting : settingsToResolve) {
-					Optional<?> result = setting.update(new SettingState(this.parent, state, allChanges.build()));
+					Optional<?> result = setting.update(new State(this.parent, state, allChanges.build()));
 					if ((result.isPresent())) {
 						state.replace(
 								setting, 
@@ -131,14 +131,14 @@ public class SettingState {
 		}
 	}
 	
-	public static SettingState FromSettings(ReadSetting<?>... settings) {
+	public static State FromSettings(ReadSetting<?>... settings) {
 		return FromSettings(Arrays.asList(settings));
 	}
 	
-	public static SettingState FromSettings(Collection<ReadSetting<?>> settings) {
+	public static State FromSettings(Collection<ReadSetting<?>> settings) {
 		ImmutableList.Builder<ReadSetting<?>> immutable = new ImmutableList.Builder<>();
 		immutable.addAll(settings);
-		return new SettingState(immutable.build());
+		return new State(immutable.build());
 	}
 	
 	private static Map<ReadSetting<?>, VersionedValue> createResetValues(ImmutableList<ReadSetting<?>> settings) {
@@ -166,17 +166,17 @@ public class SettingState {
     
     private final Optional<UUID> parentId;
 
-	public SettingState() {
+	public State() {
 		this(
 			new ImmutableList.Builder<ReadSetting<?>>().build(),
 		    new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>().build());
 	}
 	
-	public SettingState(ImmutableList<ReadSetting<?>> settings) {
+	public State(ImmutableList<ReadSetting<?>> settings) {
 		this(settings, createResetValues(settings));
 	}
 	
-	private SettingState(
+	private State(
 			List<ReadSetting<?>> settings, 
 			Map<ReadSetting<?>, VersionedValue> state) {
 		this.settings = settings;
@@ -192,8 +192,8 @@ public class SettingState {
 		}
 	}
 	
-	SettingState(
-			SettingState parent, 
+	State(
+			State parent, 
 			Map<ReadSetting<?>, VersionedValue> state,
 			List<ReadSetting<?>> lastChanges) {
 		this.settings = parent.settings;
@@ -210,7 +210,7 @@ public class SettingState {
 		return new Builder(this, settings, state);
 	}
 	
-	public boolean isDirectlyDerivedFrom(SettingState possibleParent) {
+	public boolean isDirectlyDerivedFrom(State possibleParent) {
 		if (!parentId.isPresent()) {
 			return false;
 		}
@@ -264,7 +264,7 @@ public class SettingState {
 	 * @return
 	 * @throws CheckFailedException if the resulting state after the merge isn't valid.
 	 */
-	public SettingState merge(SettingState other) throws CheckFailedException {
+	public State merge(State other) throws CheckFailedException {
 		Reject.ifNull(other);
 		
 		if (!other.kind.equals(this.kind) ) {

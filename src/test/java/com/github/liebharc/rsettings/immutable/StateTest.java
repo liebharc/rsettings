@@ -3,24 +3,24 @@ package com.github.liebharc.rsettings.immutable;
 import static org.assertj.core.api.Assertions.*;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettingsexample.immutable.*;
 
 import org.junit.*;
 
-public class SettingStateTest {
+public class StateTest {
 
 	@Test
 	public void initASetting() {
 		Name name = new Name();
-		SettingState state = SettingState.FromSettings(name);
+		State state = State.FromSettings(name);
 		assertThat(state.get(name)).isEqualTo("");
 	}
 	
 	@Test
 	public void changeASetting() throws CheckFailedException {
 		Name name = new Name();
-		SettingState state = SettingState.FromSettings(name);
+		State state = State.FromSettings(name);
 		state = state.change()
 				.set(name, "Peter")
 				.build();
@@ -30,11 +30,11 @@ public class SettingStateTest {
 	@Test
 	public void trackStateRelations() throws CheckFailedException {
 		Name name = new Name();
-		SettingState parent = SettingState.FromSettings(name);
-		SettingState child = parent.change()
+		State parent = State.FromSettings(name);
+		State child = parent.change()
 				.set(name, "Peter")
 				.build();
-		SettingState childchild = child.change()
+		State childchild = child.change()
 				.set(name, "Fish")
 				.build();
 		assertThat(parent.isDirectlyDerivedFrom(parent)).isFalse();
@@ -47,7 +47,7 @@ public class SettingStateTest {
 	public void dependencies() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		SettingState state = SettingState.FromSettings(m, km);
+		State state = State.FromSettings(m, km);
 		state = state.change()
 				.set(m, 1000.0)
 				.build();
@@ -58,7 +58,7 @@ public class SettingStateTest {
 	@Test
 	public void isEnabled() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
-		SettingState state = SettingState.FromSettings(m);
+		State state = State.FromSettings(m);
 		assertThat(state.isEnabled(m)).isFalse();
 		state = state.change()
 				.set(m, 1.0)
@@ -71,7 +71,7 @@ public class SettingStateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		SettingState state = SettingState.FromSettings(name, m, km);
+		State state = State.FromSettings(name, m, km);
 		assertThat(state.getLastChanges()).containsExactly(name, m, km);
 		
 		state = state.change()
@@ -90,13 +90,13 @@ public class SettingStateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		SettingState state1 = SettingState.FromSettings(name, m, km);
-		SettingState state2 = SettingState.FromSettings(name, m, km);
-		final SettingState leftState = 
+		State state1 = State.FromSettings(name, m, km);
+		State state2 = State.FromSettings(name, m, km);
+		final State leftState = 
 				state1.change()
 				.set(name, "Peter")
 				.build();
-		final SettingState rightState = 
+		final State rightState = 
 				state2.change()
 				.set(m, 100.0)
 				.build();
@@ -108,16 +108,16 @@ public class SettingStateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		SettingState state = SettingState.FromSettings(name, m, km);
-		SettingState state1 = 
+		State state = State.FromSettings(name, m, km);
+		State state1 = 
 				state.change()
 				.set(name, "Peter")
 				.build();
-		SettingState state2 = 
+		State state2 = 
 				state.change()
 				.set(m, 100.0)
 				.build();
-		SettingState merge = state1.merge(state2);
+		State merge = state1.merge(state2);
 		assertThat(merge.get(name)).isEqualTo("Peter");
 		assertThat(merge.get(m)).isEqualTo(100.0);
 	}

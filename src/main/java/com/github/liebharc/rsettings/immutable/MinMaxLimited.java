@@ -9,7 +9,7 @@ package com.github.liebharc.rsettings.immutable;
  */
 public interface MinMaxLimited<T extends Comparable<T>> {
 
-	T getMin(SettingState state);
+	T getMin(State state);
 	
-	T getMax(SettingState state);
+	T getMax(State state);
 }

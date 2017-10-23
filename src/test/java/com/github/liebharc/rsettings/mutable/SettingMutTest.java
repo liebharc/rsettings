@@ -9,7 +9,7 @@ import com.github.liebharc.rsettingsexample.mutable.Name;
 
 public class SettingMutTest {	
 
-	private static class NameSettingMut extends SettingStateMut {
+	private static class NameSettingMut extends StateMut {
 		private Name name;
 		
 		public NameSettingMut() {

@@ -10,7 +10,7 @@ public class DistanceInM
 		super(0.0);
 	}
 	
-	public boolean isEnabled(SettingState state) {
+	public boolean isEnabled(State state) {
 		return state.get(this) > 0.0;
 	}
 }

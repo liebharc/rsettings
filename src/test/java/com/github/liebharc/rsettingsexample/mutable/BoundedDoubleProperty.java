@@ -4,7 +4,7 @@ package com.github.liebharc.rsettingsexample.mutable;
 
 import com.github.liebharc.rsettings.CheckFailedException; 
 import com.github.liebharc.rsettings.Checks;
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.MinMaxLimitedMut;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
@@ -27,7 +27,7 @@ public class BoundedDoubleProperty
 	}
 	
 	@Override
-	public Optional<Double> update(SettingState state) throws CheckFailedException {
+	public Optional<Double> update(State state) throws CheckFailedException {
 		Checks.CheckMinMax(state.get(this), getMin(), getMax());
 		return super.update(state);
 	}

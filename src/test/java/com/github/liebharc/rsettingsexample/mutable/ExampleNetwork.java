@@ -1,8 +1,8 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.mutable.SettingStateMut;
+import com.github.liebharc.rsettings.mutable.StateMut;
 
-public final class ExampleNetwork extends SettingStateMut {
+public final class ExampleNetwork extends StateMut {
 
 	private Count count;
 	private DoubleCountProperty doubleCount;
