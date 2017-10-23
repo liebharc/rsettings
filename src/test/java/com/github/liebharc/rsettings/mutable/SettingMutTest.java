@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettingsexample.mutable.NameProperty;
 
-public class PropertyTest {	
+public class SettingMutTest {	
 
 	private static class NameSettingMut extends SettingStateMut {
 		private NameProperty name;
