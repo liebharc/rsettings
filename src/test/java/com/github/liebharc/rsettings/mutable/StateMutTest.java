@@ -5,18 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.function.Consumer;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettingsexample.mutable.BoundedDoubleProperty;
-import com.github.liebharc.rsettingsexample.mutable.Count;
-import com.github.liebharc.rsettingsexample.mutable.DoubleCountProperty;
-import com.github.liebharc.rsettingsexample.mutable.EnableIfCountEquals5;
-import com.github.liebharc.rsettingsexample.mutable.ExampleNetwork;
-import com.github.liebharc.rsettingsexample.mutable.Interdependent;
-import com.github.liebharc.rsettingsexample.mutable.Interdependent2;
-import com.github.liebharc.rsettingsexample.mutable.Name;
+import com.github.liebharc.rsettingsexample.mutable.*;
 
 public class StateMutTest {
 	
