@@ -46,7 +46,7 @@ public class SettingState {
 					propagateChanges(
 						combinedState, 
 						this.newState.keySet().stream().collect(Collectors.toList()));
-			return new SettingState(parent, makeImmutable(combinedState), makeImmutable(allChanges));
+			return new SettingState(parent, makeImmutable(combinedState), allChanges);
 		}
 
 		private Map<ReadOnlySetting<?>, Object> createCombinedState() {
@@ -59,18 +59,14 @@ public class SettingState {
 		}
 		
 		private List<ReadOnlySetting<?>> propagateChanges(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
-			List<ReadOnlySetting<?>> allChanges = new ArrayList<>(settings);
+			SettingsChangeListBuilder allChanges = new SettingsChangeListBuilder(settings);
 			List<ReadOnlySetting<?>> settingsToResolve = new ArrayList<>(settings);
 			while (!settingsToResolve.isEmpty()) {
 				List<ReadOnlySetting<?>> settingDependencies = new ArrayList<>();
 				for (ReadOnlySetting<?> setting : settingsToResolve) {
-					Optional<?> result = setting.update(new SettingState(this.parent, state, allChanges));
+					Optional<?> result = setting.update(new SettingState(this.parent, state, allChanges.build()));
 					if ((result.isPresent())) {
-						state.replace(setting, result.get());
-						if (allChanges.contains(setting)) {
-							allChanges.remove(setting);
-						}
-						
+						state.replace(setting, result.get());					
 						allChanges.add(setting);
 					}
 					
@@ -82,18 +78,12 @@ public class SettingState {
 				settingsToResolve = settingDependencies;
 			}
 			
-			return allChanges;
+			return allChanges.build();
 		}
 		
 		private Map<ReadOnlySetting<?>, Object> makeImmutable(Map<ReadOnlySetting<?>, Object> state) {
 			ImmutableMap.Builder<ReadOnlySetting<?>, Object> immutable = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
 			immutable.putAll(state);
-			return immutable.build();
-		}
-		
-		private List<ReadOnlySetting<?>> makeImmutable(List<ReadOnlySetting<?>> list) {
-			ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<ReadOnlySetting<?>>();
-			immutable.addAll(list);
 			return immutable.build();
 		}
 	}
