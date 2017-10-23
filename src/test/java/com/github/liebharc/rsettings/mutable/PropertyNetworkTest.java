@@ -1,13 +1,19 @@
 package com.github.liebharc.rsettings.mutable;
 
+import static org.assertj.core.api.Assertions.*;
+
+import org.junit.Test;
+
+import com.github.liebharc.rsettingsexample.mutable.ExampleNetwork;
+
 public class PropertyNetworkTest {
-	/*
+	
 	@Test
 	public void createANetwork() {
 		ExampleNetwork network = new ExampleNetwork();
-		assertThat(network.getNumberOfProperties()).isGreaterThan(0);
+		assertThat(network.getNumberOfSettings()).isGreaterThan(0);
 	}
-	
+	/*
 	@Test
 	public void derivedPropertiesTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();

@@ -8,7 +8,7 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettingsexample.mutable.NameProperty;
 
-public class PropertyTest {
+public class PropertyTest {	
 
 	private static class NameSettingMut {
 		private CurrentSettingState state;

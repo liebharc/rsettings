@@ -89,8 +89,12 @@ public class SettingState {
 	}
 	
 	public static SettingState FromSettings(ReadOnlySetting<?>... settings) {
+		return FromSettings(Arrays.asList(settings));
+	}
+	
+	public static SettingState FromSettings(Collection<ReadOnlySetting<?>> settings) {
 		ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<>();
-		immutable.addAll(Arrays.asList(settings));
+		immutable.addAll(settings);
 		return new SettingState(immutable.build());
 	}
 	
@@ -188,5 +192,13 @@ public class SettingState {
 			TSetting extends ReadOnlySetting<TValue> & CanBeDisabled> 
 				boolean isEnabled(TSetting setting) {
 		return setting.isEnabled(this);
+	}
+
+	public int getNumberOfSettings() {
+		return settings.size();
+	}
+
+	public List<ReadOnlySetting<?>> listSettings() {
+		return settings;
 	}
 }
