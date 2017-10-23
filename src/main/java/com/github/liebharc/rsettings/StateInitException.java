@@ -1,7 +1,5 @@
 package com.github.liebharc.rsettings;
 
-import com.github.liebharc.rsettings.mutable.ConflictingUpdatesException;
-
 /**
  * This exception will be throws if the state fails to initialize.
  */
@@ -13,7 +11,7 @@ public class StateInitException extends RuntimeException {
 		super(message);
 	}
 
-	public StateInitException(String message, ConflictingUpdatesException e) {
+	public StateInitException(String message, Exception e) {
 		super(message, e);
 	}
 }

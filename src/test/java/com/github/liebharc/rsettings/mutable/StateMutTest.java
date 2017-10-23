@@ -163,8 +163,8 @@ public class StateMutTest {
 				network.startTransaction()
 				.set(name, "Fish");
 		transaction2.complete();
-		assertThatThrownBy(() -> transaction1.complete());
-		assertThat(name.getValue()).isEqualTo("Fish");
+		transaction1.complete();
+		assertThat(name.getValue()).isEqualTo("Paul");
 	}
 	
 	@Test
@@ -178,12 +178,11 @@ public class StateMutTest {
 				network.startTransaction()
 				.set(name, "Fish");
 		transaction1.complete();
-		assertThatThrownBy(() -> transaction2.complete());
-		assertThat(name.getValue()).isEqualTo("Paul");
+		transaction2.complete();
+		assertThat(name.getValue()).isEqualTo("Fish");
 	}
 	
 	@Test
-	@Ignore
 	public void twoUpdatesNoConflict() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		StateMut.Builder transaction1 = 

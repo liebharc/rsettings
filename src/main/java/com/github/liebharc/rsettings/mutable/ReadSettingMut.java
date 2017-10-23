@@ -2,10 +2,9 @@ package com.github.liebharc.rsettings.mutable;
 
 import org.apache.commons.math3.exception.NullArgumentException;
 
-import com.github.liebharc.rsettings.events.Event;
-import com.github.liebharc.rsettings.events.EventPublisher;
-import com.github.liebharc.rsettings.immutable.ReadSetting;
-import com.github.liebharc.rsettings.immutable.State;
+import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.events.*;
+import com.github.liebharc.rsettings.immutable.*;
 
 public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 
@@ -35,7 +34,7 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 		});
 	}
 	
-	void updateState(State state) throws ConflictingUpdatesException {
+	void updateState(State state) throws CheckFailedException {
 		this.state.set(state);
 	}
 	

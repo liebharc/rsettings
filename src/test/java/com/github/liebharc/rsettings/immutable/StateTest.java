@@ -28,22 +28,6 @@ public class StateTest {
 	}
 	
 	@Test
-	public void trackStateRelations() throws CheckFailedException {
-		Name name = new Name();
-		State parent = State.FromSettings(name);
-		State child = parent.change()
-				.set(name, "Peter")
-				.build();
-		State childchild = child.change()
-				.set(name, "Fish")
-				.build();
-		assertThat(parent.isDirectlyDerivedFrom(parent)).isFalse();
-		assertThat(child.isDirectlyDerivedFrom(parent)).isTrue();
-		assertThat(childchild.isDirectlyDerivedFrom(parent)).isFalse();
-		assertThat(childchild.isDirectlyDerivedFrom(child)).isTrue();
-	}
-	
-	@Test
 	public void dependencies() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);

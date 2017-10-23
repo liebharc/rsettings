@@ -160,11 +160,7 @@ public class State {
 	
 	private final UUID kind;
     
-    private final UUID id;
-    
     private final long version;
-    
-    private final Optional<UUID> parentId;
 
 	public State() {
 		this(
@@ -181,9 +177,7 @@ public class State {
 			Map<ReadSetting<?>, VersionedValue> state) {
 		this.settings = settings;
 		this.state = state;
-		this.id = UUID.randomUUID();
 		this.kind = UUID.randomUUID();
-		this.parentId = Optional.empty();
 		this.dependencies = new SettingDependencies();
 		this.version = 0;
 		this.lastChanges = settings;
@@ -198,10 +192,8 @@ public class State {
 			List<ReadSetting<?>> lastChanges) {
 		this.settings = parent.settings;
 		this.state = state;
-		this.id = UUID.randomUUID();
 		this.kind = parent.kind;
 		this.version = parent.version + 1;
-		this.parentId = Optional.of(parent.id);
 		this.dependencies = parent.dependencies;
 		this.lastChanges = lastChanges;
 	}
@@ -210,20 +202,12 @@ public class State {
 		return new Builder(this, settings, state);
 	}
 	
-	public boolean isDirectlyDerivedFrom(State possibleParent) {
-		if (!parentId.isPresent()) {
-			return false;
-		}
-		
-		return possibleParent.id.equals(parentId.get());
-	}
-	
-	public boolean isRoot() {
-		return !parentId.isPresent();
-	}
-	
 	public List<ReadSetting<?>> getLastChanges() {
 		return lastChanges;
+	}
+
+	public boolean isRoot() {
+		return version == 0;
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
@@ -266,7 +250,7 @@ public class State {
 	 */
 	public State merge(State other) throws CheckFailedException {
 		Reject.ifNull(other);
-		
+				
 		if (!other.kind.equals(this.kind) ) {
 			throw new CheckFailedException("Can't merge two states which don't have a common ancestor");
 		}

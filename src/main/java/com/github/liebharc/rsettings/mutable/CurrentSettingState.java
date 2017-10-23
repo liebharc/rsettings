@@ -1,5 +1,6 @@
 package com.github.liebharc.rsettings.mutable;
 
+import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.events.*;
 import com.github.liebharc.rsettings.immutable.*;
 
@@ -17,14 +18,16 @@ class CurrentSettingState {
 		current = init;
 	}
 	
-	public void set(State state) throws ConflictingUpdatesException {
-		synchronized (lock) {
-			if (!state.isDirectlyDerivedFrom(current) && !state.isRoot()) {
-				throw new ConflictingUpdatesException();
+	public void set(State state) throws CheckFailedException {
+		synchronized (lock) {		
+			if (state.isRoot()) {
+				current = state;
 			}
-			
-			current = state;
+			else {
+				current = state.merge(current);
+			}
 		}
+		
 		stateChanged.raise(state);
 	}
 	

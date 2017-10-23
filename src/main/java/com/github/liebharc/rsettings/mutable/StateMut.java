@@ -42,13 +42,13 @@ public class StateMut {
 	public <TValue, TSetting extends ReadSettingMut<TValue>> TSetting register(TSetting setting) {
 		try {
 			addToState(setting);
-		} catch (ConflictingUpdatesException e) {
-			throw new StateInitException(e.getMessage(), e);
+		} catch (CheckFailedException e) {
+			throw new StateInitException("Adding a setting lead to an inconsistent state", e);
 		}
 		return setting;
 	}
 	
-	private void addToState(ReadSettingMut<?> setting) throws ConflictingUpdatesException {
+	private void addToState(ReadSettingMut<?> setting) throws CheckFailedException {
 		List<ReadSetting<?>> allSettings = new ArrayList<>(state.get().listSettings());
 		allSettings.add(setting);
 		State newState = State.FromSettings(allSettings);
