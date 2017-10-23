@@ -1,11 +1,11 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.immutable.CanBeDisabled;
-import com.github.liebharc.rsettings.immutable.Setting;
+import com.github.liebharc.rsettings.immutable.CanBeDisabled; 
 import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
 
 public final class EnableIfCountEquals5 
-	extends Setting<String> 
+	extends ReadWriteProperty<String> 
 	implements CanBeDisabled {
 
 	private CountProperty count;

@@ -1,12 +1,12 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import java.util.Optional;
+import java.util.Optional; 
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.Setting;
 import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
 
-public final class Interdependent2Property extends Setting<Integer> {
+public final class Interdependent2Property extends ReadWriteProperty<Integer> {
 
 	private InterdependentProperty other;
 	

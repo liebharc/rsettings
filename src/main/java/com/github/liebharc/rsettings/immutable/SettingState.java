@@ -26,7 +26,10 @@ public class SettingState {
 			this.settings = settings;
 		}
 
-		public <T> Builder set(Setting<T> setting, T value) {
+		public 
+			<TValue, 
+			TSetting extends ReadOnlySetting<TValue> & WriteableSetting> 
+				Builder set(TSetting setting, TValue value) {
 			if (!settings.contains(setting)) {
 				throw new IllegalArgumentException("Setting is not part of this state");
 			}

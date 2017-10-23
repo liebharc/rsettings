@@ -10,12 +10,17 @@ public class SettingStateMut {
 		state = new CurrentSettingState(SettingState.FromSettings());
 	}
 	
-	public <TValue, TSetting extends ReadOnlySetting<TValue>> TSetting register(TSetting setting) {
+	public <TValue, TSetting extends ReadProperty<TValue>> TSetting register(TSetting setting) {
+		addToState(setting);
+		return setting;
+	}
+	
+	private void addToState(ReadProperty<?> setting) {
 		List<ReadOnlySetting<?>> allSettings = new ArrayList<>(state.get().listSettings());
 		allSettings.add(setting);
 		SettingState newState = SettingState.FromSettings(allSettings);
 		state.set(newState);
-		return setting;
+		setting.setState(state);
 	}
 	
 	public int getNumberOfSettings() {

@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
 
-import com.github.liebharc.rsettingsexample.mutable.ExampleNetwork;
+import com.github.liebharc.rsettings.*;
+import com.github.liebharc.rsettingsexample.mutable.*;
 
 public class PropertyNetworkTest {
 	
@@ -13,19 +14,16 @@ public class PropertyNetworkTest {
 		ExampleNetwork network = new ExampleNetwork();
 		assertThat(network.getNumberOfSettings()).isGreaterThan(0);
 	}
-	/*
+	
 	@Test
 	public void derivedPropertiesTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		CountProperty count = network.getCount();
 		DoubleCountProperty doubleCount = network.getDoubleCount();
-		try (AutoTransaction t = network.startTransaction()) {
-			count.setValue(2);
-		}
-		
+		count.setValue(2);
 		assertThat(doubleCount.getValue()).isEqualTo(4);
 	}
-	
+	/*
 	@Test
 	public void derivedPropertyThrowsExceptionTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();

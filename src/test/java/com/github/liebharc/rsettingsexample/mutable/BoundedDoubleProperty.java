@@ -1,15 +1,15 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import java.util.Optional;
+import java.util.Optional; 
 
 import com.github.liebharc.rsettings.CheckFailedException; 
 import com.github.liebharc.rsettings.Checks;
 import com.github.liebharc.rsettings.immutable.MinMaxLimited;
-import com.github.liebharc.rsettings.immutable.Setting;
 import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.mutable.ReadProperty;
 
 public class BoundedDoubleProperty 
-	extends Setting<Double> 
+	extends ReadProperty<Double> 
 	implements MinMaxLimited<Double> {
 
 	public BoundedDoubleProperty() {

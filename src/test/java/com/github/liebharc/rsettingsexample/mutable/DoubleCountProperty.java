@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.OufOfRangeException;
-import com.github.liebharc.rsettings.immutable.ReadOnlySetting;
 import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.mutable.ReadProperty;
 
-public final class DoubleCountProperty extends ReadOnlySetting<Integer> {
+public final class DoubleCountProperty extends ReadProperty<Integer> {
 	private CountProperty count;
 	
 	public DoubleCountProperty(CountProperty count) {

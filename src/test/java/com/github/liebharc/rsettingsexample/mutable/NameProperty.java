@@ -1,12 +1,12 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import java.util.Optional;
+import java.util.Optional; 
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.Setting;
 import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
 
-public final class NameProperty extends Setting<String> {
+public final class NameProperty extends ReadWriteProperty<String> {
 
 	public NameProperty() {
 		super("");

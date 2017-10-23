@@ -2,16 +2,23 @@ package com.github.liebharc.rsettings.mutable;
 
 import com.github.liebharc.rsettings.immutable.ReadOnlySetting;
 
-public class ReadProperty<T> {
-	private ReadOnlySetting<T> setting;
-	protected CurrentSettingState state;
+public abstract class ReadProperty<T> extends ReadOnlySetting<T> {
 
-	ReadProperty(CurrentSettingState state, ReadOnlySetting<T> setting) {
+	private CurrentSettingState state;
+	
+	public ReadProperty(T defaultValue) {
+		super(defaultValue);
+	}
+
+	public T getValue() {
+		return state.get().get(this);
+	}
+
+	void setState(CurrentSettingState state) {
 		this.state = state;
-		this.setting = setting;
 	}
 	
-	public T getValue() {
-		return state.get().get(setting);
+	protected CurrentSettingState getState() {
+		return this.state;
 	}
 }
