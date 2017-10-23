@@ -106,6 +106,10 @@ public class SettingState {
     private final Map<ReadOnlySetting<?>, ?> state;
     
     private final PropertyDependencies dependencies;
+    
+    private final UUID id;
+    
+    private final Optional<UUID> parentId;
 
 	public SettingState() {
 		this(
@@ -122,6 +126,8 @@ public class SettingState {
 			Map<ReadOnlySetting<?>, ?> state) {
 		this.settings = settings;
 		this.state = state;
+		this.id = UUID.randomUUID();
+		this.parentId = Optional.empty();
 		this.dependencies = new PropertyDependencies();
 		for (ReadOnlySetting<?> setting : settings) {
 			dependencies.register(setting);
@@ -133,11 +139,21 @@ public class SettingState {
 			Map<ReadOnlySetting<?>, ?> state) {
 		this.settings = parent.settings;
 		this.state = state;
+		this.id = UUID.randomUUID();
+		this.parentId = Optional.of(parent.id);
 		this.dependencies = parent.dependencies;
 	}
 	
 	public Builder change() {
 		return new Builder(this, settings, state);
+	}
+	
+	public boolean isDirectlyDerivedFrom(SettingState possibleParent) {
+		if (!parentId.isPresent()) {
+			return false;
+		}
+		
+		return possibleParent.id == parentId.get();
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that

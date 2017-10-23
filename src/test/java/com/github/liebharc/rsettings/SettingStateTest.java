@@ -26,6 +26,22 @@ public class SettingStateTest {
 	}
 	
 	@Test
+	public void trackStateRelations() throws CheckFailedException {
+		NameSetting name = new NameSetting();
+		SettingState parent = SettingState.FromSettings(name);
+		SettingState child = parent.change()
+				.set(name, "Peter")
+				.build();
+		SettingState childchild = child.change()
+				.set(name, "Fish")
+				.build();
+		assertThat(parent.isDirectlyDerivedFrom(parent)).isFalse();
+		assertThat(child.isDirectlyDerivedFrom(parent)).isTrue();
+		assertThat(childchild.isDirectlyDerivedFrom(parent)).isFalse();
+		assertThat(childchild.isDirectlyDerivedFrom(child)).isTrue();
+	}
+	
+	@Test
 	public void dependencies() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
