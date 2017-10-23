@@ -4,6 +4,11 @@ import java.util.*;
 
 import com.google.common.collect.ImmutableList;
 
+/**
+ * A builder to create a list of changed settings. If the same setting is changed twice by an user
+ * then only the last change will be recorded since the first change never takes effect if it gets immediately 
+ * overwritten.
+ */
 public class SettingsChangeListBuilder {
 
 	private List<ReadSetting<?>> changes;

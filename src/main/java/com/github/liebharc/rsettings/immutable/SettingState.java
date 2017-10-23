@@ -6,6 +6,15 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+/**
+ * The state remembers the current values of all settings.
+ * 
+ * An immutable state solves all issues which are more commonly solved with transactions, e.g.:
+ * - Changes to an immutable state can be rolled back just by discarding/not-using a state
+ * - Changes to several settings at the same time can be implemented with a @see Builder. All changes
+ *   in a builder are considered to happen at the same time.
+ * - A states consistency can be checked every time the @see Builder.build() routine is called.
+ */
 public class SettingState {
 	public class Builder {
 		
@@ -114,7 +123,7 @@ public class SettingState {
 	
     private final Map<ReadSetting<?>, ?> state;
     
-    private final PropertyDependencies dependencies;
+    private final SettingDependencies dependencies;
 	
 	private final List<ReadSetting<?>> lastChanges;
     
@@ -139,7 +148,7 @@ public class SettingState {
 		this.state = state;
 		this.id = UUID.randomUUID();
 		this.parentId = Optional.empty();
-		this.dependencies = new PropertyDependencies();
+		this.dependencies = new SettingDependencies();
 		this.lastChanges = settings;
 		for (ReadSetting<?> setting : settings) {
 			dependencies.register(setting);

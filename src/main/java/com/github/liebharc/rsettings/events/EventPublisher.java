@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * The private part of an @see Event. It contains the code to raise an event
+ * while the @see Event class contains the client interface to subscribe to an event. 
+ * @param <T> The event type.
+ */
 public final class EventPublisher<T> {
 	
 	private Event<T> event;

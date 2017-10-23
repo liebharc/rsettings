@@ -4,6 +4,11 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.*;
 import java.util.*;
 
+/**
+ * The mutable version of the state is built on top of the immutable version.
+ * The immutable version already solved the major issues which need to be addressed to get
+ * a consistent state.
+ */
 public class SettingStateMut {
 	public class Builder {
 		
@@ -52,5 +57,9 @@ public class SettingStateMut {
 	
 	public Builder startTransaction() {
 		return new Builder();
+	}
+	
+	public SettingState getImmutableState() {
+		return state.get();
 	}
 }
