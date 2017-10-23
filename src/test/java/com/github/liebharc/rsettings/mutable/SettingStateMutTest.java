@@ -2,6 +2,8 @@ package com.github.liebharc.rsettings.mutable;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.function.Consumer;
+
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.*;
@@ -23,40 +25,32 @@ public class SettingStateMutTest {
 		count.setValue(2);
 		assertThat(doubleCount.getValue()).isEqualTo(4);
 	}
-	/*
+	
 	@Test
-	public void derivedPropertyThrowsExceptionTest() throws CheckFailedException {
+	public void derivedSettingThrowsExceptionTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		CountProperty count = network.getCount();
-		try (AutoTransaction t = network.startTransaction()) {
-			count.setValue(5);
-		}
+		count.setValue(5);
 		assertThatThrownBy(() -> {
-			try (AutoTransaction t = network.startTransaction()) {
-				count.setValue(11);
-			}
+			count.setValue(11);
 		});
 		
 		assertThat(count.getValue()).isEqualTo(5);
 	}
 	
 	@Test
-	public void propertyItselfThrowsAnException() throws CheckFailedException {
+	public void settingItselfThrowsAnException() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		NameProperty name = network.getName();
-		try (AutoTransaction t = network.startTransaction()) {
-			name.setValue("Foobar");
-		}
+		name.setValue("Foobar");
 		
 		assertThatThrownBy(() -> {
-			try (AutoTransaction t = network.startTransaction()) {
-				name.setValue("D'oh");
-			}
+			name.setValue("D'oh");
 		});
 		
 		assertThat(name.getValue()).isEqualTo("Foobar");
 	}
-
+/*
 	@Test
 	public void propertyChangeCanBeUndone() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
@@ -71,24 +65,18 @@ public class SettingStateMutTest {
 		}
 		assertThat(property.getValue()).isEqualTo("Fish");
 	}
-
+*/
 	@Test
-	public void valueAcceptedEvent() throws CheckFailedException {
+	public void valueChangedEvent() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		NameProperty property = network.getName();
 		IntBox numberOfCalls = new IntBox();
-		Consumer<ReadProperty<String>> listener = i -> numberOfCalls.increment();
-		property.getValueAcceptedEvent().subscribe(listener);
-		try (AutoTransaction t = network.startTransaction()) {
-			property.setValue("Fish");
-			assertThat(numberOfCalls).isEqualTo(0);
-			assertThat(network.hasPendingTransaction()).isTrue();
-		}
-		
-		assertThat(network.hasPendingTransaction()).isFalse();
+		Consumer<String> listener = i -> numberOfCalls.increment();
+		property.getValueChangedEvent().subscribe(listener);
+		property.setValue("Fish");
 		assertThat(numberOfCalls).isEqualTo(1);
 	}
-	
+/*	
 	@Test
 	public void enableDisableAProperty() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
