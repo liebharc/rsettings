@@ -115,8 +115,8 @@ public class StateMutTest {
 	@Test
 	public void interDependence() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		Interdependent prop1 = network.getInterdependentProperty();
-		Interdependent2 prop2 = network.getInterdependent2Property();
+		Interdependent prop1 = network.getInterdependent();
+		Interdependent2 prop2 = network.getInterdependent2();
 		network
 			.startTransaction()
 			.set(prop1, 5)
@@ -129,7 +129,7 @@ public class StateMutTest {
 	@Test
 	public void minMaxSetting() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		BoundedDoubleProperty property = network.getBoundedDoubleProperty();
+		BoundedDouble property = network.getBoundedDouble();
 		assertThat(property.getMin()).isEqualTo(-1.0);
 		assertThat(property.getMax()).isEqualTo(1.0);
 		property.setValue(0.5);
@@ -199,13 +199,14 @@ public class StateMutTest {
 		ExampleNetwork network = new ExampleNetwork();
 		StateMut.Builder transaction1 = 
 				network.startTransaction()
-				.set(network.getName(), "Paul");
+				.set(network.getInterdependent(), -5)
+				.set(network.getInterdependent2(), Sign.Negative);
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
-				.set(network.getCount(), 2);
+				.set(network.getInterdependent(), 0);
 		transaction1.complete();
-		transaction2.complete();
-		assertThat(network.getName().getValue()).isEqualTo("Paul");
-		assertThat(network.getCount().getValue()).isEqualTo(2);
+		assertThatThrownBy(() -> transaction2.complete());
+		assertThat(network.getInterdependent().getValue()).isEqualTo(-5);
+		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Negative);
 	}
 }

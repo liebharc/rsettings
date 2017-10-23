@@ -6,20 +6,20 @@ public final class ExampleNetwork extends StateMut {
 
 	private Count count;
 	private DoubleCount doubleCount;
-	private Name nameProperty;
-	private EnableIfCountEquals5 enableIfCountEquals5Property;
-	private Interdependent interdependentProperty;
-	private Interdependent2 interdependent2Property;
-	private BoundedDoubleProperty boundedDoubleProperty;
+	private Name name;
+	private EnableIfCountEquals5 enableIfCountEquals5;
+	private Interdependent interdependent;
+	private Interdependent2 interdependent2;
+	private BoundedDouble boundedDouble;
 	
 	public ExampleNetwork() {
 		count = register(new Count());
-		enableIfCountEquals5Property = register(new EnableIfCountEquals5(count));
+		enableIfCountEquals5 = register(new EnableIfCountEquals5(count));
 		doubleCount = register(new DoubleCount(count));
-		nameProperty = register(new Name());
-		interdependentProperty = register(new Interdependent());
-		interdependent2Property = register(new Interdependent2(interdependentProperty));
-		boundedDoubleProperty = register(new BoundedDoubleProperty());
+		name = register(new Name());
+		interdependent = register(new Interdependent());
+		interdependent2 = register(new Interdependent2(interdependent));
+		boundedDouble = register(new BoundedDouble());
 	}
 	
 	public Count getCount() {
@@ -31,22 +31,22 @@ public final class ExampleNetwork extends StateMut {
 	}
 	
 	public Name getName() {
-		return nameProperty;
+		return name;
 	}
 	
 	public EnableIfCountEquals5 getEnableIfCountEquals5() {
-		return enableIfCountEquals5Property;
+		return enableIfCountEquals5;
 	}
 	
-	public Interdependent getInterdependentProperty() {
-		return interdependentProperty;
+	public Interdependent getInterdependent() {
+		return interdependent;
 	}
 	
-	public Interdependent2 getInterdependent2Property() {
-		return interdependent2Property;
+	public Interdependent2 getInterdependent2() {
+		return interdependent2;
 	}
 	
-	public BoundedDoubleProperty getBoundedDoubleProperty() {
-		return boundedDoubleProperty;
+	public BoundedDouble getBoundedDouble() {
+		return boundedDouble;
 	}
 }

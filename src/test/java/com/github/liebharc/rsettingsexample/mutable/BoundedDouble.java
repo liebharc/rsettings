@@ -8,11 +8,11 @@ import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.MinMaxLimitedMut;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public class BoundedDoubleProperty 
+public class BoundedDouble 
 	extends ReadWriteSettingMut<Double> 
 	implements MinMaxLimitedMut<Double> {
 
-	public BoundedDoubleProperty() {
+	public BoundedDouble() {
 		super(0.0);
 	}
 
