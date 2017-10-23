@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.liebharc.rsettings.NetworkInitException;
+
 final class PropertyDependencies {
 	
 	private final List<ReadOnlySetting<?>> properties = new ArrayList<>();

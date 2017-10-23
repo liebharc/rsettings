@@ -1,4 +1,4 @@
-package com.github.liebharc.rsettings.immutable;
+package com.github.liebharc.rsettings;
 
 public class NetworkInitException extends RuntimeException {
 
