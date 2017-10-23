@@ -1,6 +1,6 @@
 package com.github.liebharc.rsettings.mutable;
 
-public interface MinMaxProperty<T> {
+public interface MinMaxLimitedMut<T extends Comparable<T>> {
 	T getMin();
 	T getMax();
 }

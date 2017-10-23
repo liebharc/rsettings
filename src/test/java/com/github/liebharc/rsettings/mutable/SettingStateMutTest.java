@@ -136,7 +136,7 @@ public class SettingStateMutTest {
 			prop2.setValue(-5);
 		}
 		assertThat(prop1.getValue() + prop2.getValue()).isEqualTo(0);
-	}
+	}*/
 	
 	@Test
 	public void minMaxProperty() throws CheckFailedException {
@@ -144,22 +144,16 @@ public class SettingStateMutTest {
 		BoundedDoubleProperty property = network.getBoundedDoubleProperty();
 		assertThat(property.getMin()).isEqualTo(-1.0);
 		assertThat(property.getMax()).isEqualTo(1.0);
-		try (AutoTransaction t = network.startTransaction()) {
-			property.setValue(0.5);
-		}
+		property.setValue(0.5);
 		assertThatThrownBy(() -> {
-			try (AutoTransaction t = network.startTransaction()) {
-				property.setValue(2.0);
-			}
+			property.setValue(2.0);
 		});
 		
 		assertThat(property.getValue()).isEqualTo(0.5);
 
 		assertThatThrownBy(() -> {
-			try (AutoTransaction t = network.startTransaction()) {
-				property.setValue(-1.01);
-			}
+			property.setValue(-1.01);
 		});
 		assertThat(property.getValue()).isEqualTo(0.5);
-	}*/
+	}
 }
