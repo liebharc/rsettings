@@ -16,7 +16,7 @@ public class PropertyTest {
 			this.name = register(new NameProperty());
 		}
 
-		public ReadWriteProperty<String> get() {
+		public ReadWriteSettingMut<String> get() {
 			return name;
 		}
 	}

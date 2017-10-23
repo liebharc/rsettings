@@ -11,16 +11,16 @@ public class SettingState {
 		
 		private final SettingState parent;
 		
-		private final List<ReadOnlySetting<?>> settings;
+		private final List<ReadSetting<?>> settings;
 		
-	    private final Map<ReadOnlySetting<?>, ?> prevState;
+	    private final Map<ReadSetting<?>, ?> prevState;
 	    
-	    private Map<ReadOnlySetting<?>, Object> newState = new HashMap<>();
+	    private Map<ReadSetting<?>, Object> newState = new HashMap<>();
 
 		public Builder(
 				SettingState parent,
-				List<ReadOnlySetting<?>> settings, 
-				Map<ReadOnlySetting<?>, ?> state) {
+				List<ReadSetting<?>> settings, 
+				Map<ReadSetting<?>, ?> state) {
 			this.parent = parent;
 			this.prevState =  state;
 			this.settings = settings;
@@ -28,7 +28,7 @@ public class SettingState {
 
 		public 
 			<TValue, 
-			TSetting extends ReadOnlySetting<TValue> & WriteableSetting> 
+			TSetting extends ReadSetting<TValue> & WriteableSetting> 
 				Builder set(TSetting setting, TValue value) {
 			if (!settings.contains(setting)) {
 				throw new IllegalArgumentException("Setting is not part of this state");
@@ -44,29 +44,29 @@ public class SettingState {
 		}
 		
 		public SettingState build() throws CheckFailedException {
-			Map<ReadOnlySetting<?>, Object> combinedState = createCombinedState();
-			List<ReadOnlySetting<?>> allChanges =
+			Map<ReadSetting<?>, Object> combinedState = createCombinedState();
+			List<ReadSetting<?>> allChanges =
 					propagateChanges(
 						combinedState, 
 						this.newState.keySet().stream().collect(Collectors.toList()));
 			return new SettingState(parent, makeImmutable(combinedState), allChanges);
 		}
 
-		private Map<ReadOnlySetting<?>, Object> createCombinedState() {
-			Map<ReadOnlySetting<?>, Object> combinedState = new HashMap<>();
+		private Map<ReadSetting<?>, Object> createCombinedState() {
+			Map<ReadSetting<?>, Object> combinedState = new HashMap<>();
 			combinedState.putAll(prevState);
-			for (Entry<ReadOnlySetting<?>, ?> settingValue : newState.entrySet()) {
+			for (Entry<ReadSetting<?>, ?> settingValue : newState.entrySet()) {
 				combinedState.replace(settingValue.getKey(), settingValue.getValue());
 			}
 			return combinedState;
 		}
 		
-		private List<ReadOnlySetting<?>> propagateChanges(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
+		private List<ReadSetting<?>> propagateChanges(Map<ReadSetting<?>, Object> state, List<ReadSetting<?>> settings) throws CheckFailedException {
 			SettingsChangeListBuilder allChanges = new SettingsChangeListBuilder(settings);
-			List<ReadOnlySetting<?>> settingsToResolve = new ArrayList<>(settings);
+			List<ReadSetting<?>> settingsToResolve = new ArrayList<>(settings);
 			while (!settingsToResolve.isEmpty()) {
-				List<ReadOnlySetting<?>> settingDependencies = new ArrayList<>();
-				for (ReadOnlySetting<?> setting : settingsToResolve) {
+				List<ReadSetting<?>> settingDependencies = new ArrayList<>();
+				for (ReadSetting<?> setting : settingsToResolve) {
 					Optional<?> result = setting.update(new SettingState(this.parent, state, allChanges.build()));
 					if ((result.isPresent())) {
 						state.replace(setting, result.get());					
@@ -84,39 +84,39 @@ public class SettingState {
 			return allChanges.build();
 		}
 		
-		private Map<ReadOnlySetting<?>, Object> makeImmutable(Map<ReadOnlySetting<?>, Object> state) {
-			ImmutableMap.Builder<ReadOnlySetting<?>, Object> immutable = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
+		private Map<ReadSetting<?>, Object> makeImmutable(Map<ReadSetting<?>, Object> state) {
+			ImmutableMap.Builder<ReadSetting<?>, Object> immutable = new ImmutableMap.Builder<ReadSetting<?>, Object>();
 			immutable.putAll(state);
 			return immutable.build();
 		}
 	}
 	
-	public static SettingState FromSettings(ReadOnlySetting<?>... settings) {
+	public static SettingState FromSettings(ReadSetting<?>... settings) {
 		return FromSettings(Arrays.asList(settings));
 	}
 	
-	public static SettingState FromSettings(Collection<ReadOnlySetting<?>> settings) {
-		ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<>();
+	public static SettingState FromSettings(Collection<ReadSetting<?>> settings) {
+		ImmutableList.Builder<ReadSetting<?>> immutable = new ImmutableList.Builder<>();
 		immutable.addAll(settings);
 		return new SettingState(immutable.build());
 	}
 	
-	private static Map<ReadOnlySetting<?>, ?> createResetValues(ImmutableList<ReadOnlySetting<?>> settings) {
-		ImmutableMap.Builder<ReadOnlySetting<?>, Object> initState = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
-		for (ReadOnlySetting<?> setting : settings) {
+	private static Map<ReadSetting<?>, ?> createResetValues(ImmutableList<ReadSetting<?>> settings) {
+		ImmutableMap.Builder<ReadSetting<?>, Object> initState = new ImmutableMap.Builder<ReadSetting<?>, Object>();
+		for (ReadSetting<?> setting : settings) {
 			initState.put(setting, setting.getDefaultValue());
 		}
 		
 		return initState.build();
 	}
 	
-	private final List<ReadOnlySetting<?>> settings;
+	private final List<ReadSetting<?>> settings;
 	
-    private final Map<ReadOnlySetting<?>, ?> state;
+    private final Map<ReadSetting<?>, ?> state;
     
     private final PropertyDependencies dependencies;
 	
-	private final List<ReadOnlySetting<?>> lastChanges;
+	private final List<ReadSetting<?>> lastChanges;
     
     private final UUID id;
     
@@ -124,32 +124,32 @@ public class SettingState {
 
 	public SettingState() {
 		this(
-			new ImmutableList.Builder<ReadOnlySetting<?>>().build(),
-		    new ImmutableMap.Builder<ReadOnlySetting<?>, Object>().build());
+			new ImmutableList.Builder<ReadSetting<?>>().build(),
+		    new ImmutableMap.Builder<ReadSetting<?>, Object>().build());
 	}
 	
-	public SettingState(ImmutableList<ReadOnlySetting<?>> settings) {
+	public SettingState(ImmutableList<ReadSetting<?>> settings) {
 		this(settings, createResetValues(settings));
 	}
 	
 	private SettingState(
-			List<ReadOnlySetting<?>> settings, 
-			Map<ReadOnlySetting<?>, ?> state) {
+			List<ReadSetting<?>> settings, 
+			Map<ReadSetting<?>, ?> state) {
 		this.settings = settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
 		this.parentId = Optional.empty();
 		this.dependencies = new PropertyDependencies();
 		this.lastChanges = settings;
-		for (ReadOnlySetting<?> setting : settings) {
+		for (ReadSetting<?> setting : settings) {
 			dependencies.register(setting);
 		}
 	}
 	
 	SettingState(
 			SettingState parent, 
-			Map<ReadOnlySetting<?>, ?> state,
-			List<ReadOnlySetting<?>> lastChanges) {
+			Map<ReadSetting<?>, ?> state,
+			List<ReadSetting<?>> lastChanges) {
 		this.settings = parent.settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
@@ -170,29 +170,29 @@ public class SettingState {
 		return possibleParent.id == parentId.get();
 	}
 	
-	public List<ReadOnlySetting<?>> getLastChanges() {
+	public List<ReadSetting<?>> getLastChanges() {
 		return lastChanges;
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
-	public <T> T get(ReadOnlySetting<T> setting) {
+	public <T> T get(ReadSetting<T> setting) {
 		return (T)state.get(setting);
 	}
 	
 	public <TValue extends Comparable<TValue>, 
-			TSetting extends ReadOnlySetting<TValue> & MinMaxLimited<TValue>> 
+			TSetting extends ReadSetting<TValue> & MinMaxLimited<TValue>> 
 				TValue getMin(TSetting setting) {
 		return setting.getMin(this);
 	}
 	
 	public <TValue extends Comparable<TValue>, 
-			TSetting extends ReadOnlySetting<TValue> & MinMaxLimited<TValue>> 
+			TSetting extends ReadSetting<TValue> & MinMaxLimited<TValue>> 
 				TValue getMax(TSetting setting) {
 		return setting.getMax(this);
 	}
 	
 	public <TValue, 
-			TSetting extends ReadOnlySetting<TValue> & CanBeDisabled> 
+			TSetting extends ReadSetting<TValue> & CanBeDisabled> 
 				boolean isEnabled(TSetting setting) {
 		return setting.isEnabled(this);
 	}
@@ -201,7 +201,7 @@ public class SettingState {
 		return settings.size();
 	}
 
-	public List<ReadOnlySetting<?>> listSettings() {
+	public List<ReadSetting<?>> listSettings() {
 		return settings;
 	}
 }

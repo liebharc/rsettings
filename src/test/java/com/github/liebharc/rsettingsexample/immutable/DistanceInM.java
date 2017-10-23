@@ -3,7 +3,7 @@ package com.github.liebharc.rsettingsexample.immutable;
 import com.github.liebharc.rsettings.immutable.*;
 
 public class DistanceInM 
-	extends Setting<Double>
+	extends ReadWriteSetting<Double>
 	implements CanBeDisabled {
 	
 	public DistanceInM() {

@@ -4,11 +4,11 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettings.immutable.WriteableSetting;
 
-public abstract class ReadWriteProperty<T> 
-	extends ReadProperty<T> 
+public abstract class ReadWriteSettingMut<T> 
+	extends ReadSettingMut<T> 
 	implements WriteableSetting {
 
-	public ReadWriteProperty(T defaultValue) {
+	public ReadWriteSettingMut(T defaultValue) {
 		super(defaultValue);
 	}
 

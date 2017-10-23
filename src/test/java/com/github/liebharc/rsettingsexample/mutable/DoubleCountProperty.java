@@ -5,9 +5,9 @@ import java.util.Optional;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.OufOfRangeException;
 import com.github.liebharc.rsettings.immutable.SettingState;
-import com.github.liebharc.rsettings.mutable.ReadProperty;
+import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
-public final class DoubleCountProperty extends ReadProperty<Integer> {
+public final class DoubleCountProperty extends ReadSettingMut<Integer> {
 	private CountProperty count;
 	
 	public DoubleCountProperty(CountProperty count) {

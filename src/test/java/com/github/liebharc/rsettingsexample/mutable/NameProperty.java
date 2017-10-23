@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
-import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
+import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public final class NameProperty extends ReadWriteProperty<String> {
+public final class NameProperty extends ReadWriteSettingMut<String> {
 
 	public NameProperty() {
 		super("");

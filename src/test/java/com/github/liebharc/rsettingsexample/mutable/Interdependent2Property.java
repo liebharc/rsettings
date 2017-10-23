@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
-import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
+import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public final class Interdependent2Property extends ReadWriteProperty<Integer> {
+public final class Interdependent2Property extends ReadWriteSettingMut<Integer> {
 
 	private InterdependentProperty other;
 	

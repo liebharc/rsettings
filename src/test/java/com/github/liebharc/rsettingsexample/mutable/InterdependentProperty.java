@@ -1,8 +1,8 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.mutable.ReadWriteProperty;
+import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public final class InterdependentProperty extends ReadWriteProperty<Integer> {
+public final class InterdependentProperty extends ReadWriteSettingMut<Integer> {
 	
 	public InterdependentProperty() {
 		super(0);

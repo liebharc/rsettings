@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 
-public abstract class ReadOnlySetting<T> {
+public abstract class ReadSetting<T> {
 	private T defaultValue;
 	
-	public ReadOnlySetting(T defaultValue) {
+	public ReadSetting(T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 	

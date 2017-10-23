@@ -3,10 +3,10 @@ package com.github.liebharc.rsettingsexample.immutable;
 import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.ReadOnlySetting;
+import com.github.liebharc.rsettings.immutable.ReadSetting;
 import com.github.liebharc.rsettings.immutable.SettingState;
 
-public class DistanceInKm extends ReadOnlySetting<Double> {
+public class DistanceInKm extends ReadSetting<Double> {
 
 	private DistanceInM distanceInM;
 	

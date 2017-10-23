@@ -6,9 +6,9 @@ import com.google.common.collect.ImmutableList;
 
 public class SettingsChangeListBuilder {
 
-	private List<ReadOnlySetting<?>> changes;
+	private List<ReadSetting<?>> changes;
 	
-	public void add(ReadOnlySetting<?> setting) {
+	public void add(ReadSetting<?> setting) {
 		if (changes.contains(setting)) {
 			changes.remove(setting);
 		}
@@ -16,16 +16,16 @@ public class SettingsChangeListBuilder {
 		changes.add(setting);
 	}
 	
-	public SettingsChangeListBuilder(Collection<ReadOnlySetting<?>> settings) {
+	public SettingsChangeListBuilder(Collection<ReadSetting<?>> settings) {
 		 changes = new ArrayList<>(settings);
 	}
 	
-	public List<ReadOnlySetting<?>> build() {
+	public List<ReadSetting<?>> build() {
 		return makeImmutable(changes);
 	}
 	
-	private List<ReadOnlySetting<?>> makeImmutable(List<ReadOnlySetting<?>> list) {
-		ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<ReadOnlySetting<?>>();
+	private List<ReadSetting<?>> makeImmutable(List<ReadSetting<?>> list) {
+		ImmutableList.Builder<ReadSetting<?>> immutable = new ImmutableList.Builder<ReadSetting<?>>();
 		immutable.addAll(list);
 		return immutable.build();
 	}

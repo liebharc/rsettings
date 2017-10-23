@@ -1,12 +1,12 @@
 package com.github.liebharc.rsettings.mutable;
 
-import com.github.liebharc.rsettings.immutable.ReadOnlySetting;
+import com.github.liebharc.rsettings.immutable.ReadSetting;
 
-public abstract class ReadProperty<T> extends ReadOnlySetting<T> {
+public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 
 	private CurrentSettingState state;
 	
-	public ReadProperty(T defaultValue) {
+	public ReadSettingMut(T defaultValue) {
 		super(defaultValue);
 	}
 

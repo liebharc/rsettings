@@ -6,10 +6,10 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.Checks;
 import com.github.liebharc.rsettings.immutable.MinMaxLimited;
 import com.github.liebharc.rsettings.immutable.SettingState;
-import com.github.liebharc.rsettings.mutable.ReadProperty;
+import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
 public class BoundedDoubleProperty 
-	extends ReadProperty<Double> 
+	extends ReadSettingMut<Double> 
 	implements MinMaxLimited<Double> {
 
 	public BoundedDoubleProperty() {
