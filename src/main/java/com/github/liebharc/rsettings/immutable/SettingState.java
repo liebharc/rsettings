@@ -126,6 +126,8 @@ public class SettingState {
     private final SettingDependencies dependencies;
 	
 	private final List<ReadSetting<?>> lastChanges;
+	
+	private final UUID kind;
     
     private final UUID id;
     
@@ -147,6 +149,7 @@ public class SettingState {
 		this.settings = settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
+		this.kind = UUID.randomUUID();
 		this.parentId = Optional.empty();
 		this.dependencies = new SettingDependencies();
 		this.lastChanges = settings;
@@ -162,6 +165,7 @@ public class SettingState {
 		this.settings = parent.settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
+		this.kind = parent.kind;
 		this.parentId = Optional.of(parent.id);
 		this.dependencies = parent.dependencies;
 		this.lastChanges = lastChanges;
@@ -210,11 +214,15 @@ public class SettingState {
 		return setting.isEnabled(this);
 	}
 
-	public int getNumberOfSettings() {
-		return settings.size();
-	}
-
 	public List<ReadSetting<?>> listSettings() {
 		return settings;
+	}
+	
+	public SettingState merge(SettingState other) throws CheckFailedException {
+		if (!other.kind.equals(this.kind) ) {
+			throw new CheckFailedException("Can't merge two states which don't have a common ancestor");
+		}
+		
+		return this;
 	}
 }

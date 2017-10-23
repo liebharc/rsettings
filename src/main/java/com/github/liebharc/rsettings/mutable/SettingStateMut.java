@@ -56,15 +56,15 @@ public class SettingStateMut {
 		setting.setState(state);
 	}
 	
-	public int getNumberOfSettings() {
-		return state.get().getNumberOfSettings();
-	}
-	
 	public Builder startTransaction() {
 		return new Builder();
 	}
 	
 	public SettingState getImmutableState() {
 		return state.get();
+	}
+
+	public List<ReadSetting<?>> listSettings() {
+		return state.get().listSettings();
 	}
 }

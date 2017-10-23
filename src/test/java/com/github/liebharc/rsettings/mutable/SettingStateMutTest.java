@@ -1,20 +1,29 @@
 package com.github.liebharc.rsettings.mutable;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.function.Consumer;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.github.liebharc.rsettings.*;
-import com.github.liebharc.rsettingsexample.mutable.*;
+import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettingsexample.mutable.BoundedDoubleProperty;
+import com.github.liebharc.rsettingsexample.mutable.Count;
+import com.github.liebharc.rsettingsexample.mutable.DoubleCountProperty;
+import com.github.liebharc.rsettingsexample.mutable.EnableIfCountEquals5;
+import com.github.liebharc.rsettingsexample.mutable.ExampleNetwork;
+import com.github.liebharc.rsettingsexample.mutable.Interdependent;
+import com.github.liebharc.rsettingsexample.mutable.Interdependent2;
+import com.github.liebharc.rsettingsexample.mutable.Name;
 
 public class SettingStateMutTest {
 	
 	@Test
 	public void createANetwork() {
 		ExampleNetwork network = new ExampleNetwork();
-		assertThat(network.getNumberOfSettings()).isGreaterThan(0);
+		assertThat(network.listSettings().size()).isGreaterThan(0);
 	}
 	
 	@Test
@@ -174,6 +183,7 @@ public class SettingStateMutTest {
 	}
 	
 	@Test
+	@Ignore
 	public void twoUpdatesNoConflict() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		SettingStateMut.Builder transaction1 = 

@@ -13,5 +13,4 @@ public class SettingTest {
 		Name name = new Name();
 		assertThat(name.getDefaultValue()).isEqualTo("");
 	}
-
 }
