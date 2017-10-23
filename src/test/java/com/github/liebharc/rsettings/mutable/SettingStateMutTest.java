@@ -142,4 +142,8 @@ public class SettingStateMutTest {
 		});
 		assertThat(property.getValue()).isEqualTo(0.5);
 	}
+	
+	@Test
+	public void conflictingChangesTest() throws CheckFailedException {
+	}
 }

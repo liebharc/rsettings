@@ -12,14 +12,14 @@ public class SettingStateTest {
 
 	@Test
 	public void initASetting() {
-		NameSetting name = new NameSetting();
+		Name name = new Name();
 		SettingState state = SettingState.FromSettings(name);
 		assertThat(state.get(name)).isEqualTo("");
 	}
 	
 	@Test
 	public void changeASetting() throws CheckFailedException {
-		NameSetting name = new NameSetting();
+		Name name = new Name();
 		SettingState state = SettingState.FromSettings(name);
 		state = state.change()
 				.set(name, "Peter")
@@ -29,7 +29,7 @@ public class SettingStateTest {
 	
 	@Test
 	public void trackStateRelations() throws CheckFailedException {
-		NameSetting name = new NameSetting();
+		Name name = new Name();
 		SettingState parent = SettingState.FromSettings(name);
 		SettingState child = parent.change()
 				.set(name, "Peter")
@@ -68,7 +68,7 @@ public class SettingStateTest {
 	
 	@Test
 	public void trackLastChanges() throws CheckFailedException {
-		NameSetting name = new NameSetting();
+		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
 		SettingState state = SettingState.FromSettings(name, m, km);

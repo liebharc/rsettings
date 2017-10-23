@@ -10,7 +10,7 @@ public class SettingTest {
 
 	@Test
 	public void testSetting() {
-		NameSetting name = new NameSetting();
+		Name name = new Name();
 		assertThat(name.getDefaultValue()).isEqualTo("");
 	}
 
