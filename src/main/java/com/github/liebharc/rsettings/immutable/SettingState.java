@@ -90,10 +90,7 @@ public class SettingState {
 	
 	public static SettingState FromSettings(ReadOnlySetting<?>... settings) {
 		ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<>();
-		// TODO find out if there is an easy way to use addAll
-		for (ReadOnlySetting<?> setting : settings) {
-			immutable.add(setting);
-		}
+		immutable.addAll(Arrays.asList(settings));
 		return new SettingState(immutable.build());
 	}
 	
