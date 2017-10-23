@@ -42,10 +42,11 @@ public class SettingState {
 		
 		public SettingState build() throws CheckFailedException {
 			Map<ReadOnlySetting<?>, Object> combinedState = createCombinedState();
-			propagateChanges(
-					combinedState, 
-					this.newState.keySet().stream().collect(Collectors.toList()));
-			return new SettingState(parent, makeImmutable(combinedState));
+			List<ReadOnlySetting<?>> allChanges =
+					propagateChanges(
+						combinedState, 
+						this.newState.keySet().stream().collect(Collectors.toList()));
+			return new SettingState(parent, makeImmutable(combinedState), makeImmutable(allChanges));
 		}
 
 		private Map<ReadOnlySetting<?>, Object> createCombinedState() {
@@ -57,29 +58,42 @@ public class SettingState {
 			return combinedState;
 		}
 		
-		private void propagateChanges(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
-			if (settings.isEmpty()) {
-				return;
-			}
-			
-			List<ReadOnlySetting<?>> settingDependencies = new ArrayList<>();
-			for (ReadOnlySetting<?> setting : settings) {
-				Optional<?> result = setting.update(new SettingState(this.parent, state));
-				if ((result.isPresent())) {
-					state.replace(setting, result.get());
+		private List<ReadOnlySetting<?>> propagateChanges(Map<ReadOnlySetting<?>, Object> state, List<ReadOnlySetting<?>> settings) throws CheckFailedException {
+			List<ReadOnlySetting<?>> allChanges = new ArrayList<>(settings);
+			List<ReadOnlySetting<?>> settingsToResolve = new ArrayList<>(settings);
+			while (!settingsToResolve.isEmpty()) {
+				List<ReadOnlySetting<?>> settingDependencies = new ArrayList<>();
+				for (ReadOnlySetting<?> setting : settingsToResolve) {
+					Optional<?> result = setting.update(new SettingState(this.parent, state, allChanges));
+					if ((result.isPresent())) {
+						state.replace(setting, result.get());
+						if (allChanges.contains(setting)) {
+							allChanges.remove(setting);
+						}
+						
+						allChanges.add(setting);
+					}
+					
+					if (!ObjectHelper.NullSafeEquals(state.get(setting), prevState.get(setting))) {
+						settingDependencies.addAll(dependencies.getDependencies(setting));
+					}
 				}
 				
-				if (!ObjectHelper.NullSafeEquals(state.get(setting), prevState.get(setting))) {
-					settingDependencies.addAll(dependencies.getDependencies(setting));
-				}
+				settingsToResolve = settingDependencies;
 			}
 			
-			propagateChanges(state, settingDependencies);
+			return allChanges;
 		}
 		
 		private Map<ReadOnlySetting<?>, Object> makeImmutable(Map<ReadOnlySetting<?>, Object> state) {
 			ImmutableMap.Builder<ReadOnlySetting<?>, Object> immutable = new ImmutableMap.Builder<ReadOnlySetting<?>, Object>();
 			immutable.putAll(state);
+			return immutable.build();
+		}
+		
+		private List<ReadOnlySetting<?>> makeImmutable(List<ReadOnlySetting<?>> list) {
+			ImmutableList.Builder<ReadOnlySetting<?>> immutable = new ImmutableList.Builder<ReadOnlySetting<?>>();
+			immutable.addAll(list);
 			return immutable.build();
 		}
 	}
@@ -107,6 +121,8 @@ public class SettingState {
     private final Map<ReadOnlySetting<?>, ?> state;
     
     private final PropertyDependencies dependencies;
+	
+	private final List<ReadOnlySetting<?>> lastChanges;
     
     private final UUID id;
     
@@ -130,6 +146,7 @@ public class SettingState {
 		this.id = UUID.randomUUID();
 		this.parentId = Optional.empty();
 		this.dependencies = new PropertyDependencies();
+		this.lastChanges = settings;
 		for (ReadOnlySetting<?> setting : settings) {
 			dependencies.register(setting);
 		}
@@ -137,12 +154,14 @@ public class SettingState {
 	
 	SettingState(
 			SettingState parent, 
-			Map<ReadOnlySetting<?>, ?> state) {
+			Map<ReadOnlySetting<?>, ?> state,
+			List<ReadOnlySetting<?>> lastChanges) {
 		this.settings = parent.settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
 		this.parentId = Optional.of(parent.id);
 		this.dependencies = parent.dependencies;
+		this.lastChanges = lastChanges;
 	}
 	
 	public Builder change() {
@@ -155,6 +174,10 @@ public class SettingState {
 		}
 		
 		return possibleParent.id == parentId.get();
+	}
+	
+	public List<ReadOnlySetting<?>> getLastChanges() {
+		return lastChanges;
 	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that

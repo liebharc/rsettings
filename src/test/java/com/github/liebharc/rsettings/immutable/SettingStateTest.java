@@ -65,4 +65,23 @@ public class SettingStateTest {
 				.build();
 		assertThat(state.isEnabled(m)).isTrue();
 	}
+	
+	@Test
+	public void trackLastChanges() throws CheckFailedException {
+		NameSetting name = new NameSetting();
+		DistanceInM m = new DistanceInM();
+		DistanceInKm km = new DistanceInKm(m);
+		SettingState state = SettingState.FromSettings(name, m, km);
+		assertThat(state.getLastChanges()).containsExactly(name, m, km);
+		
+		state = state.change()
+				.set(name, "Peter")
+				.build();
+		assertThat(state.getLastChanges()).containsExactly(name);
+		
+		state = state.change()
+				.set(m, 1.0)
+				.build();
+		assertThat(state.getLastChanges()).containsExactly(m, km);
+	}
 }
