@@ -1,6 +1,7 @@
 package com.github.liebharc.rsettings.mutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.StateInitException;
 import com.github.liebharc.rsettings.immutable.*;
 import java.util.*;
 
@@ -39,11 +40,15 @@ public class SettingStateMut {
 	}
 	
 	public <TValue, TSetting extends ReadSettingMut<TValue>> TSetting register(TSetting setting) {
-		addToState(setting);
+		try {
+			addToState(setting);
+		} catch (ConflictingUpdatesException e) {
+			throw new StateInitException(e.getMessage(), e);
+		}
 		return setting;
 	}
 	
-	private void addToState(ReadSettingMut<?> setting) {
+	private void addToState(ReadSettingMut<?> setting) throws ConflictingUpdatesException {
 		List<ReadSetting<?>> allSettings = new ArrayList<>(state.get().listSettings());
 		allSettings.add(setting);
 		SettingState newState = SettingState.FromSettings(allSettings);

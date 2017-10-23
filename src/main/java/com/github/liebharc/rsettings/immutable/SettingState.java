@@ -176,7 +176,11 @@ public class SettingState {
 			return false;
 		}
 		
-		return possibleParent.id == parentId.get();
+		return possibleParent.id.equals(parentId.get());
+	}
+	
+	public boolean isRoot() {
+		return !parentId.isPresent();
 	}
 	
 	public List<ReadSetting<?>> getLastChanges() {

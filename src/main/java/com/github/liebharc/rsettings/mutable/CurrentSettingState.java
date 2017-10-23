@@ -17,8 +17,12 @@ class CurrentSettingState {
 		current = init;
 	}
 	
-	public void set(SettingState state) {
+	public void set(SettingState state) throws ConflictingUpdatesException {
 		synchronized (lock) {
+			if (!state.isDirectlyDerivedFrom(current) && !state.isRoot()) {
+				throw new ConflictingUpdatesException();
+			}
+			
 			current = state;
 		}
 		stateChanged.raise(state);

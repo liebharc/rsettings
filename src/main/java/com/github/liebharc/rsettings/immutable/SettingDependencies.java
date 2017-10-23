@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.liebharc.rsettings.NetworkInitException;
+import com.github.liebharc.rsettings.StateInitException;
 
 /**
  * This class is responsible to detect the dependencies between settings and to provide
@@ -20,7 +20,7 @@ final class SettingDependencies {
 	/**
 	 * Adds a setting to the dependency tree.
 	 * @param setting A setting
-	 * @throws NetworkInitException if a dependency to an unknown setting exists
+	 * @throws StateInitException if a dependency to an unknown setting exists
 	 */
 	public final <TSetting extends ReadSetting<TValue>, TValue> void register(TSetting setting) {
 		properties.add(setting);
@@ -44,7 +44,7 @@ final class SettingDependencies {
 		List<ReadSetting<?>> dependencies = property.getDependencies();
 	    for (ReadSetting<?> setting : dependencies) {
 			if (!properties.contains(setting)) {
-				throw new NetworkInitException("Properties must be registered in the order in which they are created");
+				throw new StateInitException("Properties must be registered in the order in which they are created");
 			}
 		}
 		return property.getDependencies();

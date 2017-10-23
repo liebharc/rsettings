@@ -22,20 +22,20 @@ public class SettingMutTest {
 	}
 	
 	@Test
-	public void propertyCanBeConstructed() {
+	public void settingCanBeConstructed() {
 		NameSettingMut name = new NameSettingMut();
 		assertThat(name.get().getValue()).isEqualTo("");
 	}
 
 	@Test
-	public void resetValueTestSet() throws CheckFailedException {
+	public void resetValue() throws CheckFailedException {
 		NameSettingMut name = new NameSettingMut();
 		name.get().setValue("Peter");
 		assertThat(name.get().getValue()).isEqualTo("Peter");
 	}
 
 	@Test
-	public void propertyCanBeReset() throws CheckFailedException {
+	public void settingCanBeReset() throws CheckFailedException {
 		NameSettingMut name = new NameSettingMut();
 		name.get().setValue("Peter");
 		name.get().reset();

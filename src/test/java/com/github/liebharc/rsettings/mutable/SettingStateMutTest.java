@@ -145,5 +145,32 @@ public class SettingStateMutTest {
 	
 	@Test
 	public void conflictingChangesTest() throws CheckFailedException {
+		ExampleNetwork network = new ExampleNetwork();
+		Name name = network.getName();
+		SettingStateMut.Builder transaction1 = 
+				network.startTransaction()
+				.set(name, "Paul");
+		SettingStateMut.Builder transaction2 = 
+				network.startTransaction()
+				.set(name, "Fish");
+		transaction2.complete();
+		assertThatThrownBy(() -> transaction1.complete());
+		assertThat(name.getValue()).isEqualTo("Fish");
+	}
+
+	
+	@Test
+	public void conflictingChangesReverseCompleteOrderTest() throws CheckFailedException {
+		ExampleNetwork network = new ExampleNetwork();
+		Name name = network.getName();
+		SettingStateMut.Builder transaction1 = 
+				network.startTransaction()
+				.set(name, "Paul");
+		SettingStateMut.Builder transaction2 = 
+				network.startTransaction()
+				.set(name, "Fish");
+		transaction1.complete();
+		assertThatThrownBy(() -> transaction2.complete());
+		assertThat(name.getValue()).isEqualTo("Paul");
 	}
 }

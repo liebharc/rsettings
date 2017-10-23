@@ -35,7 +35,7 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 		});
 	}
 	
-	void updateState(SettingState state) {
+	void updateState(SettingState state) throws ConflictingUpdatesException {
 		this.state.set(state);
 	}
 	
