@@ -5,6 +5,7 @@ import org.apache.commons.math3.exception.NullArgumentException;
 import com.github.liebharc.rsettings.events.Event;
 import com.github.liebharc.rsettings.events.EventPublisher;
 import com.github.liebharc.rsettings.immutable.ReadSetting;
+import com.github.liebharc.rsettings.immutable.SettingState;
 
 public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 
@@ -34,8 +35,12 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 		});
 	}
 	
-	protected CurrentSettingState getState() {
-		return this.state;
+	void updateState(SettingState state) {
+		this.state.set(state);
+	}
+	
+	protected SettingState getState() {
+		return this.state.get();
 	}
 	
 	public Event<T> getValueChangedEvent() {

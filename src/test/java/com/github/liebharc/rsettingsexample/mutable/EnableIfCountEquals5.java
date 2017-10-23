@@ -1,12 +1,11 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import com.github.liebharc.rsettings.immutable.CanBeDisabled; 
-import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettings.mutable.CanBeDisabledMut;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
 public final class EnableIfCountEquals5 
 	extends ReadWriteSettingMut<String> 
-	implements CanBeDisabled {
+	implements CanBeDisabledMut {
 
 	private CountProperty count;
 	
@@ -16,7 +15,7 @@ public final class EnableIfCountEquals5
 	}
 
 	@Override
-	public boolean isEnabled(SettingState state) {
-		return state.get(count) == 5;
+	public boolean isEnabled() {
+		return getState().get(count) == 5;
 	}
 }

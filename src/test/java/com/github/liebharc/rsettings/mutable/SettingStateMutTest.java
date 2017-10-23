@@ -76,41 +76,33 @@ public class SettingStateMutTest {
 		property.setValue("Fish");
 		assertThat(numberOfCalls).isEqualTo(1);
 	}
-/*	
+
 	@Test
 	public void enableDisableAProperty() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		CountProperty count = network.getCount();
 		EnableIfCountEquals5 property = network.getEnableIfCountEquals5();
-		assertThat(property.IsEnabled()).isFalse();
-		try (AutoTransaction t = network.startTransaction()) {
-			count.setValue(5);
-		}
-		assertThat(property.IsEnabled()).isTrue();
-		try (AutoTransaction t = network.startTransaction()) {
-			count.setValue(6);
-		}
-		assertThat(property.IsEnabled()).isFalse();
+		assertThat(property.isEnabled()).isFalse();
+		count.setValue(5);
+		assertThat(property.isEnabled()).isTrue();
+		count.setValue(6);
+		assertThat(property.isEnabled()).isFalse();
 	}
-	
+
 	@Test
 	public void enableDisableAPropertyIfTransactionFails() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		CountProperty count = network.getCount();
 		EnableIfCountEquals5 property = network.getEnableIfCountEquals5();
-		try (AutoTransaction t = network.startTransaction()) {
-			count.setValue(5);
-		}
-		assertThat(property.IsEnabled()).isTrue();
+		count.setValue(5);
+		assertThat(property.isEnabled()).isTrue();
 		
 		assertThatThrownBy(() -> {
-			try (AutoTransaction t = network.startTransaction()) {
-				count.setValue(20);
-			}
+			count.setValue(20);
 		});
-		assertThat(property.IsEnabled()).isTrue();
+		assertThat(property.isEnabled()).isTrue();
 	}
-	
+	/*		
 	@Test
 	public void executeInTransaction() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();

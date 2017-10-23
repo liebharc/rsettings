@@ -14,9 +14,9 @@ public abstract class ReadWriteSettingMut<T>
 
 	public void setValue(T value) throws CheckFailedException {
 		SettingState newState = 
-				getState().get().change().
+				getState().change().
 				set(this, value).build();
-		getState().set(newState);
+		updateState(newState);
 	}
 	
 	public void reset() throws CheckFailedException {
