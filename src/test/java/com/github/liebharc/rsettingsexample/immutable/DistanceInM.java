@@ -1,6 +1,6 @@
-package com.github.liebharc.rsettingsexample;
+package com.github.liebharc.rsettingsexample.immutable;
 
-import com.github.liebharc.rsettings.*;
+import com.github.liebharc.rsettings.immutable.*;
 
 public class DistanceInM 
 	extends Setting<Double>

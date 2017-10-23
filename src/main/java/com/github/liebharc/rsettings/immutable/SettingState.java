@@ -1,5 +1,6 @@
-package com.github.liebharc.rsettings;
+package com.github.liebharc.rsettings.immutable;
 
+import com.github.liebharc.rsettings.CheckFailedException;
 import com.google.common.collect.*;
 import java.util.*;
 import java.util.Map.Entry;

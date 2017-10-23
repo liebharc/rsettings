@@ -1,4 +1,4 @@
-package com.github.liebharc.rsettings;
+package com.github.liebharc.rsettings.immutable;
 
 class ObjectHelper {
 	static boolean NullSafeEquals(Object a, Object b) {

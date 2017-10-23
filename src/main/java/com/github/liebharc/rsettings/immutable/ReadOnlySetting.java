@@ -1,6 +1,8 @@
-package com.github.liebharc.rsettings;
+package com.github.liebharc.rsettings.immutable;
 
 import java.util.Optional;
+
+import com.github.liebharc.rsettings.CheckFailedException;
 
 public abstract class ReadOnlySetting<T> {
 	private T defaultValue;

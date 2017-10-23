@@ -1,8 +1,10 @@
-package com.github.liebharc.rsettings;
+package com.github.liebharc.rsettings.immutable;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.github.liebharc.rsettingsexample.*;
+import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.immutable.SettingState;
+import com.github.liebharc.rsettingsexample.immutable.*;
 
 import org.junit.Test;
 

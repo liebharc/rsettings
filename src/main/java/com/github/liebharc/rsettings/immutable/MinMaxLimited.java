@@ -1,4 +1,4 @@
-package com.github.liebharc.rsettings;
+package com.github.liebharc.rsettings.immutable;
 
 public interface MinMaxLimited<T extends Comparable<T>> {
 

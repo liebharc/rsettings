@@ -1,4 +1,4 @@
-package com.github.liebharc.rsettings;
+package com.github.liebharc.rsettings.immutable;
 
 public abstract class Setting<T> extends ReadOnlySetting<T> {
 		
