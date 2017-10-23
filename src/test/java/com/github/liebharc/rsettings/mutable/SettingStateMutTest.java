@@ -112,7 +112,7 @@ public class SettingStateMutTest {
 	}
 	
 	@Test
-	public void interDependenceTest() throws CheckFailedException {
+	public void interDependence() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		Interdependent prop1 = network.getInterdependentProperty();
 		Interdependent2 prop2 = network.getInterdependent2Property();
@@ -144,7 +144,7 @@ public class SettingStateMutTest {
 	}
 	
 	@Test
-	public void conflictingChangesTest() throws CheckFailedException {
+	public void conflictingChanges() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		Name name = network.getName();
 		SettingStateMut.Builder transaction1 = 
@@ -157,10 +157,9 @@ public class SettingStateMutTest {
 		assertThatThrownBy(() -> transaction1.complete());
 		assertThat(name.getValue()).isEqualTo("Fish");
 	}
-
 	
 	@Test
-	public void conflictingChangesReverseCompleteOrderTest() throws CheckFailedException {
+	public void conflictingChangesReverseCompleteOrder() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		Name name = network.getName();
 		SettingStateMut.Builder transaction1 = 
@@ -172,5 +171,20 @@ public class SettingStateMutTest {
 		transaction1.complete();
 		assertThatThrownBy(() -> transaction2.complete());
 		assertThat(name.getValue()).isEqualTo("Paul");
+	}
+	
+	@Test
+	public void twoUpdatesNoConflict() throws CheckFailedException {
+		ExampleNetwork network = new ExampleNetwork();
+		SettingStateMut.Builder transaction1 = 
+				network.startTransaction()
+				.set(network.getName(), "Paul");
+		SettingStateMut.Builder transaction2 = 
+				network.startTransaction()
+				.set(network.getCount(), 2);
+		transaction1.complete();
+		transaction2.complete();
+		assertThat(network.getName().getValue()).isEqualTo("Paul");
+		assertThat(network.getCount().getValue()).isEqualTo(2);
 	}
 }
