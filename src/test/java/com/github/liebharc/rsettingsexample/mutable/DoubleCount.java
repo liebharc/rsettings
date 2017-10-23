@@ -7,10 +7,10 @@ import com.github.liebharc.rsettings.OufOfRangeException;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
-public final class DoubleCountProperty extends ReadSettingMut<Integer> {
+public final class DoubleCount extends ReadSettingMut<Integer> {
 	private Count count;
 	
-	public DoubleCountProperty(Count count) {
+	public DoubleCount(Count count) {
 		super(0, count);
 		this.count = count;
 	}

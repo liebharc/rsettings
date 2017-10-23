@@ -5,7 +5,7 @@ import com.github.liebharc.rsettings.mutable.StateMut;
 public final class ExampleNetwork extends StateMut {
 
 	private Count count;
-	private DoubleCountProperty doubleCount;
+	private DoubleCount doubleCount;
 	private Name nameProperty;
 	private EnableIfCountEquals5 enableIfCountEquals5Property;
 	private Interdependent interdependentProperty;
@@ -15,7 +15,7 @@ public final class ExampleNetwork extends StateMut {
 	public ExampleNetwork() {
 		count = register(new Count());
 		enableIfCountEquals5Property = register(new EnableIfCountEquals5(count));
-		doubleCount = register(new DoubleCountProperty(count));
+		doubleCount = register(new DoubleCount(count));
 		nameProperty = register(new Name());
 		interdependentProperty = register(new Interdependent());
 		interdependent2Property = register(new Interdependent2(interdependentProperty));
@@ -26,7 +26,7 @@ public final class ExampleNetwork extends StateMut {
 		return count;
 	}
 	
-	public DoubleCountProperty getDoubleCount() {
+	public DoubleCount getDoubleCount() {
 		return doubleCount;
 	}
 	

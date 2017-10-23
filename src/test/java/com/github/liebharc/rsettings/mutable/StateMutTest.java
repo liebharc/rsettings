@@ -22,7 +22,7 @@ public class StateMutTest {
 	public void derivedSettingsTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		Count count = network.getCount();
-		DoubleCountProperty doubleCount = network.getDoubleCount();
+		DoubleCount doubleCount = network.getDoubleCount();
 		count.setValue(2);
 		assertThat(doubleCount.getValue()).isEqualTo(4);
 	}
@@ -148,35 +148,54 @@ public class StateMutTest {
 	@Test
 	public void conflictingChanges() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		Name name = network.getName();
+		Count count = network.getCount();
+		DoubleCount doubleCount = network.getDoubleCount();
 		StateMut.Builder transaction1 = 
 				network.startTransaction()
-				.set(name, "Paul");
+				.set(count, 1);
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
-				.set(name, "Fish");
+				.set(count, 2);
 		transaction2.complete();
 		transaction1.complete();
-		assertThat(name.getValue()).isEqualTo("Paul");
+		assertThat(count.getValue()).isEqualTo(1);
+		assertThat(doubleCount.getValue()).isEqualTo(2);
 	}
 	
 	@Test
 	public void conflictingChangesReverseCompleteOrder() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		Name name = network.getName();
+		Count count = network.getCount();
+		DoubleCount doubleCount = network.getDoubleCount();
 		StateMut.Builder transaction1 = 
 				network.startTransaction()
-				.set(name, "Paul");
+				.set(count, 1);
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
-				.set(name, "Fish");
+				.set(count, 2);
 		transaction1.complete();
 		transaction2.complete();
-		assertThat(name.getValue()).isEqualTo("Fish");
+		assertThat(count.getValue()).isEqualTo(2);
+		assertThat(doubleCount.getValue()).isEqualTo(4);
 	}
 	
 	@Test
 	public void twoUpdatesNoConflict() throws CheckFailedException {
+		ExampleNetwork network = new ExampleNetwork();
+		StateMut.Builder transaction1 = 
+				network.startTransaction()
+				.set(network.getName(), "Paul");
+		StateMut.Builder transaction2 = 
+				network.startTransaction()
+				.set(network.getCount(), 2);
+		transaction1.complete();
+		transaction2.complete();
+		assertThat(network.getName().getValue()).isEqualTo("Paul");
+		assertThat(network.getCount().getValue()).isEqualTo(2);
+	}
+	
+	@Test
+	public void twoUpdatesLeadToInconsistentState() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		StateMut.Builder transaction1 = 
 				network.startTransaction()
