@@ -42,7 +42,9 @@ final class PropertyDependencies {
 		Constructor<?> constructor = constructors[0];
 		Class<?>[] ctorArguments = constructor.getParameterTypes();
 		for (Class<?> argument : ctorArguments) {
-			if (ReadWriteSetting.class.isAssignableFrom(argument)) {
+			if (ReadSetting.class.isAssignableFrom(argument)) {
+				// TODO Need to find a better way to resolve dependencies. Just looking at the type
+				// isn't sufficient. We would need to know the instance.
 				result.add(findPropertyOfType(argument));
 			}
 		}
