@@ -1,9 +1,32 @@
 package com.github.liebharc.rsettings.mutable;
 
+import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.*;
 import java.util.*;
 
 public class SettingStateMut {
+	public class Builder {
+		
+		private final SettingState.Builder builder;
+		
+		private Builder() {
+			builder = state.get().change();
+		}
+		
+		public 
+			<TValue, 
+			TSetting extends ReadSettingMut<TValue> & WriteableSetting> 
+				Builder set(TSetting setting, TValue value) {
+			builder.set(setting, value);
+			return this;
+		}
+		
+		public void complete() throws CheckFailedException {
+			SettingState newState = builder.build();
+			state.set(newState);
+		}
+	}
+	
 	private final CurrentSettingState state;
 	
 	public SettingStateMut() {
@@ -25,5 +48,9 @@ public class SettingStateMut {
 	
 	public int getNumberOfSettings() {
 		return state.get().getNumberOfSettings();
+	}
+	
+	public Builder startTransaction() {
+		return new Builder();
 	}
 }

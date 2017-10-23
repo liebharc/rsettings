@@ -50,22 +50,7 @@ public class SettingStateMutTest {
 		
 		assertThat(name.getValue()).isEqualTo("Foobar");
 	}
-/*
-	@Test
-	public void propertyChangeCanBeUndone() throws CheckFailedException {
-		ExampleNetwork network = new ExampleNetwork();
-		NameProperty property = network.getName();
-		try (AutoTransaction t = network.startTransaction()) {
-			property.setValue("Fish");
-		}
-
-		try (AutoTransaction t = network.startTransaction()) {
-			property.setValue("Peter");
-			t.rollback();
-		}
-		assertThat(property.getValue()).isEqualTo("Fish");
-	}
-*/
+	
 	@Test
 	public void valueChangedEvent() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
@@ -102,28 +87,28 @@ public class SettingStateMutTest {
 		});
 		assertThat(property.isEnabled()).isTrue();
 	}
-	/*		
+			
 	@Test
 	public void executeInTransaction() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		CountProperty count = network.getCount();
 		NameProperty name = network.getName();
-		try (AutoTransaction t = network.startTransaction()) {
-			count.setValue(1);
-			name.setValue("Fish");
-		};
-		assertThat(network.hasPendingTransaction()).isFalse();
+		network
+			.startTransaction()
+			.set(count, 1)
+			.set(name, "Fish")
+			.complete();
 		assertThat(count.getValue()).isEqualTo(1);
 		assertThat(name.getValue()).isEqualTo("Fish");
 		assertThatThrownBy(() -> {
-			try (AutoTransaction t = network.startTransaction()) {
-				count.setValue(2);
-				name.setValue("D'oh");
-			}
+			network
+				.startTransaction()
+				.set(count, 2)
+				.set(name, "D'oh")
+				.complete();
 		});
 		assertThat(count.getValue()).isEqualTo(1);
 		assertThat(name.getValue()).isEqualTo("Fish");
-		assertThat(network.hasPendingTransaction()).isFalse();
 	}
 	
 	@Test
@@ -131,12 +116,13 @@ public class SettingStateMutTest {
 		ExampleNetwork network = new ExampleNetwork();
 		InterdependentProperty prop1 = network.getInterdependentProperty();
 		Interdependent2Property prop2 = network.getInterdependent2Property();
-		try (AutoTransaction t = network.startTransaction()) {
-			prop1.setValue(5);
-			prop2.setValue(-5);
-		}
+		network
+			.startTransaction()
+			.set(prop1, 5)
+			.set(prop2, -5)
+			.complete();
 		assertThat(prop1.getValue() + prop2.getValue()).isEqualTo(0);
-	}*/
+	}
 	
 	@Test
 	public void minMaxProperty() throws CheckFailedException {
