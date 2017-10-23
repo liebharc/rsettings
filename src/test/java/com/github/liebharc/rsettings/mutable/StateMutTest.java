@@ -120,9 +120,10 @@ public class StateMutTest {
 		network
 			.startTransaction()
 			.set(prop1, 5)
-			.set(prop2, -5)
+			.set(prop2, Sign.Positve)
 			.complete();
-		assertThat(prop1.getValue() + prop2.getValue()).isEqualTo(0);
+		assertThat(prop1.getValue()).isEqualTo(5);
+		assertThat(prop2.getValue()).isEqualTo(Sign.Positve);
 	}
 	
 	@Test
