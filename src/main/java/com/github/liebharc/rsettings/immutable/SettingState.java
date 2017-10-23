@@ -1,6 +1,7 @@
 package com.github.liebharc.rsettings.immutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.Reject;
 import com.google.common.collect.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -16,44 +17,70 @@ import java.util.stream.Collectors;
  * - A states consistency can be checked every time the @see Builder.build() routine is called.
  */
 public class SettingState {
+	private static class VersionedValue {
+		private long stateVersion;
+		private Object value;
+
+		public VersionedValue(long stateVersion, Object value) {
+			this.stateVersion = stateVersion;
+			this.value = value;
+		}
+
+		public long getVersion() {
+			return stateVersion;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+	}
+	
 	public class Builder {
 		
 		private final SettingState parent;
 		
 		private final List<ReadSetting<?>> settings;
 		
-	    private final Map<ReadSetting<?>, ?> prevState;
+	    private final Map<ReadSetting<?>, VersionedValue> prevState;
+	    
+	    private final long version;
 	    
 	    private Map<ReadSetting<?>, Object> newState = new HashMap<>();
 
 		public Builder(
 				SettingState parent,
 				List<ReadSetting<?>> settings, 
-				Map<ReadSetting<?>, ?> state) {
+				Map<ReadSetting<?>, VersionedValue> state) {
 			this.parent = parent;
 			this.prevState =  state;
 			this.settings = settings;
+			this.version = parent.version + 1;
 		}
 
 		public 
 			<TValue, 
 			TSetting extends ReadSetting<TValue> & WriteableSetting> 
 				Builder set(TSetting setting, TValue value) {
+			Reject.ifNull(setting);
 			if (!settings.contains(setting)) {
 				throw new IllegalArgumentException("Setting is not part of this state");
 			}
 			
+			setUnchecked(setting, value);
+			
+			return this;
+		}
+
+		public void setUnchecked(ReadSetting<?> setting, Object value) {
 			if (newState.containsKey(setting)) {
 				newState.replace(setting, value);
 			} else {
 				newState.put(setting, value);
 			}
-			
-			return this;
 		}
 		
 		public SettingState build() throws CheckFailedException {
-			Map<ReadSetting<?>, Object> combinedState = createCombinedState();
+			Map<ReadSetting<?>, VersionedValue> combinedState = createCombinedState();
 			List<ReadSetting<?>> allChanges =
 					propagateChanges(
 						combinedState, 
@@ -61,16 +88,18 @@ public class SettingState {
 			return new SettingState(parent, makeImmutable(combinedState), allChanges);
 		}
 
-		private Map<ReadSetting<?>, Object> createCombinedState() {
-			Map<ReadSetting<?>, Object> combinedState = new HashMap<>();
+		private Map<ReadSetting<?>, VersionedValue> createCombinedState() {
+			Map<ReadSetting<?>, VersionedValue> combinedState = new HashMap<>();
 			combinedState.putAll(prevState);
 			for (Entry<ReadSetting<?>, ?> settingValue : newState.entrySet()) {
-				combinedState.replace(settingValue.getKey(), settingValue.getValue());
+				combinedState.replace(
+						settingValue.getKey(), 
+						new VersionedValue(version, settingValue.getValue()));
 			}
 			return combinedState;
 		}
 		
-		private List<ReadSetting<?>> propagateChanges(Map<ReadSetting<?>, Object> state, List<ReadSetting<?>> settings) throws CheckFailedException {
+		private List<ReadSetting<?>> propagateChanges(Map<ReadSetting<?>, VersionedValue> state, List<ReadSetting<?>> settings) throws CheckFailedException {
 			SettingsChangeListBuilder allChanges = new SettingsChangeListBuilder(settings);
 			List<ReadSetting<?>> settingsToResolve = new ArrayList<>(settings);
 			while (!settingsToResolve.isEmpty()) {
@@ -78,7 +107,9 @@ public class SettingState {
 				for (ReadSetting<?> setting : settingsToResolve) {
 					Optional<?> result = setting.update(new SettingState(this.parent, state, allChanges.build()));
 					if ((result.isPresent())) {
-						state.replace(setting, result.get());					
+						state.replace(
+								setting, 
+								new VersionedValue(version, result.get()));					
 						allChanges.add(setting);
 					}
 					
@@ -93,8 +124,8 @@ public class SettingState {
 			return allChanges.build();
 		}
 		
-		private Map<ReadSetting<?>, Object> makeImmutable(Map<ReadSetting<?>, Object> state) {
-			ImmutableMap.Builder<ReadSetting<?>, Object> immutable = new ImmutableMap.Builder<ReadSetting<?>, Object>();
+		private Map<ReadSetting<?>, VersionedValue> makeImmutable(Map<ReadSetting<?>, VersionedValue> state) {
+			ImmutableMap.Builder<ReadSetting<?>, VersionedValue> immutable = new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>();
 			immutable.putAll(state);
 			return immutable.build();
 		}
@@ -110,10 +141,10 @@ public class SettingState {
 		return new SettingState(immutable.build());
 	}
 	
-	private static Map<ReadSetting<?>, ?> createResetValues(ImmutableList<ReadSetting<?>> settings) {
-		ImmutableMap.Builder<ReadSetting<?>, Object> initState = new ImmutableMap.Builder<ReadSetting<?>, Object>();
+	private static Map<ReadSetting<?>, VersionedValue> createResetValues(ImmutableList<ReadSetting<?>> settings) {
+		ImmutableMap.Builder<ReadSetting<?>, VersionedValue> initState = new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>();
 		for (ReadSetting<?> setting : settings) {
-			initState.put(setting, setting.getDefaultValue());
+			initState.put(setting, new VersionedValue(0, setting.getDefaultValue()));
 		}
 		
 		return initState.build();
@@ -121,7 +152,7 @@ public class SettingState {
 	
 	private final List<ReadSetting<?>> settings;
 	
-    private final Map<ReadSetting<?>, ?> state;
+    private final Map<ReadSetting<?>, VersionedValue> state;
     
     private final SettingDependencies dependencies;
 	
@@ -131,12 +162,14 @@ public class SettingState {
     
     private final UUID id;
     
+    private final long version;
+    
     private final Optional<UUID> parentId;
 
 	public SettingState() {
 		this(
 			new ImmutableList.Builder<ReadSetting<?>>().build(),
-		    new ImmutableMap.Builder<ReadSetting<?>, Object>().build());
+		    new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>().build());
 	}
 	
 	public SettingState(ImmutableList<ReadSetting<?>> settings) {
@@ -145,13 +178,14 @@ public class SettingState {
 	
 	private SettingState(
 			List<ReadSetting<?>> settings, 
-			Map<ReadSetting<?>, ?> state) {
+			Map<ReadSetting<?>, VersionedValue> state) {
 		this.settings = settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
 		this.kind = UUID.randomUUID();
 		this.parentId = Optional.empty();
 		this.dependencies = new SettingDependencies();
+		this.version = 0;
 		this.lastChanges = settings;
 		for (ReadSetting<?> setting : settings) {
 			dependencies.register(setting);
@@ -160,12 +194,13 @@ public class SettingState {
 	
 	SettingState(
 			SettingState parent, 
-			Map<ReadSetting<?>, ?> state,
+			Map<ReadSetting<?>, VersionedValue> state,
 			List<ReadSetting<?>> lastChanges) {
 		this.settings = parent.settings;
 		this.state = state;
 		this.id = UUID.randomUUID();
 		this.kind = parent.kind;
+		this.version = parent.version + 1;
 		this.parentId = Optional.of(parent.id);
 		this.dependencies = parent.dependencies;
 		this.lastChanges = lastChanges;
@@ -193,24 +228,29 @@ public class SettingState {
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
 	public <T> T get(ReadSetting<T> setting) {
-		return (T)state.get(setting);
+		Reject.ifNull(setting);
+		return (T)state.get(setting).getValue();
 	}
 	
 	public <TValue extends Comparable<TValue>, 
 			TSetting extends ReadSetting<TValue> & MinMaxLimited<TValue>> 
 				TValue getMin(TSetting setting) {
+		Reject.ifNull(setting);
 		return setting.getMin(this);
 	}
 	
 	public <TValue extends Comparable<TValue>, 
 			TSetting extends ReadSetting<TValue> & MinMaxLimited<TValue>> 
 				TValue getMax(TSetting setting) {
+		Reject.ifNull(setting);
 		return setting.getMax(this);
 	}
 	
 	public <TValue, 
 			TSetting extends ReadSetting<TValue> & CanBeDisabled> 
 				boolean isEnabled(TSetting setting) {
+		Reject.ifNull(setting);
+		
 		return setting.isEnabled(this);
 	}
 
@@ -218,11 +258,28 @@ public class SettingState {
 		return settings;
 	}
 	
+	/**
+	 * Merges two settings. In case of a conflict the values from this instance are used.
+	 * @param other Another @see SettingState, must be derived from the same base @see SettingState.
+	 * @return
+	 * @throws CheckFailedException if the resulting state after the merge isn't valid.
+	 */
 	public SettingState merge(SettingState other) throws CheckFailedException {
+		Reject.ifNull(other);
+		
 		if (!other.kind.equals(this.kind) ) {
 			throw new CheckFailedException("Can't merge two states which don't have a common ancestor");
 		}
 		
-		return this;
+		Builder builder = change();
+		for (Entry<ReadSetting<?>, VersionedValue> thisSettingValue : state.entrySet()) {
+			VersionedValue otherValue = other.state.get(thisSettingValue.getKey());
+			VersionedValue thisValue = thisSettingValue.getValue();
+			if (otherValue.getVersion() > thisValue.getVersion()) {
+				builder.setUnchecked(thisSettingValue.getKey(), otherValue.getValue());
+			}
+		}
+		
+		return builder.build();
 	}
 }

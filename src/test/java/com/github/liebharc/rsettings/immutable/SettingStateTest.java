@@ -6,8 +6,7 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettingsexample.immutable.*;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 public class SettingStateTest {
 
@@ -105,7 +104,6 @@ public class SettingStateTest {
 	}
 	
 	@Test
-	@Ignore
 	public void mergeTwoSettings() throws CheckFailedException {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
