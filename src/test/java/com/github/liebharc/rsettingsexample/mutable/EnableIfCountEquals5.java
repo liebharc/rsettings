@@ -10,7 +10,7 @@ public final class EnableIfCountEquals5
 	private CountProperty count;
 	
 	public EnableIfCountEquals5(CountProperty count) {
-		super("Hello");
+		super("Hello", count);
 		this.count = count;
 	}
 

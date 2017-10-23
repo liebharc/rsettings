@@ -8,8 +8,8 @@ public abstract class ReadWriteSettingMut<T>
 	extends ReadSettingMut<T> 
 	implements WriteableSetting {
 
-	public ReadWriteSettingMut(T defaultValue) {
-		super(defaultValue);
+	public ReadWriteSettingMut(T defaultValue, ReadSettingMut<?>... dependencies) {
+		super(defaultValue, dependencies);
 	}
 
 	public void setValue(T value) throws CheckFailedException {

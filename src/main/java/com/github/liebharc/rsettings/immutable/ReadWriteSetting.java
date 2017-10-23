@@ -4,7 +4,7 @@ public abstract class ReadWriteSetting<T>
 	extends ReadSetting<T> 
 	implements WriteableSetting {
 		
-	public ReadWriteSetting(T defaultValue) {
-		super(defaultValue);
+	public ReadWriteSetting(T defaultValue, ReadSetting<?>... dependencies) {
+		super(defaultValue, dependencies);
 	}
 }

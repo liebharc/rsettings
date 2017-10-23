@@ -11,7 +11,7 @@ public final class DoubleCountProperty extends ReadSettingMut<Integer> {
 	private CountProperty count;
 	
 	public DoubleCountProperty(CountProperty count) {
-		super(0);
+		super(0, count);
 		this.count = count;
 	}
 

@@ -11,7 +11,7 @@ public final class Interdependent2Property extends ReadWriteSettingMut<Integer> 
 	private InterdependentProperty other;
 	
 	public Interdependent2Property(InterdependentProperty count) {
-		super(0);
+		super(0, count);
 		this.other = count;
 	}
 	

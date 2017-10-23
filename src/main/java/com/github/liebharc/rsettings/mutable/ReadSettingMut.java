@@ -13,8 +13,8 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 	
 	private CurrentSettingState state;
 	
-	public ReadSettingMut(T defaultValue) {
-		super(defaultValue);
+	public ReadSettingMut(T defaultValue, ReadSettingMut<?>... dependencies) {
+		super(defaultValue, dependencies);
 	}
 
 	public T getValue() {
