@@ -5,15 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettingsexample.mutable.NameProperty;
+import com.github.liebharc.rsettingsexample.mutable.Name;
 
 public class SettingMutTest {	
 
 	private static class NameSettingMut extends SettingStateMut {
-		private NameProperty name;
+		private Name name;
 		
 		public NameSettingMut() {
-			this.name = register(new NameProperty());
+			this.name = register(new Name());
 		}
 
 		public ReadWriteSettingMut<String> get() {

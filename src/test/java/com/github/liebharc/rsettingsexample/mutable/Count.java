@@ -2,9 +2,9 @@ package com.github.liebharc.rsettingsexample.mutable;
 
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public final class InterdependentProperty extends ReadWriteSettingMut<Integer> {
-	
-	public InterdependentProperty() {
+public final class Count extends ReadWriteSettingMut<Integer> {
+
+	public Count() {
 		super(0);
 	}
 }

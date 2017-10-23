@@ -7,9 +7,9 @@ public final class EnableIfCountEquals5
 	extends ReadWriteSettingMut<String> 
 	implements CanBeDisabledMut {
 
-	private CountProperty count;
+	private Count count;
 	
-	public EnableIfCountEquals5(CountProperty count) {
+	public EnableIfCountEquals5(Count count) {
 		super("Hello", count);
 		this.count = count;
 	}

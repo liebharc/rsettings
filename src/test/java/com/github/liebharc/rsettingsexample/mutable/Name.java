@@ -6,9 +6,9 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public final class NameProperty extends ReadWriteSettingMut<String> {
+public final class Name extends ReadWriteSettingMut<String> {
 
-	public NameProperty() {
+	public Name() {
 		super("");
 	}
 	

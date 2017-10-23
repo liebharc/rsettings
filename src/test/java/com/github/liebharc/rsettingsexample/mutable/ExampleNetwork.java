@@ -4,25 +4,25 @@ import com.github.liebharc.rsettings.mutable.SettingStateMut;
 
 public final class ExampleNetwork extends SettingStateMut {
 
-	private CountProperty count;
+	private Count count;
 	private DoubleCountProperty doubleCount;
-	private NameProperty nameProperty;
+	private Name nameProperty;
 	private EnableIfCountEquals5 enableIfCountEquals5Property;
-	private InterdependentProperty interdependentProperty;
-	private Interdependent2Property interdependent2Property;
+	private Interdependent interdependentProperty;
+	private Interdependent2 interdependent2Property;
 	private BoundedDoubleProperty boundedDoubleProperty;
 	
 	public ExampleNetwork() {
-		count = register(new CountProperty());
+		count = register(new Count());
 		enableIfCountEquals5Property = register(new EnableIfCountEquals5(count));
 		doubleCount = register(new DoubleCountProperty(count));
-		nameProperty = register(new NameProperty());
-		interdependentProperty = register(new InterdependentProperty());
-		interdependent2Property = register(new Interdependent2Property(interdependentProperty));
+		nameProperty = register(new Name());
+		interdependentProperty = register(new Interdependent());
+		interdependent2Property = register(new Interdependent2(interdependentProperty));
 		boundedDoubleProperty = register(new BoundedDoubleProperty());
 	}
 	
-	public CountProperty getCount() {
+	public Count getCount() {
 		return count;
 	}
 	
@@ -30,7 +30,7 @@ public final class ExampleNetwork extends SettingStateMut {
 		return doubleCount;
 	}
 	
-	public NameProperty getName() {
+	public Name getName() {
 		return nameProperty;
 	}
 	
@@ -38,11 +38,11 @@ public final class ExampleNetwork extends SettingStateMut {
 		return enableIfCountEquals5Property;
 	}
 	
-	public InterdependentProperty getInterdependentProperty() {
+	public Interdependent getInterdependentProperty() {
 		return interdependentProperty;
 	}
 	
-	public Interdependent2Property getInterdependent2Property() {
+	public Interdependent2 getInterdependent2Property() {
 		return interdependent2Property;
 	}
 	

@@ -8,9 +8,9 @@ import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
 public final class DoubleCountProperty extends ReadSettingMut<Integer> {
-	private CountProperty count;
+	private Count count;
 	
-	public DoubleCountProperty(CountProperty count) {
+	public DoubleCountProperty(Count count) {
 		super(0, count);
 		this.count = count;
 	}

@@ -6,11 +6,11 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.SettingState;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
-public final class Interdependent2Property extends ReadWriteSettingMut<Integer> {
+public final class Interdependent2 extends ReadWriteSettingMut<Integer> {
 
-	private InterdependentProperty other;
+	private Interdependent other;
 	
-	public Interdependent2Property(InterdependentProperty count) {
+	public Interdependent2(Interdependent count) {
 		super(0, count);
 		this.other = count;
 	}

@@ -20,7 +20,7 @@ public class SettingStateMutTest {
 	@Test
 	public void derivedSettingsTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		CountProperty count = network.getCount();
+		Count count = network.getCount();
 		DoubleCountProperty doubleCount = network.getDoubleCount();
 		count.setValue(2);
 		assertThat(doubleCount.getValue()).isEqualTo(4);
@@ -29,7 +29,7 @@ public class SettingStateMutTest {
 	@Test
 	public void derivedSettingThrowsExceptionTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		CountProperty count = network.getCount();
+		Count count = network.getCount();
 		count.setValue(5);
 		assertThatThrownBy(() -> {
 			count.setValue(11);
@@ -41,7 +41,7 @@ public class SettingStateMutTest {
 	@Test
 	public void settingItselfThrowsAnException() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		NameProperty name = network.getName();
+		Name name = network.getName();
 		name.setValue("Foobar");
 		
 		assertThatThrownBy(() -> {
@@ -54,7 +54,7 @@ public class SettingStateMutTest {
 	@Test
 	public void valueChangedEvent() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		NameProperty property = network.getName();
+		Name property = network.getName();
 		IntBox numberOfCalls = new IntBox();
 		Consumer<String> listener = i -> numberOfCalls.increment();
 		property.getValueChangedEvent().subscribe(listener);
@@ -63,9 +63,9 @@ public class SettingStateMutTest {
 	}
 
 	@Test
-	public void enableDisableAProperty() throws CheckFailedException {
+	public void enableDisableASetting() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		CountProperty count = network.getCount();
+		Count count = network.getCount();
 		EnableIfCountEquals5 property = network.getEnableIfCountEquals5();
 		assertThat(property.isEnabled()).isFalse();
 		count.setValue(5);
@@ -75,9 +75,9 @@ public class SettingStateMutTest {
 	}
 
 	@Test
-	public void enableDisableAPropertyIfTransactionFails() throws CheckFailedException {
+	public void enableDisableASettingIfTransactionFails() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		CountProperty count = network.getCount();
+		Count count = network.getCount();
 		EnableIfCountEquals5 property = network.getEnableIfCountEquals5();
 		count.setValue(5);
 		assertThat(property.isEnabled()).isTrue();
@@ -91,8 +91,8 @@ public class SettingStateMutTest {
 	@Test
 	public void executeInTransaction() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		CountProperty count = network.getCount();
-		NameProperty name = network.getName();
+		Count count = network.getCount();
+		Name name = network.getName();
 		network
 			.startTransaction()
 			.set(count, 1)
@@ -114,8 +114,8 @@ public class SettingStateMutTest {
 	@Test
 	public void interDependenceTest() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
-		InterdependentProperty prop1 = network.getInterdependentProperty();
-		Interdependent2Property prop2 = network.getInterdependent2Property();
+		Interdependent prop1 = network.getInterdependentProperty();
+		Interdependent2 prop2 = network.getInterdependent2Property();
 		network
 			.startTransaction()
 			.set(prop1, 5)
@@ -125,7 +125,7 @@ public class SettingStateMutTest {
 	}
 	
 	@Test
-	public void minMaxProperty() throws CheckFailedException {
+	public void minMaxSetting() throws CheckFailedException {
 		ExampleNetwork network = new ExampleNetwork();
 		BoundedDoubleProperty property = network.getBoundedDoubleProperty();
 		assertThat(property.getMin()).isEqualTo(-1.0);
