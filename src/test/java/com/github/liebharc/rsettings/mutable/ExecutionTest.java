@@ -1,6 +1,8 @@
 package com.github.liebharc.rsettings.mutable;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -17,6 +19,14 @@ public class ExecutionTest {
 				super(0);
 			}
 			
+			@Override
+			protected Optional<Integer> update(State state) throws CheckFailedException {
+				if (state.get(this) < 0) {
+					throw new CheckFailedException("Value must be positive");
+				}
+				
+				return super.update(state);
+			}
 		}
 		
 		private ReadWriteSettingMut<Integer> left;
@@ -50,6 +60,7 @@ public class ExecutionTest {
 	public static class ExecutionModel {
 		
 		private int sum = 0;
+		private int callCount = 0;
 		private Settings settings;
 		
 		public ExecutionModel(Settings settings) {
@@ -58,10 +69,15 @@ public class ExecutionTest {
 		
 		private void onStateChange(State state) {
 			sum = state.get(settings.getLeft()) + state.get(settings.getRight());
+			callCount++;
 		}
 
 		public int getSum() {
 			return sum;
+		}
+
+		public int getCallCount() {
+			return callCount;
 		}
 	}
 	
@@ -71,16 +87,42 @@ public class ExecutionTest {
 		ExecutionModel actions = new ExecutionModel(settings);
 		settings.getStateChangedEvent().subscribe((state) -> actions.onStateChange(state));
 		assertThat(actions.getSum()).isEqualTo(0);
+		assertThat(actions.getCallCount()).isEqualTo(0);
+		
 		settings.getLeft().setValue(5);
 		assertThat(actions.getSum()).isEqualTo(5);
+		assertThat(actions.getCallCount()).isEqualTo(1);
+		
 		settings.getRight().setValue(3);
 		assertThat(actions.getSum()).isEqualTo(8);
-		settings.getLeft().setValue(-2);
-		assertThat(actions.getSum()).isEqualTo(1);
-		settings.startTransaction()
+		assertThat(actions.getCallCount()).isEqualTo(2);
+		
+		settings.getLeft().setValue(1);
+		assertThat(actions.getSum()).isEqualTo(4);
+		assertThat(actions.getCallCount()).isEqualTo(3);
+
+		// No changes are executed until a transaction completes
+		StateMut.Builder transaction = settings.startTransaction()
 			.set(settings.getLeft(), 3)
-			.set(settings.getRight(), 4)
-			.complete();
+			.set(settings.getRight(), 4);
+		assertThat(actions.getSum()).isEqualTo(4);
+		assertThat(actions.getCallCount()).isEqualTo(3);
+		
+		// Transactions may overlap
+		settings.startTransaction()
+				.set(settings.getLeft(), 6)
+				.set(settings.getRight(), 4)
+				.complete();;
+		assertThat(actions.getSum()).isEqualTo(10);
+		assertThat(actions.getCallCount()).isEqualTo(4);
+		
+		transaction.complete();
 		assertThat(actions.getSum()).isEqualTo(7);
+		assertThat(actions.getCallCount()).isEqualTo(5);
+		
+		// Errors leave the state untouched
+		assertThatThrownBy(()-> settings.getLeft().setValue(-1));
+		assertThat(actions.getSum()).isEqualTo(7);
+		assertThat(actions.getCallCount()).isEqualTo(5);
 	}
 }
