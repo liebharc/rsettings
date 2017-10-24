@@ -4,7 +4,7 @@ import com.github.liebharc.rsettings.immutable.*;
 
 public class DistanceInM 
 	extends ReadWriteSetting<Double>
-	implements CanBeDisabled {
+	implements CanBeDisabled<Double> {
 	
 	public DistanceInM() {
 		super(0.0);

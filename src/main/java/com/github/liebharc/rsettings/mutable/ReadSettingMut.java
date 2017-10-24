@@ -42,6 +42,19 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 		return this.state.get();
 	}
 	
+	/**
+	 * Return the given state or if that is null the default state. 
+	 * @param state A state.
+	 * @return The given state or the default state.
+	 */
+	protected State getState(State state) {
+		if (state != null) {
+			return state;
+		}
+		
+		return getState();
+	}
+	
 	public Event<T> getValueChangedEvent() {
 		return valueChangedEvent.getEvent();
 	}

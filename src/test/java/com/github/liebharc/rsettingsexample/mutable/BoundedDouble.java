@@ -17,12 +17,12 @@ public class BoundedDouble
 	}
 
 	@Override
-	public Double getMin() {
+	public Double getMin(State state) {
 		return -1.0;
 	}
 
 	@Override
-	public Double getMax() {
+	public Double getMax(State state) {
 		return 1.0;
 	}
 	

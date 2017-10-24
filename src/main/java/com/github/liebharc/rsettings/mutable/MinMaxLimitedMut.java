@@ -1,6 +1,13 @@
 package com.github.liebharc.rsettings.mutable;
 
-public interface MinMaxLimitedMut<T extends Comparable<T>> {
-	T getMin();
-	T getMax();
+import com.github.liebharc.rsettings.immutable.MinMaxLimited;
+
+public interface MinMaxLimitedMut<T extends Comparable<T>> extends MinMaxLimited<T> {
+	default T getMin() {
+		return getMin(null);
+	}
+	
+	default T getMax() {
+		return getMax(null);
+	}
 }
