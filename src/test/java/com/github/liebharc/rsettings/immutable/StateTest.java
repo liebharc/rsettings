@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettingsexample.immutable.*;
+import com.github.liebharc.rsettingsexample.immutable.MetricDouble.Prefix;
 
 import org.junit.*;
 
@@ -104,5 +105,17 @@ public class StateTest {
 		State merge = state1.merge(state2);
 		assertThat(merge.get(name)).isEqualTo("Peter");
 		assertThat(merge.get(m)).isEqualTo(100.0);
+	}
+	
+	@Test
+	public void convertTo() throws CheckFailedException {
+		DistanceInM m = new DistanceInM();
+		State state = State.FromSettings(m);
+		MetricDouble value = new MetricDouble(7, Prefix.Kilo);
+		state = state.change()
+				.set(m, value)
+				.build();
+		
+		assertThat(state.get(m)).isEqualTo(7000.0);
 	}
 }

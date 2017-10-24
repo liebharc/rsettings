@@ -1,6 +1,7 @@
 package com.github.liebharc.rsettings.mutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.immutable.CanConvertTo;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.immutable.WriteableSetting;
 
@@ -17,6 +18,11 @@ public abstract class ReadWriteSettingMut<T>
 				getState().change().
 				set(this, value).build();
 		updateState(newState);
+	}
+	
+	public <TConvertible extends CanConvertTo<T>>
+		void setValue(TConvertible value) throws CheckFailedException {
+		setValue(value.convertTo(getValue()));
 	}
 	
 	public void reset() throws CheckFailedException {

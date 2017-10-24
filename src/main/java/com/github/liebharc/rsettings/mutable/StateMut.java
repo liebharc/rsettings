@@ -27,6 +27,15 @@ public class StateMut {
 			builder.set(setting, value);
 			return this;
 		}
+
+		public 
+			<TValue,
+			 TConvertible extends CanConvertTo<TValue>,
+			TSetting extends ReadSetting<TValue> & WriteableSetting<TValue>> 
+				Builder set(TSetting setting, TConvertible value) {
+			builder.set(setting, value);
+			return this;
+		}
 		
 		public void complete() throws CheckFailedException {
 			State newState = builder.build();

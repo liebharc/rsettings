@@ -209,4 +209,18 @@ public class StateMutTest {
 		assertThat(network.getInterdependent().getValue()).isEqualTo(-5);
 		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Negative);
 	}
+	
+	@Test
+	public void convertTo() throws CheckFailedException {
+		ExampleNetwork network = new ExampleNetwork();
+		network.startTransaction()
+			.set(network.getInterdependent(), 5)
+			.set(network.getInterdependent2(), new IntSign(1))
+			.complete();
+		assertThat(network.getInterdependent().getValue()).isEqualTo(5);
+		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Positve);
+		
+		network.getInterdependent2().setValue(new IntSign(2));
+		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Positve);
+	}
 }

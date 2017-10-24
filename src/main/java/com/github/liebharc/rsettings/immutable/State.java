@@ -35,7 +35,7 @@ public class State {
 		}
 	}
 	
-	public class Builder {
+	public static class Builder {
 		
 		private final State parent;
 		
@@ -69,6 +69,24 @@ public class State {
 			setUnchecked(setting, value);
 			
 			return this;
+		}
+
+		public 
+			<TValue,
+			 TConvertible extends CanConvertTo<TValue>,
+			TSetting extends ReadSetting<TValue> & WriteableSetting<TValue>> 
+				Builder set(TSetting setting, TConvertible value) {
+			Reject.ifNull(value);			
+			return set(setting, value.convertTo(get(setting)));
+		}
+		
+		@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
+		private <T> T get(ReadSetting<T> setting) {
+			if (newState.containsKey(setting)) {
+				return (T)newState.get(setting);
+			}
+			
+			return (T)prevState.get(setting).getValue();
 		}
 
 		public void setUnchecked(ReadSetting<?> setting, Object value) {
@@ -114,7 +132,7 @@ public class State {
 					}
 					
 					if (!ObjectHelper.NullSafeEquals(state.get(setting), prevState.get(setting))) {
-						settingDependencies.addAll(dependencies.getDependencies(setting));
+						settingDependencies.addAll(parent.dependencies.getDependencies(setting));
 					}
 				}
 				
