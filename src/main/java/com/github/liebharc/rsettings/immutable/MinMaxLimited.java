@@ -7,7 +7,7 @@ package com.github.liebharc.rsettings.immutable;
  * This has no default impact on the state. However implementations will likely throw 
  * an exception if a value is outside the bounds of min and max. 
  */
-public interface MinMaxLimited<T extends Comparable<T>> {
+public interface MinMaxLimited<T extends Comparable<T>> extends Setting<T> {
 
 	T getMin(State state);
 	

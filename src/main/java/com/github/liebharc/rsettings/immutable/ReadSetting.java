@@ -21,7 +21,8 @@ public abstract class ReadSetting<T> {
 	 * @param defaultValue The default value of the setting. The default values of all settings 
 	 * in a state should give a consistent state.
 	 * @param dependencies The dependencies of this setting. If any of the settings in this list
-	 * is changed then the @see update(SettingState state) routine will be called.
+	 * is changed then the @see update(SettingState state) routine will be called. The dependencies
+	 * must be set in the constructor because that should ensure that the dependency tree can be linearized.
 	 */
 	public ReadSetting(T defaultValue, ReadSetting<?>... dependencies) {
 		this.defaultValue = defaultValue;

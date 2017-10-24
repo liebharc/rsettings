@@ -12,6 +12,6 @@ package com.github.liebharc.rsettings.immutable;
  * However it is still a property of the setting if it can be changed or not and therefore the setting
  * type should indicate whether or not user changes are allowed.   
  */
-public interface WriteableSetting {
+public interface WriteableSetting<T> extends Setting<T> {
 
 }

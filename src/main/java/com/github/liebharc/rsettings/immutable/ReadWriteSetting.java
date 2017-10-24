@@ -6,7 +6,7 @@ package com.github.liebharc.rsettings.immutable;
  */
 public abstract class ReadWriteSetting<T> 
 	extends ReadSetting<T> 
-	implements WriteableSetting {
+	implements WriteableSetting<T> {
 		
 	public ReadWriteSetting(T defaultValue, ReadSetting<?>... dependencies) {
 		super(defaultValue, dependencies);

@@ -7,6 +7,6 @@ package com.github.liebharc.rsettings.immutable;
  * value has no default impact on the state. However implementations may throw exceptions
  * if a disabled setting is changed. 
  */
-public interface CanBeDisabled {
+public interface CanBeDisabled<T> extends Setting<T> {
 	boolean isEnabled(State state);
 }

@@ -59,7 +59,7 @@ public class State {
 
 		public 
 			<TValue, 
-			TSetting extends ReadSetting<TValue> & WriteableSetting> 
+			TSetting extends ReadSetting<TValue> & WriteableSetting<TValue>> 
 				Builder set(TSetting setting, TValue value) {
 			Reject.ifNull(setting);
 			if (!settings.contains(setting)) {
@@ -231,7 +231,7 @@ public class State {
 	}
 	
 	public <TValue, 
-			TSetting extends ReadSetting<TValue> & CanBeDisabled> 
+			TSetting extends ReadSetting<TValue> & CanBeDisabled<TValue>> 
 				boolean isEnabled(TSetting setting) {
 		Reject.ifNull(setting);
 		

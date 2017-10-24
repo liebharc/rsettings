@@ -6,7 +6,7 @@ import com.github.liebharc.rsettings.immutable.WriteableSetting;
 
 public abstract class ReadWriteSettingMut<T> 
 	extends ReadSettingMut<T> 
-	implements WriteableSetting {
+	implements WriteableSetting<T> {
 
 	public ReadWriteSettingMut(T defaultValue, ReadSettingMut<?>... dependencies) {
 		super(defaultValue, dependencies);

@@ -22,7 +22,7 @@ public class StateMut {
 		
 		public 
 			<TValue, 
-			TSetting extends ReadSettingMut<TValue> & WriteableSetting> 
+			TSetting extends ReadSettingMut<TValue> & WriteableSetting<TValue>> 
 				Builder set(TSetting setting, TValue value) {
 			builder.set(setting, value);
 			return this;
