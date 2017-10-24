@@ -65,7 +65,7 @@ public class StateMut {
 		return state.get();
 	}
 
-	public List<ReadSetting<?>> listSettings() {
+	public Collection<ReadSetting<?>> listSettings() {
 		return state.get().listSettings();
 	}
 	

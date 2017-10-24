@@ -2,8 +2,6 @@ package com.github.liebharc.rsettings.immutable;
 
 import java.util.*;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * A builder to create a list of changed settings. If the same setting is changed twice by an user
  * then only the last change will be recorded since the first change never takes effect if it gets immediately 
@@ -30,8 +28,6 @@ public class SettingsChangeListBuilder {
 	}
 	
 	private List<ReadSetting<?>> makeImmutable(List<ReadSetting<?>> list) {
-		ImmutableList.Builder<ReadSetting<?>> immutable = new ImmutableList.Builder<ReadSetting<?>>();
-		immutable.addAll(list);
-		return immutable.build();
+		return Collections.unmodifiableList(list);
 	}
 }

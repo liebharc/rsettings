@@ -125,9 +125,7 @@ public class State {
 		}
 		
 		private Map<ReadSetting<?>, VersionedValue> makeImmutable(Map<ReadSetting<?>, VersionedValue> state) {
-			ImmutableMap.Builder<ReadSetting<?>, VersionedValue> immutable = new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>();
-			immutable.putAll(state);
-			return immutable.build();
+			return Collections.unmodifiableMap(state);
 		}
 	}
 	
@@ -136,12 +134,10 @@ public class State {
 	}
 	
 	public static State FromSettings(Collection<ReadSetting<?>> settings) {
-		ImmutableList.Builder<ReadSetting<?>> immutable = new ImmutableList.Builder<>();
-		immutable.addAll(settings);
-		return new State(immutable.build());
+		return new State(Collections.unmodifiableList(new ArrayList<>(settings)));
 	}
 	
-	private static Map<ReadSetting<?>, VersionedValue> createResetValues(ImmutableList<ReadSetting<?>> settings) {
+	private static Map<ReadSetting<?>, VersionedValue> createResetValues(List<ReadSetting<?>> settings) {
 		ImmutableMap.Builder<ReadSetting<?>, VersionedValue> initState = new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>();
 		for (ReadSetting<?> setting : settings) {
 			initState.put(setting, new VersionedValue(0, setting.getDefaultValue()));
@@ -162,13 +158,7 @@ public class State {
     
     private final long version;
 
-	public State() {
-		this(
-			new ImmutableList.Builder<ReadSetting<?>>().build(),
-		    new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>().build());
-	}
-	
-	public State(ImmutableList<ReadSetting<?>> settings) {
+	private State(List<ReadSetting<?>> settings) {
 		this(settings, createResetValues(settings));
 	}
 	
@@ -238,7 +228,7 @@ public class State {
 		return setting.isEnabled(this);
 	}
 
-	public List<ReadSetting<?>> listSettings() {
+	public Collection<ReadSetting<?>> listSettings() {
 		return settings;
 	}
 	
