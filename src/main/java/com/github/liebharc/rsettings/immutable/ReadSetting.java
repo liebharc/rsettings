@@ -18,7 +18,7 @@ public abstract class ReadSetting<T>
 		return new ReadSettingMut<?>[0];
 	}
 	
-	private StorageToken storageToken;
+	private final StorageToken storageToken;
 	
 	private final T defaultValue;
 		
@@ -57,10 +57,6 @@ public abstract class ReadSetting<T>
 	
 	List<ReadSetting<?>> getDependencies() {
 		return this.dependencies;
-	}
-	
-	void setStorageToken(StorageToken storageToken) {
-		this.storageToken = storageToken;
 	}
 	
 	StorageToken getStorageToken() {
