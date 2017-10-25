@@ -2,10 +2,8 @@ package com.github.liebharc.rsettings.immutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.Reject;
-import com.google.common.collect.*;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * The state remembers the current values of all settings.
@@ -21,23 +19,6 @@ import java.util.stream.Collectors;
  * this class.
  */
 public final class State {
-	private static class VersionedValue {
-		private long stateVersion;
-		private Object value;
-
-		public VersionedValue(long stateVersion, Object value) {
-			this.stateVersion = stateVersion;
-			this.value = value;
-		}
-
-		public long getVersion() {
-			return stateVersion;
-		}
-
-		public Object getValue() {
-			return value;
-		}
-	}
 	
 	public final static class Builder {
 		
@@ -45,18 +26,21 @@ public final class State {
 		
 		private final List<ReadSetting<?>> settings;
 		
-	    private final Map<ReadSetting<?>, VersionedValue> prevState;
+	    private final Values prevValues;
+	    
+	    private final SettingsChangeListBuilder allChanges = new SettingsChangeListBuilder();
 	    
 	    private final long version;
 	    
-	    private Map<ReadSetting<?>, Object> newState = new HashMap<>();
+	    private final Values.Builder newState;
 
 		public Builder(
 				State parent,
 				List<ReadSetting<?>> settings, 
-				Map<ReadSetting<?>, VersionedValue> state) {
+				Values values) {
 			this.parent = parent;
-			this.prevState =  state;
+			this.prevValues =  values;
+			this.newState = values.change();
 			this.settings = settings;
 			this.version = parent.version + 1;
 		}
@@ -71,6 +55,7 @@ public final class State {
 			}
 			
 			setUnchecked(setting, value);
+			allChanges.add(setting);
 			
 			return this;
 		}
@@ -87,56 +72,39 @@ public final class State {
 		@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
 		private <T> T get(ReadSetting<T> setting) {
 			if (newState.containsKey(setting)) {
-				return (T)newState.get(setting);
+				return (T)newState.get(setting).getValue();
 			}
 			
-			return (T)prevState.get(setting).getValue();
+			return (T)prevValues.get(setting).getValue();
 		}
 
 		public void setUnchecked(ReadSetting<?> setting, Object value) {
-			if (newState.containsKey(setting)) {
-				newState.replace(setting, value);
-			} else {
-				newState.put(setting, value);
-			}
+			newState.update(setting, value, version);
 		}
 		
 		public State build() throws CheckFailedException {
-			Map<ReadSetting<?>, VersionedValue> combinedState = createCombinedState();
 			List<ReadSetting<?>> allChanges =
 					propagateChanges(
-						combinedState, 
-						this.newState.keySet().stream().collect(Collectors.toList()));
-			return new State(parent, makeImmutable(combinedState), allChanges);
-		}
-
-		private Map<ReadSetting<?>, VersionedValue> createCombinedState() {
-			Map<ReadSetting<?>, VersionedValue> combinedState = new HashMap<>();
-			combinedState.putAll(prevState);
-			for (Entry<ReadSetting<?>, ?> settingValue : newState.entrySet()) {
-				combinedState.replace(
-						settingValue.getKey(), 
-						new VersionedValue(version, settingValue.getValue()));
-			}
-			return combinedState;
+						newState);
+			return new State(parent, newState.build(), allChanges);
 		}
 		
-		private List<ReadSetting<?>> propagateChanges(Map<ReadSetting<?>, VersionedValue> state, List<ReadSetting<?>> settings) throws CheckFailedException {
-			SettingsChangeListBuilder allChanges = new SettingsChangeListBuilder(settings);
+		private List<ReadSetting<?>> propagateChanges(Values.Builder values) throws CheckFailedException {
 			List<ReadSetting<?>> settingsToResolve = new ArrayList<>(settings);
 			while (!settingsToResolve.isEmpty()) {
 				List<ReadSetting<?>> settingDependencies = new ArrayList<>();
 				for (ReadSetting<?> setting : settingsToResolve) {
-					Optional<?> result = setting.update(new State(this.parent, state, allChanges.build()));
+					Optional<?> result = setting.update(new State(this.parent, values.build(), allChanges.build()));
 					if ((result.isPresent())) {
-						state.replace(
+						values.replace(
 								setting, 
-								new VersionedValue(version, result.get()));					
-						allChanges.add(setting);
+								result.get(),
+								version);		
 					}
 					
-					if (!ObjectHelper.NullSafeEquals(state.get(setting), prevState.get(setting))) {
-						settingDependencies.addAll(parent.dependencies.getDependencies(setting));
+					if (!ObjectHelper.NullSafeEquals(values.get(setting).getValue(), prevValues.get(setting).getValue())) {
+						settingDependencies.addAll(parent.dependencies.getDependencies(setting));			
+						allChanges.add(setting);
 					}
 				}
 				
@@ -145,24 +113,20 @@ public final class State {
 			
 			return allChanges.build();
 		}
-		
-		private Map<ReadSetting<?>, VersionedValue> makeImmutable(Map<ReadSetting<?>, VersionedValue> state) {
-			return Collections.unmodifiableMap(state);
-		}
 	}
 	
-	private static Map<ReadSetting<?>, VersionedValue> createResetValues(List<ReadSetting<?>> settings) {
-		ImmutableMap.Builder<ReadSetting<?>, VersionedValue> initState = new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>();
+	private static Values createResetValues(List<ReadSetting<?>> settings) {
+		Values.Builder values = new Values().change();
 		for (ReadSetting<?> setting : settings) {
-			initState.put(setting, new VersionedValue(0, setting.getDefaultValue()));
+			values.put(setting, setting.getDefaultValue(), 0);
 		}
 		
-		return initState.build();
+		return values.build();
 	}
 	
 	private final List<ReadSetting<?>> settings;
 	
-    private final Map<ReadSetting<?>, VersionedValue> state;
+    private final Values values;
     
     private final SettingDependencies dependencies;
 	
@@ -186,9 +150,9 @@ public final class State {
 	
 	private State(
 			List<ReadSetting<?>> settings, 
-			Map<ReadSetting<?>, VersionedValue> state) {
+			Values values) {
 		this.settings = settings;
-		this.state = state;
+		this.values = values;
 		this.kind = UUID.randomUUID();
 		this.dependencies = new SettingDependencies();
 		this.version = 0;
@@ -200,10 +164,10 @@ public final class State {
 	
 	State(
 			State parent, 
-			Map<ReadSetting<?>, VersionedValue> state,
+			Values values,
 			List<ReadSetting<?>> lastChanges) {
 		this.settings = parent.settings;
-		this.state = state;
+		this.values = values;
 		this.kind = parent.kind;
 		this.version = parent.version + 1;
 		this.dependencies = parent.dependencies;
@@ -211,7 +175,7 @@ public final class State {
 	}
 	
 	public Builder change() {
-		return new Builder(this, settings, state);
+		return new Builder(this, settings, values);
 	}
 	
 	public List<ReadSetting<?>> getLastChanges() {
@@ -225,7 +189,7 @@ public final class State {
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
 	public <T> T get(ReadSetting<T> setting) {
 		Reject.ifNull(setting);
-		return (T)state.get(setting).getValue();
+		return (T)values.get(setting).getValue();
 	}
 	
 	public <TValue extends Comparable<TValue>, 
@@ -272,8 +236,8 @@ public final class State {
 		}
 		
 		Builder builder = change();
-		for (Entry<ReadSetting<?>, VersionedValue> thisSettingValue : state.entrySet()) {
-			VersionedValue otherValue = other.state.get(thisSettingValue.getKey());
+		for (Entry<ReadSetting<?>, VersionedValue> thisSettingValue : values.entrySet()) {
+			VersionedValue otherValue = other.values.get(thisSettingValue.getKey());
 			VersionedValue thisValue = thisSettingValue.getValue();
 			if (otherValue.getVersion() > thisValue.getVersion()) {
 				builder.setUnchecked(thisSettingValue.getKey(), otherValue.getValue());

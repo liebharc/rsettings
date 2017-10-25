@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class SettingsChangeListBuilder {
 
-	private List<ReadSetting<?>> changes;
+	private final List<ReadSetting<?>> changes;
 	
 	public void add(ReadSetting<?> setting) {
 		if (changes.contains(setting)) {
@@ -19,8 +19,8 @@ public class SettingsChangeListBuilder {
 		changes.add(setting);
 	}
 	
-	public SettingsChangeListBuilder(Collection<ReadSetting<?>> settings) {
-		 changes = new ArrayList<>(settings);
+	public SettingsChangeListBuilder() {
+		 changes = new ArrayList<>();
 	}
 	
 	public List<ReadSetting<?>> build() {
