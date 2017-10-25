@@ -13,7 +13,7 @@ public class BoundedDouble
 	implements MinMaxLimitedMut<Double> {
 
 	public BoundedDouble() {
-		super(0.0);
+		super(0.0, NoDependencies());
 	}
 
 	@Override

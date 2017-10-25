@@ -5,6 +5,6 @@ import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 public final class Interdependent extends ReadWriteSettingMut<Integer> {
 	
 	public Interdependent() {
-		super(0);
+		super(0, NoDependencies());
 	}
 }

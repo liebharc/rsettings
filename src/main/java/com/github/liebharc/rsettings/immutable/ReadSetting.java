@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
 /**
  * A setting which only can be read by the user but not changed directly. The value of a read-only
@@ -12,6 +13,10 @@ import com.github.liebharc.rsettings.CheckFailedException;
  * @param <T> The type of a setting.
  */
 public abstract class ReadSetting<T> {
+	protected static ReadSettingMut<?>[] NoDependencies() {
+		return new ReadSettingMut<?>[0];
+	}
+	
 	private T defaultValue;
 	
 	private List<ReadSetting<?>> dependencies;
@@ -24,7 +29,7 @@ public abstract class ReadSetting<T> {
 	 * is changed then the @see update(SettingState state) routine will be called. The dependencies
 	 * must be set in the constructor because that should ensure that the dependency tree can be linearized.
 	 */
-	public ReadSetting(T defaultValue, ReadSetting<?>... dependencies) {
+	public ReadSetting(T defaultValue, ReadSetting<?>[] dependencies) {
 		this.defaultValue = defaultValue;
 		this.dependencies = Arrays.asList(dependencies); 
 	}

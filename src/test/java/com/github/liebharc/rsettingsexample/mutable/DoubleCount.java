@@ -1,6 +1,6 @@
 package com.github.liebharc.rsettingsexample.mutable;
 
-import java.util.Optional;
+import java.util.Optional; 
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.OufOfRangeException;
@@ -11,7 +11,7 @@ public final class DoubleCount extends ReadSettingMut<Integer> {
 	private Count count;
 	
 	public DoubleCount(Count count) {
-		super(0, count);
+		super(0, new ReadSettingMut<?>[] { count });
 		this.count = count;
 	}
 

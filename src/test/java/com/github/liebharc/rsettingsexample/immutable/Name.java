@@ -5,6 +5,6 @@ import com.github.liebharc.rsettings.immutable.*;
 public final class Name extends ReadWriteSetting<String >{
 
 	public Name() {
-		super("");
+		super("", NoDependencies());
 	}
 }

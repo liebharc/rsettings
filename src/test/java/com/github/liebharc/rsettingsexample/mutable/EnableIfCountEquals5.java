@@ -2,6 +2,7 @@ package com.github.liebharc.rsettingsexample.mutable;
 
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.CanBeDisabledMut;
+import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 
 public final class EnableIfCountEquals5 
@@ -11,7 +12,7 @@ public final class EnableIfCountEquals5
 	private Count count;
 	
 	public EnableIfCountEquals5(Count count) {
-		super("Hello", count);
+		super("Hello", new ReadSettingMut<?>[] { count });
 		this.count = count;
 	}
 

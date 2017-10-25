@@ -19,21 +19,21 @@ public class MutualDependentSettingsTest {
 	private static class A extends ReadWriteSetting<Integer> {
 
 		public A() {
-			super(0);
+			super(0, NoDependencies());
 		}
 	}
 	
 	private static class B extends ReadWriteSetting<Integer> {
 
 		public B() {
-			super(0);
+			super(0, NoDependencies());
 		}
 	}
 	
 	private static class Selected extends ReadWriteSetting<Selection> {
 
 		public Selected() {
-			super(Selection.A);
+			super(Selection.A, NoDependencies());
 		}
 	}
 	
@@ -43,7 +43,7 @@ public class MutualDependentSettingsTest {
 		private final B b;
 
 		public AOrB(Selected selection, A a, B b) {
-			super(0, selection, a, b);
+			super(0, new ReadSetting<?>[] { selection, a, b });
 			this.selection = selection;
 			this.a = a;
 			this.b = b;

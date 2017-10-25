@@ -7,7 +7,7 @@ public class DistanceInM
 	implements CanBeDisabled<Double> {
 	
 	public DistanceInM() {
-		super(0.0);
+		super(0.0, NoDependencies());
 	}
 	
 	public boolean isEnabled(State state) {

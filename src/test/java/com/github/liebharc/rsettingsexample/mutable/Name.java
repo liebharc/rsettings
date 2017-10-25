@@ -9,7 +9,7 @@ import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
 public final class Name extends ReadWriteSettingMut<String> {
 
 	public Name() {
-		super("");
+		super("", NoDependencies());
 	}
 	
 	@Override

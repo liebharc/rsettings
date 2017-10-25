@@ -1,6 +1,6 @@
 package com.github.liebharc.rsettings.mutable;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*; 
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public class ExecutionTest {
 		private static class IntegerSetting extends ReadWriteSettingMut<Integer> {
 
 			public IntegerSetting() {
-				super(0);
+				super(0, NoDependencies());
 			}
 			
 			@Override
