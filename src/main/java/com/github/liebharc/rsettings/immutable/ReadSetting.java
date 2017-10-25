@@ -17,9 +17,11 @@ public abstract class ReadSetting<T> {
 		return new ReadSettingMut<?>[0];
 	}
 	
-	private T defaultValue;
+	private StorageToken storageToken;
 	
-	private List<ReadSetting<?>> dependencies;
+	private final T defaultValue;
+		
+	private final List<ReadSetting<?>> dependencies;
 	
 	/**
 	 * Creates a new setting.
@@ -30,6 +32,7 @@ public abstract class ReadSetting<T> {
 	 * must be set in the constructor because that should ensure that the dependency tree can be linearized.
 	 */
 	public ReadSetting(T defaultValue, ReadSetting<?>[] dependencies) {
+		this.storageToken = new StorageToken();
 		this.defaultValue = defaultValue;
 		this.dependencies = Arrays.asList(dependencies); 
 	}
@@ -53,5 +56,13 @@ public abstract class ReadSetting<T> {
 	
 	List<ReadSetting<?>> getDependencies() {
 		return this.dependencies;
+	}
+	
+	void setStorageToken(StorageToken storageToken) {
+		this.storageToken = storageToken;
+	}
+	
+	StorageToken getStorageToken() {
+		return storageToken;
 	}
 }

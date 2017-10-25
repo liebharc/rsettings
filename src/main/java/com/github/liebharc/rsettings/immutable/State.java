@@ -3,7 +3,6 @@ package com.github.liebharc.rsettings.immutable;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.Reject;
 import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * The state remembers the current values of all settings.
@@ -215,7 +214,7 @@ public final class State {
 	}
 	
 	public boolean hasChanged(ReadSetting<?> setting) {
-		return lastChanges.contains(setting);
+		return lastChanges.stream().anyMatch(s -> s.getStorageToken() == setting.getStorageToken());
 	}
 
 	public Collection<ReadSetting<?>> listSettings() {
@@ -236,11 +235,11 @@ public final class State {
 		}
 		
 		Builder builder = change();
-		for (Entry<ReadSetting<?>, VersionedValue> thisSettingValue : values.entrySet()) {
-			VersionedValue otherValue = other.values.get(thisSettingValue.getKey());
-			VersionedValue thisValue = thisSettingValue.getValue();
+		for (ReadSetting<?> setting : settings) {
+			VersionedValue otherValue = other.values.get(setting);
+			VersionedValue thisValue = this.values.get(setting);
 			if (otherValue.getVersion() > thisValue.getVersion()) {
-				builder.setUnchecked(thisSettingValue.getKey(), otherValue.getValue());
+				builder.setUnchecked(setting, otherValue.getValue());
 			}
 		}
 		

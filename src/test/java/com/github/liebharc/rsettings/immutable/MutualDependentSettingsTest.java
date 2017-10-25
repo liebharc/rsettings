@@ -2,7 +2,6 @@ package com.github.liebharc.rsettings.immutable;
 
 import java.util.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
@@ -16,26 +15,57 @@ public class MutualDependentSettingsTest {
 		B
 	}
 	
-	private static class A extends ReadWriteSetting<Integer> {
-
-		public A() {
-			super(0, NoDependencies());
-		}
-	}
-	
-	private static class B extends ReadWriteSetting<Integer> {
-
-		public B() {
-			super(0, NoDependencies());
-		}
-	}
-	
 	private static class Selected extends ReadWriteSetting<Selection> {
 
 		public Selected() {
 			super(Selection.A, NoDependencies());
 		}
 	}
+	
+	private static class A extends ReadWriteSetting<Integer> {
+
+		private ReadSetting<Integer> aOrB;
+		private Selected selection;
+
+		public A(
+				Selected selection,
+				ReadSetting<Integer> aOrB) {
+			super(0, NoDependencies());
+			this.selection = selection;
+			this.aOrB = aOrB;
+		}
+		
+		@Override
+		protected Optional<Integer> update(State state) throws CheckFailedException {
+			if (state.hasChanged(aOrB) && state.get(selection) == Selection.A)
+				return Optional.of(state.get(aOrB));
+				 
+			return super.update(state);
+		}
+	}
+	
+	private static class B extends ReadWriteSetting<Integer> {
+
+		private ReadSetting<Integer> aOrB;
+		private Selected selection;
+
+		public B(
+				Selected selection,
+				ReadSetting<Integer> aOrB) {
+			super(0, NoDependencies());
+			this.selection = selection;
+			this.aOrB = aOrB;
+		}
+		
+		@Override
+		protected Optional<Integer> update(State state) throws CheckFailedException {
+			if (state.hasChanged(aOrB) && state.get(selection) == Selection.B)
+				return Optional.of(state.get(aOrB));
+				 
+			return super.update(state);
+		}
+	}
+
 	
 	private static class AOrB extends ReadWriteSetting<Integer> {
 		private final Selected selection;
@@ -66,10 +96,12 @@ public class MutualDependentSettingsTest {
 		private final AOrB aOrB;
 
 		public Model() {
-			a = new A();
-			b = new B();
 			selected = new Selected();
+			FutureSetting<Integer> futureAOrB = new FutureSetting<>();
+			a = new A(selected, futureAOrB);
+			b = new B(selected, futureAOrB);
 			aOrB = new AOrB(selected, a, b);
+			futureAOrB.substitue(aOrB);
 		}
 		
 		public ReadSetting<?>[] getSettings() {
@@ -81,6 +113,7 @@ public class MutualDependentSettingsTest {
 	public void changeToAOrBShouldUpdateDerivedSetting() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
+		
 		state = state
 			.change()
 			.set(model.a, 5)
@@ -102,7 +135,6 @@ public class MutualDependentSettingsTest {
 	}
 	
 	@Test
-	@Ignore
 	public void changeToSourceSettingShouldUpdateAOrB() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
@@ -131,7 +163,6 @@ public class MutualDependentSettingsTest {
 	}
 	
 	@Test
-	@Ignore
 	public void mutualUpdateNoConflictTest() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
@@ -147,15 +178,17 @@ public class MutualDependentSettingsTest {
 	}
 	
 	@Test
-	@Ignore
 	public void mutualUpdateConflictTest() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
-		State.Builder builder = state.change()
+		state = state.change()
 				.set(model.selected, Selection.A)
 				.set(model.a, 5)
 				.set(model.b, 3)
-				.set(model.aOrB, 4);
-		assertThatThrownBy(() -> builder.build());
+				.set(model.aOrB, 4)
+				.build();
+		assertThat(state.get(model.a)).isEqualTo(4);
+		assertThat(state.get(model.b)).isEqualTo(3);
+		assertThat(state.get(model.aOrB)).isEqualTo(4);
 	}
 }
