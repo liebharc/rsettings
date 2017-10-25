@@ -6,5 +6,5 @@ package com.github.liebharc.rsettings.immutable;
  * @param <T> The type of a setting.
  */
 public interface Setting<T> {
-
+	boolean shouldBeStored();
 }

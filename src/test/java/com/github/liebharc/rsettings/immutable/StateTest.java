@@ -7,6 +7,10 @@ import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettingsexample.immutable.*;
 import com.github.liebharc.rsettingsexample.immutable.MetricDouble.Prefix;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.*;
 
 public class StateTest {
@@ -123,5 +127,20 @@ public class StateTest {
 				.build();
 		
 		assertThat(state.get(m)).isEqualTo(7000.0);
+	}
+	
+	@Test
+	public void storageTest() throws CheckFailedException {
+		Name name = new Name();
+		DistanceInM m = new DistanceInM();
+		DistanceInKm km = new DistanceInKm(m);
+		State state = new State(name, m, km);
+		Set<Map.Entry<ReadSetting<?>, Object>> values = state.getPersistenceValues();
+		Set<ReadSetting<?>> keys = values.stream().map(e -> e.getKey()).collect(Collectors.toSet());
+		assertThat(keys).doesNotContain(km);
+		assertThat(keys).contains(m);
+		assertThat(keys).contains(name);
+		assertThat(values.size()).isEqualTo(2);
+		assertThat(values.stream().filter(e -> e.getKey() == m).findFirst().get().getValue()).isEqualTo(0.0);
 	}
 }

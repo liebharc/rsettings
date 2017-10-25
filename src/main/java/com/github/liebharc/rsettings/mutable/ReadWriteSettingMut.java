@@ -28,4 +28,9 @@ public abstract class ReadWriteSettingMut<T>
 	public void reset() throws CheckFailedException {
 		setValue(this.getDefaultValue());
 	}
+	
+	@Override
+	public boolean shouldBeStored() {
+		return true;
+	}
 }

@@ -58,4 +58,9 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 	public Event<T> getValueChangedEvent() {
 		return valueChangedEvent.getEvent();
 	}
+	
+	@Override
+	public boolean shouldBeStored() {
+		return false;
+	}
 }

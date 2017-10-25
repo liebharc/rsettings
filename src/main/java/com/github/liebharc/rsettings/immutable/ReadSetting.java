@@ -12,7 +12,8 @@ import com.github.liebharc.rsettings.mutable.ReadSettingMut;
  * setting might still change during the update phase dependent on the value of other settings.
  * @param <T> The type of a setting.
  */
-public abstract class ReadSetting<T> {
+public abstract class ReadSetting<T> 
+	implements Setting<T> {
 	protected static ReadSettingMut<?>[] NoDependencies() {
 		return new ReadSettingMut<?>[0];
 	}
@@ -64,5 +65,10 @@ public abstract class ReadSetting<T> {
 	
 	StorageToken getStorageToken() {
 		return storageToken;
+	}
+	
+	@Override
+	public boolean shouldBeStored() {
+		return false;
 	}
 }

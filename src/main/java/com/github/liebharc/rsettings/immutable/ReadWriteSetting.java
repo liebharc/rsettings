@@ -11,4 +11,9 @@ public abstract class ReadWriteSetting<T>
 	public ReadWriteSetting(T defaultValue, ReadSetting<?>[] dependencies) {
 		super(defaultValue, dependencies);
 	}
+	
+	@Override
+	public boolean shouldBeStored() {
+		return true;
+	}
 }

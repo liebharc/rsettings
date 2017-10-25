@@ -3,6 +3,7 @@ package com.github.liebharc.rsettings.immutable;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.Reject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The state remembers the current values of all settings.
@@ -244,5 +245,17 @@ public final class State {
 		}
 		
 		return builder.build();
+	}
+	
+	/**
+	 * Returns a set of settings and values which when stored and restored will recreate the same state.
+	 * 
+	 * @return Settings and values
+	 */
+	public Set<Map.Entry<ReadSetting<?>, Object>> getPersistenceValues() {
+		return settings.stream()
+			.filter((s) -> s.shouldBeStored())
+			.map(s -> new AbstractMap.SimpleEntry<ReadSetting<?>, Object>(s, values.get(s).getValue()))
+			.collect(Collectors.toSet());
 	}
 }
