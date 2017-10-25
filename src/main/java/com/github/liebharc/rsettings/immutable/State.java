@@ -249,6 +249,10 @@ public final class State {
 		
 		return setting.isEnabled(this);
 	}
+	
+	public boolean hasChanged(ReadSetting<?> setting) {
+		return lastChanges.contains(setting);
+	}
 
 	public Collection<ReadSetting<?>> listSettings() {
 		return settings;

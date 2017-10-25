@@ -63,11 +63,17 @@ public class StateTest {
 				.set(name, "Peter")
 				.build();
 		assertThat(state.getLastChanges()).containsExactly(name);
+		assertThat(state.hasChanged(name)).isTrue();
+		assertThat(state.hasChanged(m)).isFalse();
+		assertThat(state.hasChanged(km)).isFalse();
 		
 		state = state.change()
 				.set(m, 1.0)
 				.build();
 		assertThat(state.getLastChanges()).containsExactly(m, km);
+		assertThat(state.hasChanged(name)).isFalse();
+		assertThat(state.hasChanged(m)).isTrue();
+		assertThat(state.hasChanged(km)).isTrue();
 	}
 	
 	@Test
