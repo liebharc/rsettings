@@ -46,7 +46,7 @@ public class StateMut {
 	private final CurrentSettingState state;
 	
 	public StateMut() {
-		state = new CurrentSettingState(State.FromSettings());
+		state = new CurrentSettingState(new State());
 	}
 	
 	public <TValue, TSetting extends ReadSettingMut<TValue>> TSetting register(TSetting setting) {
@@ -61,7 +61,7 @@ public class StateMut {
 	private void addToState(ReadSettingMut<?> setting) throws CheckFailedException {
 		List<ReadSetting<?>> allSettings = new ArrayList<>(state.get().listSettings());
 		allSettings.add(setting);
-		State newState = State.FromSettings(allSettings);
+		State newState = new State(allSettings);
 		state.set(newState);
 		setting.setState(state);
 	}

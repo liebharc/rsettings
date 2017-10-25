@@ -14,14 +14,14 @@ public class StateTest {
 	@Test
 	public void initASetting() {
 		Name name = new Name();
-		State state = State.FromSettings(name);
+		State state = new State(name);
 		assertThat(state.get(name)).isEqualTo("");
 	}
 	
 	@Test
 	public void changeASetting() throws CheckFailedException {
 		Name name = new Name();
-		State state = State.FromSettings(name);
+		State state = new State(name);
 		state = state.change()
 				.set(name, "Peter")
 				.build();
@@ -32,7 +32,7 @@ public class StateTest {
 	public void dependencies() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		State state = State.FromSettings(m, km);
+		State state = new State(m, km);
 		state = state.change()
 				.set(m, 1000.0)
 				.build();
@@ -43,7 +43,7 @@ public class StateTest {
 	@Test
 	public void isEnabled() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
-		State state = State.FromSettings(m);
+		State state = new State(m);
 		assertThat(state.isEnabled(m)).isFalse();
 		state = state.change()
 				.set(m, 1.0)
@@ -56,7 +56,7 @@ public class StateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		State state = State.FromSettings(name, m, km);
+		State state = new State(name, m, km);
 		assertThat(state.getLastChanges()).containsExactly(name, m, km);
 		
 		state = state.change()
@@ -75,8 +75,8 @@ public class StateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		State state1 = State.FromSettings(name, m, km);
-		State state2 = State.FromSettings(name, m, km);
+		State state1 = new State(name, m, km);
+		State state2 = new State(name, m, km);
 		final State leftState = 
 				state1.change()
 				.set(name, "Peter")
@@ -93,7 +93,7 @@ public class StateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		State state = State.FromSettings(name, m, km);
+		State state = new State(name, m, km);
 		State state1 = 
 				state.change()
 				.set(name, "Peter")
@@ -110,7 +110,7 @@ public class StateTest {
 	@Test
 	public void convertTo() throws CheckFailedException {
 		DistanceInM m = new DistanceInM();
-		State state = State.FromSettings(m);
+		State state = new State(m);
 		MetricDouble value = new MetricDouble(7, Prefix.Kilo);
 		state = state.change()
 				.set(m, value)

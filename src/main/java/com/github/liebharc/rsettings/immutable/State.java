@@ -147,14 +147,6 @@ public class State {
 		}
 	}
 	
-	public static State FromSettings(ReadSetting<?>... settings) {
-		return FromSettings(Arrays.asList(settings));
-	}
-	
-	public static State FromSettings(Collection<ReadSetting<?>> settings) {
-		return new State(Collections.unmodifiableList(new ArrayList<>(settings)));
-	}
-	
 	private static Map<ReadSetting<?>, VersionedValue> createResetValues(List<ReadSetting<?>> settings) {
 		ImmutableMap.Builder<ReadSetting<?>, VersionedValue> initState = new ImmutableMap.Builder<ReadSetting<?>, VersionedValue>();
 		for (ReadSetting<?> setting : settings) {
@@ -178,6 +170,14 @@ public class State {
 
 	private State(List<ReadSetting<?>> settings) {
 		this(settings, createResetValues(settings));
+	}
+	
+	public State(ReadSetting<?>... settings) {
+		this(Arrays.asList(settings));
+	}
+	
+	public State(Collection<ReadSetting<?>> settings) {
+		this(Collections.unmodifiableList(new ArrayList<>(settings)));
 	}
 	
 	private State(
