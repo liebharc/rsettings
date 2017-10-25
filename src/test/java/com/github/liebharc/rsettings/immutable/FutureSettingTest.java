@@ -8,7 +8,7 @@ import com.github.liebharc.rsettings.CheckFailedException;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class MutualDependentSettingsTest {
+public class FutureSettingTest {
 
 	private enum Selection {
 		A,
