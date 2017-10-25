@@ -2,6 +2,7 @@ package com.github.liebharc.rsettings.immutable;
 
 import java.util.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
@@ -101,6 +102,7 @@ public class MutualDependentSettingsTest {
 	}
 	
 	@Test
+	@Ignore
 	public void changeToSourceSettingShouldUpdateAOrB() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
@@ -129,6 +131,7 @@ public class MutualDependentSettingsTest {
 	}
 	
 	@Test
+	@Ignore
 	public void mutualUpdateNoConflictTest() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
@@ -144,6 +147,7 @@ public class MutualDependentSettingsTest {
 	}
 	
 	@Test
+	@Ignore
 	public void mutualUpdateConflictTest() throws CheckFailedException {
 		Model model = new Model();
 		State state = new State(model.getSettings());
