@@ -15,8 +15,12 @@ import java.util.stream.Collectors;
  * - Changes to several settings at the same time can be implemented with a @see Builder. All changes
  *   in a builder are considered to happen at the same time.
  * - A states consistency can be checked every time the @see Builder.build() routine is called.
+ * 
+ * Note: This class isn't designed for inheritance. If additional functionality needs to be added 
+ * then consider to use composition over inheritance. Meaning create a new class and have it reference
+ * this class.
  */
-public class State {
+public final class State {
 	private static class VersionedValue {
 		private long stateVersion;
 		private Object value;
@@ -35,7 +39,7 @@ public class State {
 		}
 	}
 	
-	public static class Builder {
+	public final static class Builder {
 		
 		private final State parent;
 		
