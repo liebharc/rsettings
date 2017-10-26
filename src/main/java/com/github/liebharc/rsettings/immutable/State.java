@@ -177,10 +177,6 @@ public final class State {
 	public Builder change() {
 		return new Builder(this, settings, values);
 	}
-	
-	public List<ReadSetting<?>> getLastChanges() {
-		return lastChanges;
-	}
 
 	public boolean isRoot() {
 		return version == 0;
@@ -214,8 +210,31 @@ public final class State {
 		return setting.isEnabled(this);
 	}
 	
+	public List<ReadSetting<?>> getChanges() {
+		return lastChanges;
+	}
+	
+	public List<ReadSetting<?>> getChanges(State since) {
+		Reject.ifNull(since);
+		
+		return settings.stream()
+				.filter(s -> hasChanged(s, since))
+				.collect(Collectors.toList());
+	}
+	
 	public boolean hasChanged(ReadSetting<?> setting) {
 		return lastChanges.contains(setting);
+	}
+	
+	public boolean hasChanged(ReadSetting<?> setting, State since) {
+		Reject.ifNull(since);
+		Reject.ifNull(setting);
+		
+		if (!since.kind.equals(this.kind) ) {
+			throw new IllegalArgumentException("Can't merge two states which don't have a common ancestor");
+		}
+		
+		return !ObjectHelper.NullSafeEquals(this.get(setting), since.get(setting));
 	}
 
 	public Collection<ReadSetting<?>> listSettings() {

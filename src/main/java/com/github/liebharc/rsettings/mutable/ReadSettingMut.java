@@ -32,7 +32,7 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 		
 		this.state = state;
 		state.getStateChangedEvent().subscribe((newState) -> {
-			if (newState.getLastChanges().contains(this)) {
+			if (newState.getChanges().contains(this)) {
 				T newValue = newState.get(this);
 				valueChangedEvent.raise(newValue);
 			}

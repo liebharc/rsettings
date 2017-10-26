@@ -61,12 +61,12 @@ public class StateTest {
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
 		State state = new State(name, m, km);
-		assertThat(state.getLastChanges()).containsExactly(name, m, km);
+		assertThat(state.getChanges()).containsExactly(name, m, km);
 		
 		state = state.change()
 				.set(name, "Peter")
 				.build();
-		assertThat(state.getLastChanges()).containsExactly(name);
+		assertThat(state.getChanges()).containsExactly(name);
 		assertThat(state.hasChanged(name)).isTrue();
 		assertThat(state.hasChanged(m)).isFalse();
 		assertThat(state.hasChanged(km)).isFalse();
@@ -74,10 +74,35 @@ public class StateTest {
 		state = state.change()
 				.set(m, 1.0)
 				.build();
-		assertThat(state.getLastChanges()).containsExactly(m, km);
+		assertThat(state.getChanges()).containsExactly(m, km);
 		assertThat(state.hasChanged(name)).isFalse();
 		assertThat(state.hasChanged(m)).isTrue();
 		assertThat(state.hasChanged(km)).isTrue();
+	}
+	
+	@Test
+	public void trackChangesToAReferencePoint() throws CheckFailedException {
+		Name name = new Name();
+		DistanceInM m = new DistanceInM();
+		DistanceInKm km = new DistanceInKm(m);
+		State reference = new State(name, m, km);
+		assertThat(reference.getChanges()).containsExactly(name, m, km);
+		
+		reference = reference.change()
+				.set(name, "Peter")
+				.build();
+		
+		State withSomeChanges = reference.change()
+				.set(m, 1.0)
+				.set(name,  "Paul")
+				.build();
+		withSomeChanges = withSomeChanges.change()
+				.set(name,  "Peter")
+				.build();
+		assertThat(withSomeChanges.getChanges(reference)).containsExactly(m, km);
+		assertThat(withSomeChanges.hasChanged(name, reference)).isFalse();
+		assertThat(withSomeChanges.hasChanged(m, reference)).isTrue();
+		assertThat(withSomeChanges.hasChanged(km, reference)).isTrue();
 	}
 	
 	@Test
