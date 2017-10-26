@@ -215,7 +215,7 @@ public final class State {
 	}
 	
 	public boolean hasChanged(ReadSetting<?> setting) {
-		return lastChanges.stream().anyMatch(s -> s.getStorageToken() == setting.getStorageToken());
+		return lastChanges.contains(setting);
 	}
 
 	public Collection<ReadSetting<?>> listSettings() {

@@ -18,7 +18,7 @@ public abstract class ReadSetting<T>
 		return new ReadSettingMut<?>[0];
 	}
 	
-	private final StorageToken storageToken;
+	private final SettingId id;
 	
 	private final T defaultValue;
 		
@@ -33,7 +33,7 @@ public abstract class ReadSetting<T>
 	 * must be set in the constructor because that should ensure that the dependency tree can be linearized.
 	 */
 	public ReadSetting(T defaultValue, ReadSetting<?>[] dependencies) {
-		this.storageToken = new StorageToken();
+		this.id = new SettingId();
 		this.defaultValue = defaultValue;
 		this.dependencies = Arrays.asList(dependencies); 
 	}
@@ -59,12 +59,31 @@ public abstract class ReadSetting<T>
 		return this.dependencies;
 	}
 	
-	StorageToken getStorageToken() {
-		return storageToken;
+	protected SettingId getId() {
+		return id;
 	}
 	
 	@Override
 	public boolean shouldBeStored() {
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getId().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof ReadSetting<?>))
+			return false;
+		ReadSetting<?> other = (ReadSetting<?>) obj;
+		if (getId() != other.getId())
+			return false;
+		return true;
 	}
 }

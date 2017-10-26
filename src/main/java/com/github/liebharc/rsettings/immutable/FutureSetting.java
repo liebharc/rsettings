@@ -15,22 +15,26 @@ import com.github.liebharc.rsettings.StateInitException;
  */
 public final class FutureSetting<T> extends ReadSetting<T> {
 
-	private StorageToken storageToken = null;
+	private SettingId id = null;
 	
 	public FutureSetting() {
 		super(null, NoDependencies());
 	}
 
 	public void substitue(ReadSetting<T> setting) {
-		if (storageToken != null) {
+		if (id != null) {
 			throw new StateInitException("Substitute can only be called once");
 		}
 		
-		storageToken = setting.getStorageToken();
+		id = setting.getId();
 	}
 	
 	@Override
-	StorageToken getStorageToken() {
-		return storageToken;
+	protected SettingId getId() {
+		if (id == null) {
+			return super.getId();
+		}
+		
+		return id;
 	}
 }

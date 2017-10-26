@@ -5,14 +5,14 @@ import java.util.*;
 class Values {	
 	static class Builder {
 		
-		private final Map<StorageToken, VersionedValue> values;
+		private final Map<ReadSetting<?>, VersionedValue> values;
 		
 		private Builder(Values values) {
 			this.values = new HashMap<>(values.values);
 		}
 	
 		public void update(ReadSetting<?> setting, Object value, long version) {
-			if (values.containsKey(setting.getStorageToken())) {
+			if (values.containsKey(setting)) {
 				replace(setting, value, version);
 			} else {
 				put(setting, value, version);
@@ -24,23 +24,23 @@ class Values {
 		}
 
 		public void replace(ReadSetting<?> setting, Object value, long version) {
-			values.replace(setting.getStorageToken(), new VersionedValue(version, value));		
+			values.replace(setting, new VersionedValue(version, value));		
 		}
 
 		public void put(ReadSetting<?> setting, Object 	value, long version) {
-			values.put(setting.getStorageToken(), new VersionedValue(version, value));
+			values.put(setting, new VersionedValue(version, value));
 		}
 
 		public void replace(ReadSetting<?> setting, VersionedValue value) {
-			values.replace(setting.getStorageToken(), value);
+			values.replace(setting, value);
 		}
 		
 		public boolean containsKey(ReadSetting<?> setting) {
-			return values.containsKey(setting.getStorageToken());
+			return values.containsKey(setting);
 		}
 
 		public VersionedValue get(ReadSetting<?> setting) {
-			return values.get(setting.getStorageToken());
+			return values.get(setting);
 		}
 		
 		public Values build() {
@@ -48,22 +48,22 @@ class Values {
 		}
 	}
 	
-	private final Map<StorageToken, VersionedValue> values;
+	private final Map<ReadSetting<?>, VersionedValue> values;
 	
 	public Values() {
 		values = new HashMap<>();
 	}
 	
-	private Values(Map<StorageToken, VersionedValue> values) {
+	private Values(Map<ReadSetting<?>, VersionedValue> values) {
 		this.values = values;
 	}
 
 	public boolean containsKey(ReadSetting<?> setting) {
-		return values.containsKey(setting.getStorageToken());
+		return values.containsKey(setting);
 	}
 
 	public VersionedValue get(ReadSetting<?> setting) {
-		return values.get(setting.getStorageToken());
+		return values.get(setting);
 	}
 
 	public Builder change() {
