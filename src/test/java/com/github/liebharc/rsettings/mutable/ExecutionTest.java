@@ -29,21 +29,32 @@ public class ExecutionTest {
 			}
 		}
 		
+		private static class ProductSetting extends ReadSettingMut<Integer> {
+			private ReadWriteSettingMut<Integer> a;
+			private ReadWriteSettingMut<Integer> b;
+
+			public ProductSetting(ReadWriteSettingMut<Integer> a, ReadWriteSettingMut<Integer> b) {
+				super(0, Dependencies(a, b));
+				this.a = a;
+				this.b = b;
+			}
+			
+			@Override
+			protected Optional<Integer> update(State state) throws CheckFailedException {
+				return Optional.of(state.get(a) * state.get(b));
+			}
+		}
+		
 		private ReadWriteSettingMut<Integer> left;
 		
 		private ReadWriteSettingMut<Integer> right;
 		
+		private ReadSettingMut<Integer> product;
+		
 		public Settings() {
 			left = register(new IntegerSetting());
 			right = register(new IntegerSetting());
-		}
-
-		public ReadWriteSettingMut<Integer> getLeft() {
-			return left;
-		}
-
-		public ReadWriteSettingMut<Integer> getRight() {
-			return right;
+			product = register(new ProductSetting(left, right));
 		}
 	}
 	
@@ -68,7 +79,7 @@ public class ExecutionTest {
 		}
 		
 		private void onStateChange(State state) {
-			sum = state.get(settings.getLeft()) + state.get(settings.getRight());
+			sum = state.get(settings.left) + state.get(settings.right);
 			callCount++;
 		}
 
@@ -86,42 +97,50 @@ public class ExecutionTest {
 		Settings settings = new Settings();
 		ExecutionModel actions = new ExecutionModel(settings);
 		settings.getStateChangedEvent().subscribe((state) -> actions.onStateChange(state));
+		assertThat(settings.product.getValue()).isEqualTo(0);
 		assertThat(actions.getSum()).isEqualTo(0);
 		assertThat(actions.getCallCount()).isEqualTo(0);
 		
-		settings.getLeft().setValue(5);
+		settings.left.setValue(5);
+		assertThat(settings.product.getValue()).isEqualTo(0);
 		assertThat(actions.getSum()).isEqualTo(5);
 		assertThat(actions.getCallCount()).isEqualTo(1);
 		
-		settings.getRight().setValue(3);
+		settings.right.setValue(3);
+		assertThat(settings.product.getValue()).isEqualTo(15);
 		assertThat(actions.getSum()).isEqualTo(8);
 		assertThat(actions.getCallCount()).isEqualTo(2);
 		
-		settings.getLeft().setValue(1);
+		settings.left.setValue(1);
+		assertThat(settings.product.getValue()).isEqualTo(3);
 		assertThat(actions.getSum()).isEqualTo(4);
 		assertThat(actions.getCallCount()).isEqualTo(3);
 
 		// No changes are executed until a transaction completes
 		StateMut.Builder transaction = settings.startTransaction()
-			.set(settings.getLeft(), 3)
-			.set(settings.getRight(), 4);
+			.set(settings.left, 3)
+			.set(settings.right, 4);
+		assertThat(settings.product.getValue()).isEqualTo(3);
 		assertThat(actions.getSum()).isEqualTo(4);
 		assertThat(actions.getCallCount()).isEqualTo(3);
 		
 		// Transactions may overlap
 		settings.startTransaction()
-				.set(settings.getLeft(), 6)
-				.set(settings.getRight(), 4)
-				.execute();;
+				.set(settings.left, 6)
+				.set(settings.right, 4)
+				.execute();
+		assertThat(settings.product.getValue()).isEqualTo(24);
 		assertThat(actions.getSum()).isEqualTo(10);
 		assertThat(actions.getCallCount()).isEqualTo(4);
 		
 		transaction.execute();
+		assertThat(settings.product.getValue()).isEqualTo(12);
 		assertThat(actions.getSum()).isEqualTo(7);
 		assertThat(actions.getCallCount()).isEqualTo(5);
 		
 		// Errors leave the state untouched
-		assertThatThrownBy(()-> settings.getLeft().setValue(-1));
+		assertThatThrownBy(()-> settings.left.setValue(-1));
+		assertThat(settings.product.getValue()).isEqualTo(12);
 		assertThat(actions.getSum()).isEqualTo(7);
 		assertThat(actions.getCallCount()).isEqualTo(5);
 	}
