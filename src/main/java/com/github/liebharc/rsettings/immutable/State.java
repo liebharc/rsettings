@@ -210,10 +210,19 @@ public final class State {
 		return setting.isEnabled(this);
 	}
 	
+	/**
+	 * Returns all settings which have changed. See @see hasChanged(ReadSetting<?>) for more details.   
+	 * @return All setting which have changed.
+	 */
 	public List<ReadSetting<?>> getChanges() {
 		return lastChanges;
 	}
-	
+
+	/**
+	 * Returns all settings which have changed. See @see hasChanged(ReadSetting<?>, State) for more details.
+	 * @param since A previous state.
+	 * @return All setting which have changed.
+	 */
 	public List<ReadSetting<?>> getChanges(State since) {
 		Reject.ifNull(since);
 		
@@ -222,19 +231,67 @@ public final class State {
 				.collect(Collectors.toList());
 	}
 	
+	/**
+	 * Returns all settings which have been touched. See @see hasBeenTouched(ReadSetting<?>, State) for more details.
+	 * @param since A previous state.
+	 * @return All setting which have been touched.
+	 */
+	public List<ReadSetting<?>> getTouchedSettings(State since) {
+		Reject.ifNull(since);
+		
+		return settings.stream()
+				.filter(s -> hasBeenTouched(s, since))
+				.collect(Collectors.toList());
+	}
+	
+	
+
+	/**
+	 * Indicates whether or not a setting has changed during the call of @see change().
+	 * @param setting A setting.
+	 * @return True if the setting has changed.
+	 */
 	public boolean hasChanged(ReadSetting<?> setting) {
 		return lastChanges.contains(setting);
 	}
-	
+
+	/**
+	 * Indicates whether or not a setting has changed compared to the state specified by since.
+	 * @param setting A setting.
+	 * @param since A previous state.
+	 * @return True if the setting has changed.
+	 */
 	public boolean hasChanged(ReadSetting<?> setting, State since) {
 		Reject.ifNull(since);
 		Reject.ifNull(setting);
 		
-		if (!since.kind.equals(this.kind) ) {
-			throw new IllegalArgumentException("Can't merge two states which don't have a common ancestor");
-		}
+		requireStateToBeOlder(since);
 		
 		return !ObjectHelper.NullSafeEquals(this.get(setting), since.get(setting));
+	}
+
+	/**
+	 * Indicates whether or not a setting has been touched compared to the state specified by since.
+	 * In contrast to @see hasBeenChanged(ReadSetting<?>, State) this method also returns true
+	 * if a value has been changed back to its original value. 
+	 * @param setting A setting.
+	 * @param since A previous state.
+	 * @return True if the setting has been touched.
+	 */
+	public boolean hasBeenTouched(ReadSetting<?> setting, State since) {
+		Reject.ifNull(since);
+		Reject.ifNull(setting);
+		requireStateToBeOlder(since);
+		
+		return this.values.get(setting).getVersion() > since.values.get(setting).getVersion();
+	}
+
+	private void requireStateToBeOlder(State since) {
+		if (!since.kind.equals(this.kind) )
+			throw new IllegalArgumentException("Can't merge two states which don't have a common ancestor");
+		
+		if (since.version > this.version)
+			throw new IllegalArgumentException("since argument must be at least as old as this state");
 	}
 
 	public Collection<ReadSetting<?>> listSettings() {

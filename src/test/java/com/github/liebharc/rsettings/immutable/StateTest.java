@@ -106,6 +106,31 @@ public class StateTest {
 	}
 	
 	@Test
+	public void trackTouchedValues() throws CheckFailedException {
+		Name name = new Name();
+		DistanceInM m = new DistanceInM();
+		DistanceInKm km = new DistanceInKm(m);
+		State reference = new State(name, m, km);
+		assertThat(reference.getChanges()).containsExactly(name, m, km);
+		
+		reference = reference.change()
+				.set(name, "Peter")
+				.build();
+		
+		State withSomeChanges = reference.change()
+				.set(m, 1.0)
+				.set(name,  "Paul")
+				.build();
+		withSomeChanges = withSomeChanges.change()
+				.set(name,  "Peter")
+				.build();
+		assertThat(withSomeChanges.getTouchedSettings(reference)).containsExactly(name, m, km);
+		assertThat(withSomeChanges.hasBeenTouched(name, reference)).isTrue();
+		assertThat(withSomeChanges.hasBeenTouched(m, reference)).isTrue();
+		assertThat(withSomeChanges.hasBeenTouched(km, reference)).isTrue();
+	}
+	
+	@Test
 	public void mergeTwoDifferentSettings() throws CheckFailedException {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
