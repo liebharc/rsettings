@@ -1,7 +1,5 @@
 package com.github.liebharc.rsettings.immutable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
@@ -13,19 +11,19 @@ import com.github.liebharc.rsettings.CheckFailedException;
  */
 public abstract class ReadSetting<T> 
 	implements Setting<T> {
-	protected static ReadSetting<?>[] NoDependencies() {
-		return new ReadSetting<?>[0];
+	protected static Dependencies NoDependencies() {
+		return Dependencies.empty();
 	}
 	
-	protected static ReadSetting<?>[] Dependencies(ReadSetting<?>... dependencies) {
-		return dependencies;
+	protected static Dependencies Dependencies(ReadSetting<?>... dependencies) {
+		return new Dependencies(dependencies);
 	}
 	
 	private final SettingId id;
 	
 	private final T defaultValue;
 		
-	private final List<ReadSetting<?>> dependencies;
+	private final Dependencies dependencies;
 	
 	/**
 	 * Creates a new setting.
@@ -35,10 +33,10 @@ public abstract class ReadSetting<T>
 	 * is changed then the @see update(SettingState state) routine will be called. The dependencies
 	 * must be set in the constructor because that should ensure that the dependency tree can be linearized.
 	 */
-	public ReadSetting(T defaultValue, ReadSetting<?>[] dependencies) {
+	public ReadSetting(T defaultValue, Dependencies dependencies) {
 		this.id = new SettingId();
 		this.defaultValue = defaultValue;
-		this.dependencies = Arrays.asList(dependencies); 
+		this.dependencies = dependencies; 
 	}
 	
 	public final T getDefaultValue() {
@@ -58,7 +56,7 @@ public abstract class ReadSetting<T>
 		return Optional.empty();
 	}
 	
-	List<ReadSetting<?>> getDependencies() {
+	Dependencies getDependencies() {
 		return this.dependencies;
 	}
 	

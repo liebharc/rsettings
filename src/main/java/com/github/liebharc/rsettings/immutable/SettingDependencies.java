@@ -25,8 +25,8 @@ final class SettingDependencies {
 	public final <TSetting extends ReadSetting<TValue>, TValue> void register(TSetting setting) {
 		settings.add(setting);
 		settingDependencies.put(setting, new ArrayList<>());
-		List<ReadSetting<?>> sources = findDependencies(setting);
-		for (ReadSetting<?> source : sources) {
+		Dependencies sources = findDependencies(setting);
+		for (ReadSetting<?> source : sources.asList()) {
 			if (!isFutureSetting(source))
 				settingDependencies.get(source).add(setting);
 		}
@@ -41,15 +41,15 @@ final class SettingDependencies {
 		return settingDependencies.get(setting);
 	}
 	
-	private List<ReadSetting<?>> findDependencies(ReadSetting<?> setting) {
-		List<ReadSetting<?>> dependencies = setting.getDependencies();
-	    for (ReadSetting<?> dependency : dependencies) {
+	private Dependencies findDependencies(ReadSetting<?> setting) {
+		Dependencies dependencies = setting.getDependencies();
+	    for (ReadSetting<?> dependency : dependencies.asList()) {
 	    	boolean weShouldSeeThisSettingInFuture = isFutureSetting(dependency);
 			if (!settings.contains(dependency) && !weShouldSeeThisSettingInFuture) {
 				throw new StateInitException("Setting must be registered in the order in which they are created");
 			}
 		}
-		return setting.getDependencies();
+		return dependencies;
 	}
 	
 	private boolean isFutureSetting(ReadSetting<?> setting) {

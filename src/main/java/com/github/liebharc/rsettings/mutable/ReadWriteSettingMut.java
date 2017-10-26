@@ -2,15 +2,15 @@ package com.github.liebharc.rsettings.mutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.CanConvertTo;
-import com.github.liebharc.rsettings.immutable.ReadSetting;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.immutable.WriteableSetting;
+import com.github.liebharc.rsettings.immutable.Dependencies;
 
 public abstract class ReadWriteSettingMut<T> 
 	extends ReadSettingMut<T> 
 	implements WriteableSetting<T> {
 
-	public ReadWriteSettingMut(T defaultValue, ReadSetting<?>[] dependencies) {
+	public ReadWriteSettingMut(T defaultValue, Dependencies dependencies) {
 		super(defaultValue, dependencies);
 	}
 
