@@ -1,8 +1,7 @@
 package com.github.liebharc.rsettings.mutable;
 
-import org.apache.commons.math3.exception.NullArgumentException;
-
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.Reject;
 import com.github.liebharc.rsettings.StateInitException;
 import com.github.liebharc.rsettings.events.*;
 import com.github.liebharc.rsettings.immutable.*;
@@ -26,9 +25,7 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 	}
 
 	void setState(CurrentSettingState state) {
-		if (state == null) {
-			throw new NullArgumentException();
-		}
+		Reject.ifNull(state);
 		
 		this.state = state;
 		state.getStateChangedEvent().subscribe((newState) -> {
