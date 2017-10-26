@@ -178,6 +178,10 @@ public final class State {
 		return new Builder(this, settings, values);
 	}
 
+	/**
+	 * Indicates whether or not this is a newly created state.
+	 * @return True if this is a state which just has been initialized.
+	 */
 	public boolean isRoot() {
 		return version == 0;
 	}

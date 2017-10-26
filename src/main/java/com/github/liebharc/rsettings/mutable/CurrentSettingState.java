@@ -20,7 +20,7 @@ class CurrentSettingState {
 	
 	public void set(State state) throws CheckFailedException {
 		synchronized (lock) {		
-			if (state.isRoot()) {
+			if (state.isRoot() && current.isRoot()) {
 				current = state;
 			}
 			else {
