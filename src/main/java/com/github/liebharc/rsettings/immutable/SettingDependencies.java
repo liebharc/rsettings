@@ -13,9 +13,9 @@ import com.github.liebharc.rsettings.StateInitException;
  */
 final class SettingDependencies {
 	
-	private final List<ReadSetting<?>> properties = new ArrayList<>();
+	private final List<ReadSetting<?>> settings = new ArrayList<>();
 	
-	private final Map<ReadSetting<?>, List<ReadSetting<?>>> propertyDependencies = new HashMap<>();
+	private final Map<ReadSetting<?>, List<ReadSetting<?>>> settingDependencies = new HashMap<>();
 	
 	/**
 	 * Adds a setting to the dependency tree.
@@ -23,11 +23,12 @@ final class SettingDependencies {
 	 * @throws StateInitException if a dependency to an unknown setting exists
 	 */
 	public final <TSetting extends ReadSetting<TValue>, TValue> void register(TSetting setting) {
-		properties.add(setting);
-		propertyDependencies.put(setting, new ArrayList<>());
+		settings.add(setting);
+		settingDependencies.put(setting, new ArrayList<>());
 		List<ReadSetting<?>> sources = findDependencies(setting);
 		for (ReadSetting<?> source : sources) {
-			propertyDependencies.get(source).add(setting);
+			if (!isFutureSetting(source))
+				settingDependencies.get(source).add(setting);
 		}
 	}
 	
@@ -37,16 +38,21 @@ final class SettingDependencies {
 	 * @return All settings which depend on the given setting.
 	 */
 	public List<ReadSetting<?>> getDependencies(ReadSetting<?> setting) {
-		return propertyDependencies.get(setting);
+		return settingDependencies.get(setting);
 	}
 	
-	private List<ReadSetting<?>> findDependencies(ReadSetting<?> property) {
-		List<ReadSetting<?>> dependencies = property.getDependencies();
-	    for (ReadSetting<?> setting : dependencies) {
-			if (!properties.contains(setting)) {
-				throw new StateInitException("Properties must be registered in the order in which they are created");
+	private List<ReadSetting<?>> findDependencies(ReadSetting<?> setting) {
+		List<ReadSetting<?>> dependencies = setting.getDependencies();
+	    for (ReadSetting<?> dependency : dependencies) {
+	    	boolean weShouldSeeThisSettingInFuture = isFutureSetting(dependency);
+			if (!settings.contains(dependency) && !weShouldSeeThisSettingInFuture) {
+				throw new StateInitException("Setting must be registered in the order in which they are created");
 			}
 		}
-		return property.getDependencies();
+		return setting.getDependencies();
+	}
+	
+	private boolean isFutureSetting(ReadSetting<?> setting) {
+		return setting instanceof FutureSetting<?>;
 	}
 }

@@ -11,7 +11,7 @@ public final class DoubleCount extends ReadSettingMut<Integer> {
 	private Count count;
 	
 	public DoubleCount(Count count) {
-		super(0, new ReadSettingMut<?>[] { count });
+		super(0, Dependencies(count));
 		this.count = count;
 	}
 

@@ -30,7 +30,7 @@ public class FutureSettingTest {
 		public A(
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
-			super(0, NoDependencies());
+			super(0, Dependencies(selection, aOrB));
 			this.selection = selection;
 			this.aOrB = aOrB;
 		}
@@ -52,7 +52,7 @@ public class FutureSettingTest {
 		public B(
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
-			super(0, NoDependencies());
+			super(0, Dependencies(selection, aOrB));
 			this.selection = selection;
 			this.aOrB = aOrB;
 		}
@@ -73,7 +73,7 @@ public class FutureSettingTest {
 		private final B b;
 
 		public AOrB(Selected selection, A a, B b) {
-			super(0, new ReadSetting<?>[] { selection, a, b });
+			super(0, Dependencies(selection, a, b));
 			this.selection = selection;
 			this.a = a;
 			this.b = b;
@@ -105,7 +105,7 @@ public class FutureSettingTest {
 		}
 		
 		public ReadSetting<?>[] getSettings() {
-			return new ReadSetting<?>[] { a, b, selected, aOrB };
+			return new ReadSetting<?>[] { selected, a, b, aOrB };
 		}
 	}
 	

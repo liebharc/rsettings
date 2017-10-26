@@ -12,7 +12,7 @@ public final class EnableIfCountEquals5
 	private Count count;
 	
 	public EnableIfCountEquals5(Count count) {
-		super("Hello", new ReadSettingMut<?>[] { count });
+		super("Hello", Dependencies(count));
 		this.count = count;
 	}
 

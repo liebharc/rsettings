@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.mutable.ReadSettingMut;
 
 /**
  * A setting which only can be read by the user but not changed directly. The value of a read-only
@@ -14,8 +13,12 @@ import com.github.liebharc.rsettings.mutable.ReadSettingMut;
  */
 public abstract class ReadSetting<T> 
 	implements Setting<T> {
-	protected static ReadSettingMut<?>[] NoDependencies() {
-		return new ReadSettingMut<?>[0];
+	protected static ReadSetting<?>[] NoDependencies() {
+		return new ReadSetting<?>[0];
+	}
+	
+	protected static ReadSetting<?>[] Dependencies(ReadSetting<?>... dependencies) {
+		return dependencies;
 	}
 	
 	private final SettingId id;

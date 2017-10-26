@@ -11,7 +11,7 @@ import com.github.liebharc.rsettings.immutable.State;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class FutureSettingTest {
+public class FutureSettingMutTest {
 
 	private enum Selection {
 		A,
@@ -33,7 +33,7 @@ public class FutureSettingTest {
 		public A(
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
-			super(0, NoDependencies());
+			super(0, Dependencies(selection, aOrB));
 			this.selection = selection;
 			this.aOrB = aOrB;
 		}
@@ -55,7 +55,7 @@ public class FutureSettingTest {
 		public B(
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
-			super(0, NoDependencies());
+			super(0, Dependencies(selection, aOrB));
 			this.selection = selection;
 			this.aOrB = aOrB;
 		}
@@ -76,7 +76,7 @@ public class FutureSettingTest {
 		private final B b;
 
 		public AOrB(Selected selection, A a, B b) {
-			super(0, new ReadSettingMut<?>[] { selection, a, b });
+			super(0, Dependencies(selection, a, b));
 			this.selection = selection;
 			this.a = a;
 			this.b = b;
@@ -106,11 +106,9 @@ public class FutureSettingTest {
 			aOrB = register(new AOrB(selected, a, b));
 			futureAOrB.substitute(aOrB);
 		}
-		
-		public ReadSettingMut<?>[] getSettings() {
-			return new ReadSettingMut<?>[] { a, b, selected, aOrB };
-		}
-	}@Test
+	}
+	
+	@Test
 	public void changeToSourceSettingShouldUpdateAOrB() throws CheckFailedException {
 		Model model = new Model();
 		model.aOrB.setValue(5);

@@ -11,7 +11,7 @@ public class DistanceInKm extends ReadSetting<Double> {
 	private DistanceInM distanceInM;
 	
 	public DistanceInKm(DistanceInM distanceInM) {
-		super(0.0, new ReadSetting<?>[] { distanceInM });
+		super(0.0, Dependencies(distanceInM));
 		this.distanceInM = distanceInM;
 	}
 	
