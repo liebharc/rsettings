@@ -98,7 +98,7 @@ public class StateMutTest {
 			.startTransaction()
 			.set(count, 1)
 			.set(name, "Fish")
-			.complete();
+			.execute();
 		assertThat(count.getValue()).isEqualTo(1);
 		assertThat(name.getValue()).isEqualTo("Fish");
 		assertThatThrownBy(() -> {
@@ -106,7 +106,7 @@ public class StateMutTest {
 				.startTransaction()
 				.set(count, 2)
 				.set(name, "D'oh")
-				.complete();
+				.execute();
 		});
 		assertThat(count.getValue()).isEqualTo(1);
 		assertThat(name.getValue()).isEqualTo("Fish");
@@ -121,7 +121,7 @@ public class StateMutTest {
 			.startTransaction()
 			.set(prop1, 5)
 			.set(prop2, Sign.Positve)
-			.complete();
+			.execute();
 		assertThat(prop1.getValue()).isEqualTo(5);
 		assertThat(prop2.getValue()).isEqualTo(Sign.Positve);
 	}
@@ -156,8 +156,8 @@ public class StateMutTest {
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(count, 2);
-		transaction2.complete();
-		transaction1.complete();
+		transaction2.execute();
+		transaction1.execute();
 		assertThat(count.getValue()).isEqualTo(1);
 		assertThat(doubleCount.getValue()).isEqualTo(2);
 	}
@@ -173,8 +173,8 @@ public class StateMutTest {
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(count, 2);
-		transaction1.complete();
-		transaction2.complete();
+		transaction1.execute();
+		transaction2.execute();
 		assertThat(count.getValue()).isEqualTo(2);
 		assertThat(doubleCount.getValue()).isEqualTo(4);
 	}
@@ -188,8 +188,8 @@ public class StateMutTest {
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(network.getCount(), 2);
-		transaction1.complete();
-		transaction2.complete();
+		transaction1.execute();
+		transaction2.execute();
 		assertThat(network.getName().getValue()).isEqualTo("Paul");
 		assertThat(network.getCount().getValue()).isEqualTo(2);
 	}
@@ -204,8 +204,8 @@ public class StateMutTest {
 		StateMut.Builder transaction2 = 
 				network.startTransaction()
 				.set(network.getInterdependent(), 0);
-		transaction1.complete();
-		assertThatThrownBy(() -> transaction2.complete());
+		transaction1.execute();
+		assertThatThrownBy(() -> transaction2.execute());
 		assertThat(network.getInterdependent().getValue()).isEqualTo(-5);
 		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Negative);
 	}
@@ -216,7 +216,7 @@ public class StateMutTest {
 		network.startTransaction()
 			.set(network.getInterdependent(), 5)
 			.set(network.getInterdependent2(), new IntSign(1))
-			.complete();
+			.execute();
 		assertThat(network.getInterdependent().getValue()).isEqualTo(5);
 		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Positve);
 		

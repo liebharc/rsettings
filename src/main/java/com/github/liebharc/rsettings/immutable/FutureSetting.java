@@ -21,7 +21,7 @@ public final class FutureSetting<T> extends ReadSetting<T> {
 		super(null, NoDependencies());
 	}
 
-	public void substitue(ReadSetting<T> setting) {
+	public void substitute(ReadSetting<T> setting) {
 		if (id != null) {
 			throw new StateInitException("Substitute can only be called once");
 		}

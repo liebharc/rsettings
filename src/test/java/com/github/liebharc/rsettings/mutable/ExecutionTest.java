@@ -112,11 +112,11 @@ public class ExecutionTest {
 		settings.startTransaction()
 				.set(settings.getLeft(), 6)
 				.set(settings.getRight(), 4)
-				.complete();;
+				.execute();;
 		assertThat(actions.getSum()).isEqualTo(10);
 		assertThat(actions.getCallCount()).isEqualTo(4);
 		
-		transaction.complete();
+		transaction.execute();
 		assertThat(actions.getSum()).isEqualTo(7);
 		assertThat(actions.getCallCount()).isEqualTo(5);
 		

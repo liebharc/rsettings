@@ -37,7 +37,7 @@ public class StateMut {
 			return this;
 		}
 		
-		public void complete() throws CheckFailedException {
+		public void execute() throws CheckFailedException {
 			State newState = builder.build();
 			state.set(newState);
 		}

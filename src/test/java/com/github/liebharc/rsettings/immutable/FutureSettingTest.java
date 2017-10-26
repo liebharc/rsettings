@@ -101,7 +101,7 @@ public class FutureSettingTest {
 			a = new A(selected, futureAOrB);
 			b = new B(selected, futureAOrB);
 			aOrB = new AOrB(selected, a, b);
-			futureAOrB.substitue(aOrB);
+			futureAOrB.substitute(aOrB);
 		}
 		
 		public ReadSetting<?>[] getSettings() {

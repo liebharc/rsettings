@@ -3,6 +3,7 @@ package com.github.liebharc.rsettings.mutable;
 import org.apache.commons.math3.exception.NullArgumentException;
 
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettings.StateInitException;
 import com.github.liebharc.rsettings.events.*;
 import com.github.liebharc.rsettings.immutable.*;
 
@@ -17,6 +18,10 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 	}
 
 	public T getValue() {
+		if (state == null) {
+			throw new StateInitException("Mutable settings must be registered after construction");
+		}
+		
 		return state.get().get(this);
 	}
 
@@ -35,11 +40,19 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 	}
 	
 	void updateState(State state) throws CheckFailedException {
+		if (state == null) {
+			throw new StateInitException("Mutable settings must be registered after construction");
+		}
+		
 		this.state.set(state);
 	}
 	
 	protected State getState() {
-		return this.state.get();
+		if (state == null) {
+			throw new StateInitException("Mutable settings must be registered after construction");
+		}
+		
+		return state.get();
 	}
 	
 	/**
