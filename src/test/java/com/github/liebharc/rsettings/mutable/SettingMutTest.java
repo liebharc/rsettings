@@ -13,7 +13,8 @@ public class SettingMutTest {
 		private Name name;
 		
 		public NameSettingMut() {
-			this.name = register(new Name());
+			this.name = new Name(getRegister());
+			getRegister().complete();
 		}
 
 		public ReadWriteSettingMut<String> get() {

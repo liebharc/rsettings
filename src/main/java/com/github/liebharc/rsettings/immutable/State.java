@@ -177,14 +177,6 @@ public final class State {
 	public Builder change() {
 		return new Builder(this, settings, values);
 	}
-
-	/**
-	 * Indicates whether or not this is a newly created state.
-	 * @return True if this is a state which just has been initialized.
-	 */
-	public boolean isRoot() {
-		return version == 0;
-	}
 	
 	@SuppressWarnings("unchecked") // The type cast should always succeed even if the compile can't verify that
 	public <T> T get(ReadSetting<T> setting) {

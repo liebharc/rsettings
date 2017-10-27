@@ -13,13 +13,14 @@ public final class ExampleNetwork extends StateMut {
 	private BoundedDouble boundedDouble;
 	
 	public ExampleNetwork() {
-		count = register(new Count());
-		enableIfCountEquals5 = register(new EnableIfCountEquals5(count));
-		doubleCount = register(new DoubleCount(count));
-		name = register(new Name());
-		interdependent = register(new Interdependent());
-		interdependent2 = register(new Interdependent2(interdependent));
-		boundedDouble = register(new BoundedDouble());
+		count = new Count(getRegister());
+		enableIfCountEquals5 = new EnableIfCountEquals5(getRegister(), count);
+		doubleCount = new DoubleCount(getRegister(), count);
+		name = new Name(getRegister());
+		interdependent = new Interdependent(getRegister());
+		interdependent2 = new Interdependent2(getRegister(), interdependent);
+		boundedDouble = new BoundedDouble(getRegister());
+		getRegister().complete();
 	}
 	
 	public Count getCount() {

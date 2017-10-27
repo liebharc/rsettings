@@ -20,8 +20,8 @@ public class FutureSettingMutTest {
 	
 	private static class Selected extends ReadWriteSettingMut<Selection> {
 
-		public Selected() {
-			super(Selection.A, NoDependencies());
+		public Selected(Register register) {
+			super(register, Selection.A, NoDependencies());
 		}
 	}
 	
@@ -31,9 +31,10 @@ public class FutureSettingMutTest {
 		private Selected selection;
 
 		public A(
+				Register register,
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
-			super(0, Dependencies(selection, aOrB));
+			super(register, 0, Dependencies(selection, aOrB));
 			this.selection = selection;
 			this.aOrB = aOrB;
 		}
@@ -53,9 +54,10 @@ public class FutureSettingMutTest {
 		private Selected selection;
 
 		public B(
+				Register register,
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
-			super(0, Dependencies(selection, aOrB));
+			super(register, 0, Dependencies(selection, aOrB));
 			this.selection = selection;
 			this.aOrB = aOrB;
 		}
@@ -75,8 +77,8 @@ public class FutureSettingMutTest {
 		private final A a;
 		private final B b;
 
-		public AOrB(Selected selection, A a, B b) {
-			super(0, Dependencies(selection, a, b));
+		public AOrB(Register register, Selected selection, A a, B b) {
+			super(register, 0, Dependencies(selection, a, b));
 			this.selection = selection;
 			this.a = a;
 			this.b = b;
@@ -99,12 +101,13 @@ public class FutureSettingMutTest {
 		private final AOrB aOrB;
 
 		public Model() {
-			selected = register(new Selected());
+			selected = new Selected(getRegister());
 			FutureSetting<Integer> futureAOrB = new FutureSetting<>();
-			a = register(new A(selected, futureAOrB));
-			b = register(new B(selected, futureAOrB));
-			aOrB = register(new AOrB(selected, a, b));
+			a = new A(getRegister(), selected, futureAOrB);
+			b = new B(getRegister(), selected, futureAOrB);
+			aOrB = new AOrB(getRegister(), selected, a, b);
 			futureAOrB.substitute(aOrB);
+			getRegister().complete();
 		}
 	}
 	

@@ -2,32 +2,19 @@ package com.github.liebharc.rsettings.mutable;
 
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.Reject;
-import com.github.liebharc.rsettings.StateInitException;
 import com.github.liebharc.rsettings.events.*;
 import com.github.liebharc.rsettings.immutable.*;
 
 public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 
-	private EventPublisher<T> valueChangedEvent = new EventPublisher<>(); 
+	private final EventPublisher<T> valueChangedEvent = new EventPublisher<>(); 
 	
-	private CurrentSettingState state;
+	private final StateProvider state;
 	
-	public ReadSettingMut(T defaultValue, Dependencies dependencies) {
+	public ReadSettingMut(Register register, T defaultValue, Dependencies dependencies) {
 		super(defaultValue, dependencies);
-	}
-
-	public T getValue() {
-		if (state == null) {
-			throw new StateInitException("Mutable settings must be registered after construction");
-		}
-		
-		return state.get().get(this);
-	}
-
-	void setState(CurrentSettingState state) {
-		Reject.ifNull(state);
-		
-		this.state = state;
+		Reject.ifNull(register);
+		state = register.register(this);
 		state.getStateChangedEvent().subscribe((newState) -> {
 			if (newState.getChanges().contains(this)) {
 				T newValue = newState.get(this);
@@ -35,20 +22,16 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 			}
 		});
 	}
+
+	public T getValue() {
+		return state.get().get(this);
+	}
 	
 	void updateState(State state) throws CheckFailedException {
-		if (state == null) {
-			throw new StateInitException("Mutable settings must be registered after construction");
-		}
-		
 		this.state.set(state);
 	}
 	
-	protected State getState() {
-		if (state == null) {
-			throw new StateInitException("Mutable settings must be registered after construction");
-		}
-		
+	protected State getState() {	
 		return state.get();
 	}
 	

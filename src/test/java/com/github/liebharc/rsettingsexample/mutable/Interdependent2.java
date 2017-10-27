@@ -5,12 +5,13 @@ package com.github.liebharc.rsettingsexample.mutable;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
+import com.github.liebharc.rsettings.mutable.Register;
  
 public final class Interdependent2 extends ReadWriteSettingMut<Sign> {
 	private Interdependent other;
 	
-	public Interdependent2(Interdependent count) {
-		super(Sign.Zero, Dependencies(count));
+	public Interdependent2(Register register, Interdependent count) {
+		super(register, Sign.Zero, Dependencies(count));
 		this.other = count;
 	}
 	

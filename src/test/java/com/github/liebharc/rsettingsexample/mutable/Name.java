@@ -5,11 +5,12 @@ import java.util.Optional;
 import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.ReadWriteSettingMut;
+import com.github.liebharc.rsettings.mutable.Register;
 
 public final class Name extends ReadWriteSettingMut<String> {
 
-	public Name() {
-		super("", NoDependencies());
+	public Name(Register register) {
+		super(register, "", NoDependencies());
 	}
 	
 	@Override

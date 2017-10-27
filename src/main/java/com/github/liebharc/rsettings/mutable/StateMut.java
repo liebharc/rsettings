@@ -1,7 +1,6 @@
 package com.github.liebharc.rsettings.mutable;
 
-import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.StateInitException;
+import com.github.liebharc.rsettings.CheckFailedException; 
 import com.github.liebharc.rsettings.events.Event;
 import com.github.liebharc.rsettings.immutable.*;
 import java.util.*;
@@ -43,27 +42,29 @@ public class StateMut {
 		}
 	}
 	
-	private final CurrentSettingState state;
+	private class RegisterMut implements Register {
+
+		private final List<ReadSetting<?>> settings = new ArrayList<>();
+		
+		@Override
+		public StateProvider register(ReadSettingMut<?> setting) {
+			settings.add(setting);
+			return state;
+		}
+
+		@Override
+		public void complete() {
+			state.reinitialize(new State(settings));
+		}
+		
+	}
+	
+	private final CurrentStateProvider state;
+	
+	private final Register register = new RegisterMut();
 	
 	public StateMut() {
-		state = new CurrentSettingState(new State());
-	}
-	
-	public <TValue, TSetting extends ReadSettingMut<TValue>> TSetting register(TSetting setting) {
-		try {
-			addToState(setting);
-		} catch (CheckFailedException e) {
-			throw new StateInitException("Adding a setting lead to an inconsistent state", e);
-		}
-		return setting;
-	}
-	
-	private void addToState(ReadSettingMut<?> setting) throws CheckFailedException {
-		List<ReadSetting<?>> allSettings = new ArrayList<>(state.get().listSettings());
-		allSettings.add(setting);
-		State newState = new State(allSettings);
-		state.set(newState);
-		setting.setState(state);
+		state = new CurrentStateProvider(new State());
 	}
 	
 	public Builder startTransaction() {
@@ -80,5 +81,9 @@ public class StateMut {
 	
 	public Event<State> getStateChangedEvent() {
 		return state.getStateChangedEvent();
+	}
+	
+	protected Register getRegister() {
+		return register;
 	}
 }
