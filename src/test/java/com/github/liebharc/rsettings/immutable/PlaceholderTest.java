@@ -8,7 +8,7 @@ import com.github.liebharc.rsettings.CheckFailedException;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class FutureSettingTest {
+public class PlaceholderTest {
 
 	private enum Selection {
 		A,
@@ -81,11 +81,15 @@ public class FutureSettingTest {
 		
 		@Override
 		protected Optional<Integer> update(State state) throws CheckFailedException {
-			if (state.get(selection) == Selection.A) {
-				return Optional.of(state.get(a));
+			if (!state.hasChanged(this)) {
+				if (state.get(selection) == Selection.A) {
+					return Optional.of(state.get(a));
+				}
+				
+				return Optional.of(state.get(b));
 			}
 			
-			return Optional.of(state.get(b));
+			return Optional.empty();
 		}
 	}
 	
@@ -97,11 +101,11 @@ public class FutureSettingTest {
 
 		public Model() {
 			selected = new Selected();
-			FutureSetting<Integer> futureAOrB = new FutureSetting<>();
-			a = new A(selected, futureAOrB);
-			b = new B(selected, futureAOrB);
+			Placeholder<Integer> aOrBPlaceholder = new Placeholder<>();
+			a = new A(selected, aOrBPlaceholder);
+			b = new B(selected, aOrBPlaceholder);
 			aOrB = new AOrB(selected, a, b);
-			futureAOrB.substitute(aOrB);
+			aOrBPlaceholder.substitute(aOrB);
 		}
 		
 		public ReadSetting<?>[] getSettings() {
@@ -196,25 +200,25 @@ public class FutureSettingTest {
 	@Test
 	public void equality() throws CheckFailedException {
 		Selected setting = new Selected();
-		FutureSetting<Selection> future = new FutureSetting<>();
-		future.substitute(setting);
-		assertThat(setting.equals(future)).isTrue();
-		assertThat(setting.hashCode() == future.hashCode()).isTrue();
+		Placeholder<Selection> placeholder = new Placeholder<>();
+		placeholder.substitute(setting);
+		assertThat(setting.equals(placeholder)).isTrue();
+		assertThat(setting.hashCode() == placeholder.hashCode()).isTrue();
 		List<Object> list = new ArrayList<>();
 		list.add(setting);
-		assertThat(list.contains(future)).isTrue();
+		assertThat(list.contains(placeholder)).isTrue();
 		list.clear();
-		list.add(future);
+		list.add(placeholder);
 		assertThat(list.contains(setting)).isTrue();
 		Map<Setting<?>, Integer> map = new HashMap<>();
 		map.put(setting, 5);
-		assertThat(map.get(future)).isEqualTo(5);
+		assertThat(map.get(placeholder)).isEqualTo(5);
 		map.clear();
-		map.put(future, 3);
+		map.put(placeholder, 3);
 		assertThat(map.get(setting)).isEqualTo(3);
 		State state = new State(setting);
 		state = state.change().set(setting, Selection.B).build();
-		assertThat(state.get(future)).isEqualTo(Selection.B);
+		assertThat(state.get(placeholder)).isEqualTo(Selection.B);
 		assertThat(state.get(setting)).isEqualTo(Selection.B);
 	}
 }

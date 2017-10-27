@@ -55,7 +55,6 @@ public final class State {
 			}
 			
 			setUnchecked(setting, value);
-			allChanges.add(setting);
 			
 			return this;
 		}
@@ -80,6 +79,7 @@ public final class State {
 
 		public void setUnchecked(ReadSetting<?> setting, Object value) {
 			newState.update(setting, value, version);
+			allChanges.add(setting);
 		}
 		
 		public State build() throws CheckFailedException {
@@ -90,28 +90,39 @@ public final class State {
 		}
 		
 		private List<ReadSetting<?>> propagateChanges(Values.Builder values) throws CheckFailedException {
-			List<ReadSetting<?>> settingsToResolve = new ArrayList<>(settings);
-			while (!settingsToResolve.isEmpty()) {
-				List<ReadSetting<?>> settingDependencies = new ArrayList<>();
-				for (ReadSetting<?> setting : settingsToResolve) {
-					Optional<?> result = setting.update(new State(this.parent, values.build(), allChanges.build()));
-					if ((result.isPresent())) {
-						values.replace(
-								setting, 
-								result.get(),
-								version);		
-					}
-					
-					if (!ObjectHelper.NullSafeEquals(values.get(setting).getValue(), prevValues.get(setting).getValue())) {
-						settingDependencies.addAll(parent.dependencies.getDependencies(setting));			
-						allChanges.add(setting);
-					}
-				}
-				
-				settingsToResolve = settingDependencies;
+			List<ReadSetting<?>> settingsNextPass = new ArrayList<>(allChanges.build());
+			settingsNextPass = updatePass(values, prevValues, settingsNextPass);
+			
+			while (!settingsNextPass.isEmpty()) {
+				settingsNextPass = updatePass(values,  values.build(), settingsNextPass);
 			}
 			
 			return allChanges.build();
+		}
+
+		private List<ReadSetting<?>> updatePass(
+				Values.Builder values,
+				Values reference,
+				List<ReadSetting<?>> settings)
+				throws CheckFailedException {
+			List<ReadSetting<?>> settingDependencies = new ArrayList<>();
+			for (ReadSetting<?> setting : settings) {
+				Optional<?> result = setting.update(new State(this.parent, values.build(), allChanges.build()));
+				Object previousValue = reference.get(setting).getValue();
+				if ((result.isPresent())) {
+					values.replace(
+							setting, 
+							result.get(),
+							version);		
+				}
+				
+				if (!ObjectHelper.NullSafeEquals(values.get(setting).getValue(), previousValue)) {
+					settingDependencies.addAll(parent.dependencies.getDependencies(setting));			
+					allChanges.add(setting);
+				}
+			}
+			
+			return settingDependencies;
 		}
 	}
 	
@@ -128,24 +139,35 @@ public final class State {
 	
     private final Values values;
     
-    private final SettingDependencies dependencies;
+    private final DependencyGraph dependencies;
 	
 	private final List<ReadSetting<?>> lastChanges;
 	
 	private final UUID kind;
     
     private final long version;
+    
+    private static List<ReadSetting<?>> removePlaceholders(Iterable<ReadSetting<?>> settings) {
+    	List<ReadSetting<?>> list = new ArrayList<>();
+    	settings.forEach((s) -> {
+    		if (!Placeholder.isPlaceholder(s)) {
+    			list.add(s);
+    		}
+    	});
+    	
+    	return Collections.unmodifiableList(list);
+    }
 
 	private State(List<ReadSetting<?>> settings) {
 		this(settings, createResetValues(settings));
 	}
 	
 	public State(ReadSetting<?>... settings) {
-		this(Arrays.asList(settings));
+		this(removePlaceholders(Arrays.asList(settings)));
 	}
 	
 	public State(Collection<ReadSetting<?>> settings) {
-		this(Collections.unmodifiableList(new ArrayList<>(settings)));
+		this(removePlaceholders(settings));
 	}
 	
 	private State(
@@ -154,12 +176,9 @@ public final class State {
 		this.settings = settings;
 		this.values = values;
 		this.kind = UUID.randomUUID();
-		this.dependencies = new SettingDependencies();
+		this.dependencies = new DependencyGraph(settings);
 		this.version = 0;
 		this.lastChanges = settings;
-		for (ReadSetting<?> setting : settings) {
-			dependencies.register(setting);
-		}
 	}
 	
 	State(
@@ -239,8 +258,6 @@ public final class State {
 				.filter(s -> hasBeenTouched(s, since))
 				.collect(Collectors.toList());
 	}
-	
-	
 
 	/**
 	 * Indicates whether or not a setting has changed during the call of @see change().
@@ -264,6 +281,15 @@ public final class State {
 		requireStateToBeOlder(since);
 		
 		return !ObjectHelper.NullSafeEquals(this.get(setting), since.get(setting));
+	}
+	
+	/**
+	 * Indicates whether or not any of the settings has changed during the call of @see change().
+	 * @param setting A list of settings.
+	 * @return True if any setting has changed.
+	 */
+	public boolean hasAnyChanged(List<ReadSetting<?>> list) {
+		return list.stream().anyMatch(s -> hasChanged(s));
 	}
 
 	/**

@@ -5,13 +5,13 @@ import java.util.*;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.FutureSetting;
+import com.github.liebharc.rsettings.immutable.Placeholder;
 import com.github.liebharc.rsettings.immutable.ReadSetting;
 import com.github.liebharc.rsettings.immutable.State;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class FutureSettingMutTest {
+public class PlaceholderMutTest {
 
 	private enum Selection {
 		A,
@@ -86,11 +86,15 @@ public class FutureSettingMutTest {
 		
 		@Override
 		protected Optional<Integer> update(State state) throws CheckFailedException {
-			if (state.get(selection) == Selection.A) {
-				return Optional.of(state.get(a));
+			if (!state.hasChanged(this)) {
+				if (state.get(selection) == Selection.A) {
+					return Optional.of(state.get(a));
+				}
+				
+				return Optional.of(state.get(b));
 			}
 			
-			return Optional.of(state.get(b));
+			return Optional.empty();
 		}
 	}
 	
@@ -102,11 +106,11 @@ public class FutureSettingMutTest {
 
 		public Model() {
 			selected = new Selected(getRegister());
-			FutureSetting<Integer> futureAOrB = new FutureSetting<>();
-			a = new A(getRegister(), selected, futureAOrB);
-			b = new B(getRegister(), selected, futureAOrB);
+			Placeholder<Integer> aOrBPlaceholder = new Placeholder<>();
+			a = new A(getRegister(), selected, aOrBPlaceholder);
+			b = new B(getRegister(), selected, aOrBPlaceholder);
 			aOrB = new AOrB(getRegister(), selected, a, b);
-			futureAOrB.substitute(aOrB);
+			aOrBPlaceholder.substitute(aOrB);
 			getRegister().complete();
 		}
 	}

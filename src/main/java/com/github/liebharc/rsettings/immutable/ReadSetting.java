@@ -67,6 +67,10 @@ public abstract class ReadSetting<T>
 		return this.dependencies;
 	}
 	
+	protected boolean hasAnyDependencyChanged(State state) {
+		return state.hasAnyChanged(this.dependencies.asList());
+	}
+	
 	protected SettingId getId() {
 		return id;
 	}

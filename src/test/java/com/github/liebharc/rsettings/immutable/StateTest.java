@@ -7,7 +7,9 @@ import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettingsexample.immutable.*;
 import com.github.liebharc.rsettingsexample.immutable.MetricDouble.Prefix;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,6 +72,8 @@ public class StateTest {
 		assertThat(state.hasChanged(name)).isTrue();
 		assertThat(state.hasChanged(m)).isFalse();
 		assertThat(state.hasChanged(km)).isFalse();
+		assertThat(state.hasAnyChanged(Arrays.asList(name, m))).isTrue();
+		assertThat(state.hasAnyChanged(Arrays.asList(km, m))).isFalse();
 		
 		state = state.change()
 				.set(m, 1.0)
@@ -110,8 +114,8 @@ public class StateTest {
 		Name name = new Name();
 		DistanceInM m = new DistanceInM();
 		DistanceInKm km = new DistanceInKm(m);
-		State reference = new State(name, m, km);
-		assertThat(reference.getChanges()).containsExactly(name, m, km);
+		State reference = new State(name, km, m);
+		assertThat(reference.getChanges()).containsExactly(name, km, m);
 		
 		reference = reference.change()
 				.set(name, "Peter")
@@ -124,7 +128,7 @@ public class StateTest {
 		withSomeChanges = withSomeChanges.change()
 				.set(name,  "Peter")
 				.build();
-		assertThat(withSomeChanges.getTouchedSettings(reference)).containsExactly(name, m, km);
+		assertThat(withSomeChanges.getTouchedSettings(reference)).containsExactly(name, km, m);
 		assertThat(withSomeChanges.hasBeenTouched(name, reference)).isTrue();
 		assertThat(withSomeChanges.hasBeenTouched(m, reference)).isTrue();
 		assertThat(withSomeChanges.hasBeenTouched(km, reference)).isTrue();
@@ -192,5 +196,54 @@ public class StateTest {
 		assertThat(keys).contains(name);
 		assertThat(values.size()).isEqualTo(2);
 		assertThat(values.stream().filter(e -> e.getKey() == m).findFirst().get().getValue()).isEqualTo(0.0);
+	}
+	
+	private static class NameCopy extends ReadWriteSetting<String> {
+
+		private Name name;
+
+		public NameCopy(Name name) {
+			super("", Dependencies(name));
+			this.name = name;
+		}
+		
+		@Override
+		protected Optional<String> update(State state) throws CheckFailedException {
+			if (state.hasChanged(this))
+				return super.update(state);
+			return Optional.of(state.get(name));
+		}
+	}
+	
+	@Test
+	public void nonOverwritingDependency() throws CheckFailedException {
+		Name name = new Name();
+		NameCopy copy = new NameCopy(name);
+		DistanceInM m = new DistanceInM();
+		State state = new State(name, copy, m);
+		state = state.change()
+				.set(name, "Peter")
+				.build();
+		assertThat(state.get(name)).isEqualTo("Peter");
+		assertThat(state.get(copy)).isEqualTo("Peter");
+		
+		state = state.change()
+				.set(name, "Paul")
+				.set(copy, "Fish")
+				.build();
+		assertThat(state.get(name)).isEqualTo("Paul");
+		assertThat(state.get(copy)).isEqualTo("Fish");
+		
+		state = state.change()
+				.set(m, 10.0)
+				.build();
+		assertThat(state.get(name)).isEqualTo("Paul");
+		assertThat(state.get(copy)).isEqualTo("Fish");
+		
+		state = state.change()
+				.set(name, "Peter")
+				.build();
+		assertThat(state.get(name)).isEqualTo("Peter");
+		assertThat(state.get(copy)).isEqualTo("Peter");
 	}
 }
