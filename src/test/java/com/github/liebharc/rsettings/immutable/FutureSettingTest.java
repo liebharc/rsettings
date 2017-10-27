@@ -191,4 +191,30 @@ public class FutureSettingTest {
 		assertThat(state.get(model.b)).isEqualTo(3);
 		assertThat(state.get(model.aOrB)).isEqualTo(4);
 	}
+	
+	@SuppressWarnings("unlikely-arg-type")
+	@Test
+	public void equality() throws CheckFailedException {
+		Selected setting = new Selected();
+		FutureSetting<Selection> future = new FutureSetting<>();
+		future.substitute(setting);
+		assertThat(setting.equals(future)).isTrue();
+		assertThat(setting.hashCode() == future.hashCode()).isTrue();
+		List<Object> list = new ArrayList<>();
+		list.add(setting);
+		assertThat(list.contains(future)).isTrue();
+		list.clear();
+		list.add(future);
+		assertThat(list.contains(setting)).isTrue();
+		Map<Setting<?>, Integer> map = new HashMap<>();
+		map.put(setting, 5);
+		assertThat(map.get(future)).isEqualTo(5);
+		map.clear();
+		map.put(future, 3);
+		assertThat(map.get(setting)).isEqualTo(3);
+		State state = new State(setting);
+		state = state.change().set(setting, Selection.B).build();
+		assertThat(state.get(future)).isEqualTo(Selection.B);
+		assertThat(state.get(setting)).isEqualTo(Selection.B);
+	}
 }

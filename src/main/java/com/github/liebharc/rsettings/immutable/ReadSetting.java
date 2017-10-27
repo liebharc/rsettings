@@ -1,5 +1,7 @@
 package com.github.liebharc.rsettings.immutable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.github.liebharc.rsettings.CheckFailedException;
@@ -15,8 +17,13 @@ public abstract class ReadSetting<T>
 		return Dependencies.empty();
 	}
 	
-	protected static Dependencies Dependencies(ReadSetting<?>... dependencies) {
-		return new Dependencies(dependencies);
+	protected static Dependencies Dependencies(ReadSetting<?> first, ReadSetting<?>... rest) {
+		List<ReadSetting<?>> all = new ArrayList<>();
+		all.add(first);
+		for (ReadSetting<?> setting : rest) {
+			all.add(setting);
+		}
+		return new Dependencies(all);
 	}
 	
 	private final SettingId id;
@@ -70,12 +77,12 @@ public abstract class ReadSetting<T>
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return getId().hashCode();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

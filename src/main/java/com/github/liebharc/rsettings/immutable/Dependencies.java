@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Dependencies {
 
-	private static final Dependencies NO_DEPENDENCIES = new Dependencies(new ReadSetting<?>[0]);
+	private static final Dependencies NO_DEPENDENCIES = new Dependencies(new ArrayList<>());
 	
 	static Dependencies empty() {
 		return NO_DEPENDENCIES;
@@ -12,8 +12,8 @@ public class Dependencies {
 	
 	private List<ReadSetting<?>> dependencies;
 
-	Dependencies(ReadSetting<?>[] dependencies) {
-		this.dependencies = Collections.unmodifiableList(Arrays.asList(dependencies));
+	Dependencies(List<ReadSetting<?>> dependencies) {
+		this.dependencies = Collections.unmodifiableList(dependencies);
 		
 	}
 
