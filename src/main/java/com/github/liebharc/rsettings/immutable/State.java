@@ -109,12 +109,9 @@ public final class State {
 				}
 				
 				hasChanged = !ObjectHelper.NullSafeEquals(values.get(setting).getValue(), previousValue);
-				if (hasChanged) {			
-					allChanges.add(setting);
-				}
 			} while (path.moveNext(hasChanged));
 			
-			return allChanges.build();
+			return path.getVisited();
 		}
 	}
 	
@@ -247,7 +244,7 @@ public final class State {
 	 * @return True if the setting has changed.
 	 */
 	public boolean hasChanged(ReadSetting<?> setting) {
-		return lastChanges.contains(setting);
+		return lastChanges.stream().anyMatch(s -> s.getId() == setting.getId());
 	}
 
 	/**

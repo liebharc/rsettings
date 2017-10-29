@@ -1,11 +1,10 @@
 package com.github.liebharc.rsettings.mutable;
 
-import java.util.*;
+import java.util.*; 
 
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettings.immutable.Placeholder;
 import com.github.liebharc.rsettings.immutable.ReadSetting;
 import com.github.liebharc.rsettings.immutable.State;
 
@@ -86,15 +85,11 @@ public class PlaceholderMutTest {
 		
 		@Override
 		protected Optional<Integer> update(State state) throws CheckFailedException {
-			if (!state.hasChanged(this)) {
-				if (state.get(selection) == Selection.A) {
-					return Optional.of(state.get(a));
-				}
-				
-				return Optional.of(state.get(b));
+			if (state.get(selection) == Selection.A) {
+				return Optional.of(state.get(a));
 			}
 			
-			return Optional.empty();
+			return Optional.of(state.get(b));
 		}
 	}
 	
@@ -106,7 +101,7 @@ public class PlaceholderMutTest {
 
 		public Model() {
 			selected = new Selected(getRegister());
-			Placeholder<Integer> aOrBPlaceholder = new Placeholder<>();
+			PlaceholderMut<Integer> aOrBPlaceholder = new PlaceholderMut<>(getRegister());
 			a = new A(getRegister(), selected, aOrBPlaceholder);
 			b = new B(getRegister(), selected, aOrBPlaceholder);
 			aOrB = new AOrB(getRegister(), selected, a, b);

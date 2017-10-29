@@ -5,14 +5,14 @@ import java.util.*;
 class Values {	
 	static class Builder {
 		
-		private final Map<ReadSetting<?>, VersionedValue> values;
+		private final Map<SettingId, VersionedValue> values;
 		
 		private Builder(Values values) {
 			this.values = new HashMap<>(values.values);
 		}
 	
 		public void update(ReadSetting<?> setting, Object value, long version) {
-			if (values.containsKey(setting)) {
+			if (values.containsKey(setting.getId())) {
 				replace(setting, value, version);
 			} else {
 				put(setting, value, version);
@@ -24,23 +24,23 @@ class Values {
 		}
 
 		public void replace(ReadSetting<?> setting, Object value, long version) {
-			values.replace(setting, new VersionedValue(version, value));		
+			values.replace(setting.getId(), new VersionedValue(version, value));		
 		}
 
 		public void put(ReadSetting<?> setting, Object 	value, long version) {
-			values.put(setting, new VersionedValue(version, value));
+			values.put(setting.getId(), new VersionedValue(version, value));
 		}
 
 		public void replace(ReadSetting<?> setting, VersionedValue value) {
-			values.replace(setting, value);
+			values.replace(setting.getId(), value);
 		}
 		
 		public boolean containsKey(ReadSetting<?> setting) {
-			return values.containsKey(setting);
+			return values.containsKey(setting.getId());
 		}
 
 		public VersionedValue get(ReadSetting<?> setting) {
-			return values.get(setting);
+			return values.get(setting.getId());
 		}
 		
 		public Values build() {
@@ -48,22 +48,22 @@ class Values {
 		}
 	}
 	
-	private final Map<ReadSetting<?>, VersionedValue> values;
+	private final Map<SettingId, VersionedValue> values;
 	
 	public Values() {
 		values = new HashMap<>();
 	}
 	
-	private Values(Map<ReadSetting<?>, VersionedValue> values) {
+	private Values(Map<SettingId, VersionedValue> values) {
 		this.values = values;
 	}
 
 	public boolean containsKey(ReadSetting<?> setting) {
-		return values.containsKey(setting);
+		return values.containsKey(setting.getId());
 	}
 
 	public VersionedValue get(ReadSetting<?> setting) {
-		return values.get(setting);
+		return values.get(setting.getId());
 	}
 
 	public Builder change() {

@@ -47,7 +47,7 @@ public class StateMut {
 		private final Register settings = new Register();
 		
 		@Override
-		public StateProvider add(ReadSettingMut<?> setting) {
+		public StateProvider add(ReadSetting<?> setting) {
 			settings.add(setting);
 			return state;
 		}

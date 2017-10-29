@@ -78,24 +78,4 @@ public abstract class ReadSetting<T>
 	@Override
 	public boolean shouldBeStored() {
 		return false;
-	}
-
-	@Override
-	public final int hashCode() {
-		return getId().hashCode();
-	}
-
-	@Override
-	public final boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof ReadSetting<?>))
-			return false;
-		ReadSetting<?> other = (ReadSetting<?>) obj;
-		if (getId() != other.getId())
-			return false;
-		return true;
-	}
-}
+	}}

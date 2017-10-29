@@ -16,4 +16,9 @@ class VersionedValue {
 	public Object getValue() {
 		return value;
 	}
+	
+	@Override
+	public String toString() {
+		return "VersionedValue(" + stateVersion + "," + value + ")";
+	}
 }

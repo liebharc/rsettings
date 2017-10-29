@@ -11,5 +11,4 @@ interface StateProvider {
 	State get();
 
 	Event<State> getStateChangedEvent();
-
 }

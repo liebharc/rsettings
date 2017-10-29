@@ -2,6 +2,7 @@ package com.github.liebharc.rsettings.immutable;
 
 import java.util.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
@@ -80,15 +81,11 @@ public class PlaceholderTest {
 		
 		@Override
 		protected Optional<Integer> update(State state) throws CheckFailedException {
-			if (!state.hasChanged(this)) {
-				if (state.get(selection) == Selection.A) {
-					return Optional.of(state.get(a));
-				}
-				
-				return Optional.of(state.get(b));
+			if (state.get(selection) == Selection.A) {
+				return Optional.of(state.get(a));
 			}
 			
-			return Optional.empty();
+			return Optional.of(state.get(b));
 		}
 	}
 	
@@ -196,30 +193,45 @@ public class PlaceholderTest {
 		assertThat(state.get(model.aOrB)).isEqualTo(4);
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
+	
+	private class IncrementSetting extends ReadWriteSetting<Integer> {
+
+		private ReadSetting<Integer> other;
+
+		public IncrementSetting(ReadSetting<Integer> other) {
+			super(0, Dependencies(other));
+			this.other = other;
+		}
+		
+		@Override
+		protected Optional<Integer> update(State state) throws CheckFailedException {
+			int value = Math.max(state.get(other), state.get(this)) + 1;
+			return Optional.of(Math.min(value, 10));
+		}
+	}
+	
 	@Test
-	public void equality() throws CheckFailedException {
+	public void linearUpdatesTest() throws CheckFailedException {
 		Register reg = new Register();
-		Selected setting = reg.add(new Selected());
-		Placeholder<Selection> placeholder = new Placeholder<>();
-		placeholder.substitute(setting);
-		assertThat(setting.equals(placeholder)).isTrue();
-		assertThat(setting.hashCode() == placeholder.hashCode()).isTrue();
-		List<Object> list = new ArrayList<>();
-		list.add(setting);
-		assertThat(list.contains(placeholder)).isTrue();
-		list.clear();
-		list.add(placeholder);
-		assertThat(list.contains(setting)).isTrue();
-		Map<Setting<?>, Integer> map = new HashMap<>();
-		map.put(setting, 5);
-		assertThat(map.get(placeholder)).isEqualTo(5);
-		map.clear();
-		map.put(placeholder, 3);
-		assertThat(map.get(setting)).isEqualTo(3);
+		Placeholder<Integer> p = reg.add(new Placeholder<>(PlaceholderType.Linear));
+		IncrementSetting a = reg.add(new IncrementSetting(p));
+		IncrementSetting b = reg.add(new IncrementSetting(a));
+		p.substitute(b);
 		State state = new State(reg);
-		state = state.change().set(setting, Selection.B).build();
-		assertThat(state.get(placeholder)).isEqualTo(Selection.B);
-		assertThat(state.get(setting)).isEqualTo(Selection.B);
+		state = state.change().set(b, 1).build();
+		assertThat(state.get(b)).isEqualTo(3);
+	}
+	
+	@Test
+	@Ignore
+	public void cyclicUpdatesTest() throws CheckFailedException {
+		Register reg = new Register();
+		Placeholder<Integer> p = reg.add(new Placeholder<>(PlaceholderType.Cyclic));
+		IncrementSetting a = reg.add(new IncrementSetting(p));
+		IncrementSetting b = reg.add(new IncrementSetting(a));
+		p.substitute(b);
+		State state = new State(reg);
+		state = state.change().set(b, 1).build();
+		assertThat(state.get(b)).isEqualTo(10);
 	}
 }

@@ -13,16 +13,22 @@ import com.github.liebharc.rsettings.StateInitException;
  *
  * @param <T> The value of the setting.
  */
-public final class Placeholder<T> extends ReadSetting<T> {
-
+public class Placeholder<T> extends ReadSetting<T> {
 	static boolean isPlaceholder(ReadSetting<?> setting) {
 		return setting instanceof Placeholder<?>; 
 	}
 	
 	private SettingId id = null;
 	
+	private final PlaceholderType type;
+	
 	public Placeholder() {
+		this(PlaceholderType.Linear);
+	}
+	
+	public Placeholder(PlaceholderType type) {
 		super(null, NoDependencies());
+		this.type = type;
 	}
 
 	public void substitute(ReadSetting<T> setting) {
@@ -40,5 +46,9 @@ public final class Placeholder<T> extends ReadSetting<T> {
 		}
 		
 		return id;
+	}
+
+	public PlaceholderType getType() {
+		return type;
 	}
 }

@@ -44,8 +44,7 @@ public class DependencyGraphTest {
 			dependsOnBAndCPlaceholder = new Placeholder<>();
 			dependsOnBAndCPlaceholder.substitute(dependsOnBAndC);
 			dependsOnPlaceholder = new DepTestSetting(dependsOnBAndCPlaceholder);
-			settings = Arrays.asList(a, b, dependsOnA, dependsOnB, c, dependsOnBAndC, d, dependsOnPlaceholder);
-			
+			settings = Arrays.asList(a, b, dependsOnA, dependsOnB, c, dependsOnBAndC, d, dependsOnBAndCPlaceholder, dependsOnPlaceholder);
 		}
 	}
 	
@@ -58,8 +57,8 @@ public class DependencyGraphTest {
 		assertThat(getDependencies(graph, model.dependsOnA)).isEmpty();
 		assertThat(getDependencies(graph, model.dependsOnB)).containsExactly(model.dependsOnBAndC);
 		assertThat(getDependencies(graph, model.c)).containsExactly(model.dependsOnBAndC);
-		assertThat(getDependencies(graph, model.dependsOnBAndC)).containsExactly(model.dependsOnPlaceholder);
-		assertThat(getDependencies(graph, model.dependsOnBAndCPlaceholder)).containsExactly(model.dependsOnPlaceholder);
+		assertThat(getDependencies(graph, model.dependsOnBAndC)).containsExactly(model.dependsOnBAndCPlaceholder);
+		assertThat(getDependencies(graph, model.dependsOnBAndCPlaceholder)).containsExactly(model.dependsOnBAndCPlaceholder, model.dependsOnPlaceholder);
 		assertThat(getDependencies(graph, model.d)).isEmpty();
 		assertThat(getDependencies(graph, model.dependsOnPlaceholder)).isEmpty();
 	}
