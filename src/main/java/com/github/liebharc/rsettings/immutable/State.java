@@ -90,25 +90,17 @@ public final class State {
 		}
 		
 		private List<ReadSetting<?>> propagateChanges(Values.Builder values) throws CheckFailedException {
-			List<ReadSetting<?>> settingsNextPass = new ArrayList<>(allChanges.build());
-			settingsNextPass = updatePass(values, prevValues, settingsNextPass);
-			
-			while (!settingsNextPass.isEmpty()) {
-				settingsNextPass = updatePass(values,  values.build(), settingsNextPass);
+			List<ReadSetting<?>> directChanges = allChanges.build();
+			if (directChanges.isEmpty()) {
+				return directChanges;
 			}
 			
-			return allChanges.build();
-		}
-
-		private List<ReadSetting<?>> updatePass(
-				Values.Builder values,
-				Values reference,
-				List<ReadSetting<?>> settings)
-				throws CheckFailedException {
-			List<ReadSetting<?>> settingDependencies = new ArrayList<>();
-			for (ReadSetting<?> setting : settings) {
+			boolean hasChanged;
+			DependencyGraph.Path path = parent.dependencies.getDependencies(directChanges);
+			do {
+				ReadSetting<?> setting = path.current();
 				Optional<?> result = setting.update(new State(this.parent, values.build(), allChanges.build()));
-				Object previousValue = reference.get(setting).getValue();
+				Object previousValue = newState.get(setting).getValue();
 				if ((result.isPresent())) {
 					values.replace(
 							setting, 
@@ -116,13 +108,13 @@ public final class State {
 							version);		
 				}
 				
-				if (!ObjectHelper.NullSafeEquals(values.get(setting).getValue(), previousValue)) {
-					settingDependencies.addAll(parent.dependencies.getDependencies(setting));			
+				hasChanged = !ObjectHelper.NullSafeEquals(values.get(setting).getValue(), previousValue);
+				if (hasChanged) {			
 					allChanges.add(setting);
 				}
-			}
+			} while (path.moveNext(hasChanged));
 			
-			return settingDependencies;
+			return allChanges.build();
 		}
 	}
 	

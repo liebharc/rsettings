@@ -1,5 +1,6 @@
 package com.github.liebharc.rsettings.immutable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,14 +53,26 @@ public class DependencyGraphTest {
 	public void findDependencies() {
 		Model model = new Model();
 		DependencyGraph graph = new DependencyGraph(model.settings);
-		assertThat(graph.getDependencies(model.a)).containsExactly(model.dependsOnA);
-		assertThat(graph.getDependencies(model.b)).containsExactly(model.dependsOnB);
-		assertThat(graph.getDependencies(model.dependsOnA)).isEmpty();
-		assertThat(graph.getDependencies(model.dependsOnB)).containsExactly(model.dependsOnBAndC);
-		assertThat(graph.getDependencies(model.c)).containsExactly(model.dependsOnBAndC);
-		assertThat(graph.getDependencies(model.dependsOnBAndC)).containsExactly(model.dependsOnPlaceholder);
-		assertThat(graph.getDependencies(model.dependsOnBAndCPlaceholder)).containsExactly(model.dependsOnPlaceholder);
-		assertThat(graph.getDependencies(model.d)).isEmpty();
-		assertThat(graph.getDependencies(model.dependsOnPlaceholder)).isEmpty();
+		assertThat(getDependencies(graph, model.a)).containsExactly(model.dependsOnA);
+		assertThat(getDependencies(graph, model.b)).containsExactly(model.dependsOnB);
+		assertThat(getDependencies(graph, model.dependsOnA)).isEmpty();
+		assertThat(getDependencies(graph, model.dependsOnB)).containsExactly(model.dependsOnBAndC);
+		assertThat(getDependencies(graph, model.c)).containsExactly(model.dependsOnBAndC);
+		assertThat(getDependencies(graph, model.dependsOnBAndC)).containsExactly(model.dependsOnPlaceholder);
+		assertThat(getDependencies(graph, model.dependsOnBAndCPlaceholder)).containsExactly(model.dependsOnPlaceholder);
+		assertThat(getDependencies(graph, model.d)).isEmpty();
+		assertThat(getDependencies(graph, model.dependsOnPlaceholder)).isEmpty();
+	}
+	
+	private List<ReadSetting<?>> getDependencies(DependencyGraph graph, ReadSetting<?> setting) {
+		List<ReadSetting<?>> result = new ArrayList<>();
+		List<ReadSetting<?>> settings = new ArrayList<>();
+		settings.add(setting);
+		DependencyGraph.Path path = graph.getDependencies(settings);
+		while (path.moveNext(false)) {
+			result.add(path.current());	
+		}
+		
+		return result;
 	}
 }

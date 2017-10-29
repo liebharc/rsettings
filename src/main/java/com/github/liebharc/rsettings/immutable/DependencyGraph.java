@@ -15,6 +15,33 @@ import com.github.liebharc.rsettings.StateInitException;
  */
 final class DependencyGraph {
 	
+	/**
+	 * Iterates over the dependencies.
+	 */
+	public class Path {
+		private List<ReadSetting<?>> next = new ArrayList<>();;
+		
+		private Path(List<ReadSetting<?>> init) {
+			next.addAll(init);
+			for (ReadSetting<?> setting : init) {
+				next.addAll(settingDependencies.get(setting));
+			}
+		}
+		
+		public ReadSetting<?> current() {
+			return next.get(0);
+		}
+		
+		public boolean moveNext(boolean hasCurrentBeenModified) {
+			if (hasCurrentBeenModified) {
+				next.addAll(settingDependencies.get(current()));
+			}
+			
+			next.remove(0);
+			return !next.isEmpty();
+		}
+	}
+	
 	private final List<ReadSetting<?>> settings;
 	
 	private final Map<ReadSetting<?>, List<ReadSetting<?>>> settingDependencies = new HashMap<>();
@@ -61,7 +88,7 @@ final class DependencyGraph {
 	 * @param setting A setting.
 	 * @return All settings which depend on the given setting.
 	 */
-	public List<ReadSetting<?>> getDependencies(ReadSetting<?> setting) {
-		return settingDependencies.get(setting);
+	public Path getDependencies(List<ReadSetting<?>> settings) {
+		return new Path(settings);
 	}
 }
