@@ -140,7 +140,8 @@ public class ExecutionTest {
 		assertThat(actions.getCallCount()).isEqualTo(5);
 		
 		// Errors leave the state untouched
-		assertThatThrownBy(()-> settings.left.setValue(-1));
+		assertThatThrownBy(()-> settings.left.setValue(-1))
+			.isInstanceOf(CheckFailedException.class);
 		assertThat(settings.product.getValue()).isEqualTo(12);
 		assertThat(actions.getSum()).isEqualTo(7);
 		assertThat(actions.getCallCount()).isEqualTo(5);

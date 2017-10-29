@@ -5,9 +5,6 @@ import java.util.*;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
-import com.github.liebharc.rsettingsexample.immutable.DistanceInKm;
-import com.github.liebharc.rsettingsexample.immutable.DistanceInM;
-
 import static org.assertj.core.api.Assertions.*;
 
 public class PlaceholderTest {
@@ -224,12 +221,5 @@ public class PlaceholderTest {
 		state = state.change().set(setting, Selection.B).build();
 		assertThat(state.get(placeholder)).isEqualTo(Selection.B);
 		assertThat(state.get(setting)).isEqualTo(Selection.B);
-	}
-	
-	@Test
-	public void missingDependencyTest() {
-		Register reg = new Register();
-		DistanceInM m = new DistanceInM();
-		assertThatThrownBy(() -> reg.add(new DistanceInKm(m)));
 	}
 }

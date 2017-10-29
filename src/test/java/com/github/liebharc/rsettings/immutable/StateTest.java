@@ -157,7 +157,8 @@ public class StateTest {
 				state2.change()
 				.set(m, 100.0)
 				.build();
-		assertThatThrownBy(() -> leftState.merge(rightState));
+		assertThatThrownBy(() -> leftState.merge(rightState))
+			.hasMessage("Can't merge two states which don't have a common ancestor");
 	}
 	
 	@Test
@@ -257,5 +258,17 @@ public class StateTest {
 				.build();
 		assertThat(state.get(name)).isEqualTo("Peter");
 		assertThat(state.get(copy)).isEqualTo("Peter");
+	}
+	
+	@Test
+	public void missingDependencyTest() {
+		Register reg = new Register();
+		DistanceInM m = new DistanceInM();
+		assertThatThrownBy(() -> reg.add(new DistanceInKm(m)))
+			.hasMessage(
+				"Setting depends on objects which haven't been added yet. "
+				+ "Settings should be added in the order in which they are created. "
+				+ "Missing dependencies are of type: "
+				+ "com.github.liebharc.rsettingsexample.immutable.DistanceInM");
 	}
 }

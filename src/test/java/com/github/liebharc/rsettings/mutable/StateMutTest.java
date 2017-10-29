@@ -34,7 +34,7 @@ public class StateMutTest {
 		count.setValue(5);
 		assertThatThrownBy(() -> {
 			count.setValue(11);
-		});
+		}).isInstanceOf(CheckFailedException.class);
 		
 		assertThat(count.getValue()).isEqualTo(5);
 	}
@@ -47,7 +47,7 @@ public class StateMutTest {
 		
 		assertThatThrownBy(() -> {
 			name.setValue("D'oh");
-		});
+		}).isInstanceOf(CheckFailedException.class);
 		
 		assertThat(name.getValue()).isEqualTo("Foobar");
 	}
@@ -85,7 +85,7 @@ public class StateMutTest {
 		
 		assertThatThrownBy(() -> {
 			count.setValue(20);
-		});
+		}).isInstanceOf(CheckFailedException.class);
 		assertThat(property.isEnabled()).isTrue();
 	}
 			
@@ -107,7 +107,7 @@ public class StateMutTest {
 				.set(count, 2)
 				.set(name, "D'oh")
 				.execute();
-		});
+		}).isInstanceOf(CheckFailedException.class);
 		assertThat(count.getValue()).isEqualTo(1);
 		assertThat(name.getValue()).isEqualTo("Fish");
 	}
@@ -135,13 +135,13 @@ public class StateMutTest {
 		property.setValue(0.5);
 		assertThatThrownBy(() -> {
 			property.setValue(2.0);
-		});
+		}).isInstanceOf(CheckFailedException.class);
 		
 		assertThat(property.getValue()).isEqualTo(0.5);
 
 		assertThatThrownBy(() -> {
 			property.setValue(-1.01);
-		});
+		}).isInstanceOf(CheckFailedException.class);
 		assertThat(property.getValue()).isEqualTo(0.5);
 	}
 	
@@ -205,7 +205,8 @@ public class StateMutTest {
 				network.startTransaction()
 				.set(network.getInterdependent(), 0);
 		transaction1.execute();
-		assertThatThrownBy(() -> transaction2.execute());
+		assertThatThrownBy(() -> transaction2.execute())
+			.isInstanceOf(CheckFailedException.class);
 		assertThat(network.getInterdependent().getValue()).isEqualTo(-5);
 		assertThat(network.getInterdependent2().getValue()).isEqualTo(Sign.Negative);
 	}
