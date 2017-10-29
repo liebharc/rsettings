@@ -15,7 +15,7 @@ public class ExecutionTest {
 		
 		private static class IntegerSetting extends ReadWriteSettingMut<Integer> {
 
-			public IntegerSetting(Register register) {
+			public IntegerSetting(RegisterMut register) {
 				super(register, 0, NoDependencies());
 			}
 			
@@ -33,7 +33,7 @@ public class ExecutionTest {
 			private ReadWriteSettingMut<Integer> a;
 			private ReadWriteSettingMut<Integer> b;
 
-			public ProductSetting(Register register, ReadWriteSettingMut<Integer> a, ReadWriteSettingMut<Integer> b) {
+			public ProductSetting(RegisterMut register, ReadWriteSettingMut<Integer> a, ReadWriteSettingMut<Integer> b) {
 				super(register, 0, Dependencies(a, b));
 				this.a = a;
 				this.b = b;

@@ -5,6 +5,8 @@ import java.util.*;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
+import com.github.liebharc.rsettingsexample.immutable.DistanceInKm;
+import com.github.liebharc.rsettingsexample.immutable.DistanceInM;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -94,22 +96,23 @@ public class PlaceholderTest {
 	}
 	
 	public static class Model {
+		private final Register reg = new Register();
 		private final A a;
 		private final B b;
 		private final Selected selected;
 		private final AOrB aOrB;
 
 		public Model() {
-			selected = new Selected();
-			Placeholder<Integer> aOrBPlaceholder = new Placeholder<>();
-			a = new A(selected, aOrBPlaceholder);
-			b = new B(selected, aOrBPlaceholder);
-			aOrB = new AOrB(selected, a, b);
+			selected = reg.add(new Selected());
+			Placeholder<Integer> aOrBPlaceholder = reg.add(new Placeholder<>());
+			a = reg.add(new A(selected, aOrBPlaceholder));
+			b = reg.add(new B(selected, aOrBPlaceholder));
+			aOrB = reg.add(new AOrB(selected, a, b));
 			aOrBPlaceholder.substitute(aOrB);
 		}
 		
-		public ReadSetting<?>[] getSettings() {
-			return new ReadSetting<?>[] { selected, a, b, aOrB };
+		public Register getSettings() {
+			return reg;
 		}
 	}
 	
@@ -199,7 +202,8 @@ public class PlaceholderTest {
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void equality() throws CheckFailedException {
-		Selected setting = new Selected();
+		Register reg = new Register();
+		Selected setting = reg.add(new Selected());
 		Placeholder<Selection> placeholder = new Placeholder<>();
 		placeholder.substitute(setting);
 		assertThat(setting.equals(placeholder)).isTrue();
@@ -216,9 +220,16 @@ public class PlaceholderTest {
 		map.clear();
 		map.put(placeholder, 3);
 		assertThat(map.get(setting)).isEqualTo(3);
-		State state = new State(setting);
+		State state = new State(reg);
 		state = state.change().set(setting, Selection.B).build();
 		assertThat(state.get(placeholder)).isEqualTo(Selection.B);
 		assertThat(state.get(setting)).isEqualTo(Selection.B);
+	}
+	
+	@Test
+	public void missingDependencyTest() {
+		Register reg = new Register();
+		DistanceInM m = new DistanceInM();
+		assertThatThrownBy(() -> reg.add(new DistanceInKm(m)));
 	}
 }

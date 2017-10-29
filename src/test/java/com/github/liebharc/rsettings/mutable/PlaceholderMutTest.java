@@ -20,7 +20,7 @@ public class PlaceholderMutTest {
 	
 	private static class Selected extends ReadWriteSettingMut<Selection> {
 
-		public Selected(Register register) {
+		public Selected(RegisterMut register) {
 			super(register, Selection.A, NoDependencies());
 		}
 	}
@@ -31,7 +31,7 @@ public class PlaceholderMutTest {
 		private Selected selection;
 
 		public A(
-				Register register,
+				RegisterMut register,
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
 			super(register, 0, Dependencies(selection, aOrB));
@@ -54,7 +54,7 @@ public class PlaceholderMutTest {
 		private Selected selection;
 
 		public B(
-				Register register,
+				RegisterMut register,
 				Selected selection,
 				ReadSetting<Integer> aOrB) {
 			super(register, 0, Dependencies(selection, aOrB));
@@ -77,7 +77,7 @@ public class PlaceholderMutTest {
 		private final A a;
 		private final B b;
 
-		public AOrB(Register register, Selected selection, A a, B b) {
+		public AOrB(RegisterMut register, Selected selection, A a, B b) {
 			super(register, 0, Dependencies(selection, a, b));
 			this.selection = selection;
 			this.a = a;

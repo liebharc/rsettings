@@ -157,24 +157,14 @@ public final class State {
     	
     	return Collections.unmodifiableList(list);
     }
-
+	
+	public State(Register settings) {
+		this(settings.asList());
+	}
+	
 	private State(List<ReadSetting<?>> settings) {
-		this(settings, createResetValues(settings));
-	}
-	
-	public State(ReadSetting<?>... settings) {
-		this(removePlaceholders(Arrays.asList(settings)));
-	}
-	
-	public State(Collection<ReadSetting<?>> settings) {
-		this(removePlaceholders(settings));
-	}
-	
-	private State(
-			List<ReadSetting<?>> settings, 
-			Values values) {
-		this.settings = settings;
-		this.values = values;
+		this.settings = removePlaceholders(settings);
+		this.values = createResetValues(this.settings);
 		this.kind = UUID.randomUUID();
 		this.dependencies = new DependencyGraph(settings);
 		this.version = 0;

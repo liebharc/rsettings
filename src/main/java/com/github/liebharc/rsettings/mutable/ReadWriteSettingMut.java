@@ -10,7 +10,7 @@ public abstract class ReadWriteSettingMut<T>
 	extends ReadSettingMut<T> 
 	implements WriteableSetting<T> {
 
-	public ReadWriteSettingMut(Register register, T defaultValue, Dependencies dependencies) {
+	public ReadWriteSettingMut(RegisterMut register, T defaultValue, Dependencies dependencies) {
 		super(register, defaultValue, dependencies);
 	}
 

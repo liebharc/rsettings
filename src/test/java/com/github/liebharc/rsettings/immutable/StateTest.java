@@ -19,15 +19,17 @@ public class StateTest {
 
 	@Test
 	public void initASetting() {
-		Name name = new Name();
-		State state = new State(name);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		State state = new State(reg);
 		assertThat(state.get(name)).isEqualTo("");
 	}
 	
 	@Test
 	public void changeASetting() throws CheckFailedException {
-		Name name = new Name();
-		State state = new State(name);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		State state = new State(reg);
 		state = state.change()
 				.set(name, "Peter")
 				.build();
@@ -36,9 +38,10 @@ public class StateTest {
 	
 	@Test
 	public void dependencies() throws CheckFailedException {
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State state = new State(m, km);
+		Register reg = new Register();
+		DistanceInM m = reg.add(new DistanceInM());
+		DistanceInKm km = reg.add(new DistanceInKm(m));
+		State state = new State(reg);
 		state = state.change()
 				.set(m, 1000.0)
 				.build();
@@ -48,8 +51,9 @@ public class StateTest {
 	
 	@Test
 	public void isEnabled() throws CheckFailedException {
-		DistanceInM m = new DistanceInM();
-		State state = new State(m);
+		Register reg = new Register();
+		DistanceInM m = reg.add(new DistanceInM());
+		State state = new State(reg);
 		assertThat(state.isEnabled(m)).isFalse();
 		state = state.change()
 				.set(m, 1.0)
@@ -59,10 +63,11 @@ public class StateTest {
 	
 	@Test
 	public void trackLastChanges() throws CheckFailedException {
-		Name name = new Name();
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State state = new State(name, m, km);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		DistanceInM m = reg.add(new DistanceInM());
+		DistanceInKm km = reg.add(new DistanceInKm(m));
+		State state = new State(reg);
 		assertThat(state.getChanges()).containsExactly(name, m, km);
 		
 		state = state.change()
@@ -86,10 +91,11 @@ public class StateTest {
 	
 	@Test
 	public void trackChangesToAReferencePoint() throws CheckFailedException {
-		Name name = new Name();
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State reference = new State(name, m, km);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		DistanceInM m = reg.add(new DistanceInM());
+		DistanceInKm km = reg.add(new DistanceInKm(m));
+		State reference = new State(reg);
 		assertThat(reference.getChanges()).containsExactly(name, m, km);
 		
 		reference = reference.change()
@@ -111,11 +117,12 @@ public class StateTest {
 	
 	@Test
 	public void trackTouchedValues() throws CheckFailedException {
-		Name name = new Name();
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State reference = new State(name, km, m);
-		assertThat(reference.getChanges()).containsExactly(name, km, m);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		DistanceInM m = reg.add(new DistanceInM());
+		DistanceInKm km = reg.add(new DistanceInKm(m));
+		State reference = new State(reg);
+		assertThat(reference.getChanges()).containsExactly(name, m, km);
 		
 		reference = reference.change()
 				.set(name, "Peter")
@@ -128,7 +135,7 @@ public class StateTest {
 		withSomeChanges = withSomeChanges.change()
 				.set(name,  "Peter")
 				.build();
-		assertThat(withSomeChanges.getTouchedSettings(reference)).containsExactly(name, km, m);
+		assertThat(withSomeChanges.getTouchedSettings(reference)).containsExactly(name, m, km);
 		assertThat(withSomeChanges.hasBeenTouched(name, reference)).isTrue();
 		assertThat(withSomeChanges.hasBeenTouched(m, reference)).isTrue();
 		assertThat(withSomeChanges.hasBeenTouched(km, reference)).isTrue();
@@ -136,11 +143,12 @@ public class StateTest {
 	
 	@Test
 	public void mergeTwoDifferentSettings() throws CheckFailedException {
-		Name name = new Name();
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State state1 = new State(name, m, km);
-		State state2 = new State(name, m, km);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		DistanceInM m = reg.add(new DistanceInM());
+		reg.add(new DistanceInKm(m));
+		State state1 = new State(reg);
+		State state2 = new State(reg);
 		final State leftState = 
 				state1.change()
 				.set(name, "Peter")
@@ -154,10 +162,11 @@ public class StateTest {
 	
 	@Test
 	public void mergeTwoSettings() throws CheckFailedException {
-		Name name = new Name();
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State state = new State(name, m, km);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		DistanceInM m = reg.add(new DistanceInM());
+		reg.add(new DistanceInKm(m));
+		State state = new State(reg);
 		State state1 = 
 				state.change()
 				.set(name, "Peter")
@@ -173,8 +182,9 @@ public class StateTest {
 	
 	@Test
 	public void convertTo() throws CheckFailedException {
-		DistanceInM m = new DistanceInM();
-		State state = new State(m);
+		Register reg = new Register();
+		DistanceInM m = reg.add(new DistanceInM());
+		State state = new State(reg);
 		MetricDouble value = new MetricDouble(7, Prefix.Kilo);
 		state = state.change()
 				.set(m, value)
@@ -185,10 +195,11 @@ public class StateTest {
 	
 	@Test
 	public void storageTest() throws CheckFailedException {
-		Name name = new Name();
-		DistanceInM m = new DistanceInM();
-		DistanceInKm km = new DistanceInKm(m);
-		State state = new State(name, m, km);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		DistanceInM m = reg.add(new DistanceInM());
+		DistanceInKm km = reg.add(new DistanceInKm(m));
+		State state = new State(reg);
 		Set<Map.Entry<ReadSetting<?>, Object>> values = state.getPersistenceValues();
 		Set<ReadSetting<?>> keys = values.stream().map(e -> e.getKey()).collect(Collectors.toSet());
 		assertThat(keys).doesNotContain(km);
@@ -217,10 +228,11 @@ public class StateTest {
 	
 	@Test
 	public void nonOverwritingDependency() throws CheckFailedException {
-		Name name = new Name();
-		NameCopy copy = new NameCopy(name);
-		DistanceInM m = new DistanceInM();
-		State state = new State(name, copy, m);
+		Register reg = new Register();
+		Name name = reg.add(new Name());
+		NameCopy copy = reg.add(new NameCopy(name));
+		DistanceInM m = reg.add(new DistanceInM());
+		State state = new State(reg);
 		state = state.change()
 				.set(name, "Peter")
 				.build();

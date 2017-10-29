@@ -42,12 +42,12 @@ public class StateMut {
 		}
 	}
 	
-	private class RegisterMut implements Register {
+	private class RegisterStateMut implements RegisterMut {
 
-		private final List<ReadSetting<?>> settings = new ArrayList<>();
+		private final Register settings = new Register();
 		
 		@Override
-		public StateProvider register(ReadSettingMut<?> setting) {
+		public StateProvider add(ReadSettingMut<?> setting) {
 			settings.add(setting);
 			return state;
 		}
@@ -61,10 +61,10 @@ public class StateMut {
 	
 	private final CurrentStateProvider state;
 	
-	private final Register register = new RegisterMut();
+	private final RegisterMut register = new RegisterStateMut();
 	
 	public StateMut() {
-		state = new CurrentStateProvider(new State());
+		state = new CurrentStateProvider(new State(new Register()));
 	}
 	
 	public Builder startTransaction() {
@@ -83,7 +83,7 @@ public class StateMut {
 		return state.getStateChangedEvent();
 	}
 	
-	protected Register getRegister() {
+	protected RegisterMut getRegister() {
 		return register;
 	}
 }

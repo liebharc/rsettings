@@ -11,10 +11,10 @@ public abstract class ReadSettingMut<T> extends ReadSetting<T> {
 	
 	private final StateProvider state;
 	
-	public ReadSettingMut(Register register, T defaultValue, Dependencies dependencies) {
+	public ReadSettingMut(RegisterMut register, T defaultValue, Dependencies dependencies) {
 		super(defaultValue, dependencies);
 		Reject.ifNull(register);
-		state = register.register(this);
+		state = register.add(this);
 		state.getStateChangedEvent().subscribe((newState) -> {
 			if (newState.getChanges().contains(this)) {
 				T newValue = newState.get(this);

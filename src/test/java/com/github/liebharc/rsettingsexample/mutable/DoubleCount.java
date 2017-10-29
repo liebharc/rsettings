@@ -6,12 +6,12 @@ import com.github.liebharc.rsettings.CheckFailedException;
 import com.github.liebharc.rsettings.OufOfRangeException;
 import com.github.liebharc.rsettings.immutable.State;
 import com.github.liebharc.rsettings.mutable.ReadSettingMut;
-import com.github.liebharc.rsettings.mutable.Register;
+import com.github.liebharc.rsettings.mutable.RegisterMut;
 
 public final class DoubleCount extends ReadSettingMut<Integer> {
 	private Count count;
 	
-	public DoubleCount(Register register, Count count) {
+	public DoubleCount(RegisterMut register, Count count) {
 		super(register, 0, Dependencies(count));
 		this.count = count;
 	}
