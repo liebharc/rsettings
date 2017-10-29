@@ -223,7 +223,6 @@ public class PlaceholderTest {
 	}
 	
 	@Test
-	@Ignore
 	public void cyclicUpdatesTest() throws CheckFailedException {
 		Register reg = new Register();
 		Placeholder<Integer> p = reg.add(new Placeholder<>(PlaceholderType.Cyclic));

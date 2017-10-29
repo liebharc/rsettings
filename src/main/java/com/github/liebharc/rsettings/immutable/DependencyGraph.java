@@ -11,7 +11,7 @@ final class DependencyGraph {
 	
 	private static class DependencyNode {
 		
-		protected final List<ReadSetting<?>> dependencies = new ArrayList<>();
+		private final List<ReadSetting<?>> dependencies = new ArrayList<>();
 
 		public void add(ReadSetting<?> dependency) {
 			dependencies.add(dependency);
@@ -20,25 +20,33 @@ final class DependencyGraph {
 		public void visit(Path path) {
 			path.next.addAll(dependencies);
 		}
+
+		public List<ReadSetting<?>> getDependencies() {
+			return dependencies;
+		}
 	}
 	
-	private static class CyclicDependencyNode extends DependencyNode {
+	private class CyclicDependencyNode extends DependencyNode {
 
-		private final ReadSetting<?> setting;
+		private final List<ReadSetting<?>> placeholders;
 
-		public CyclicDependencyNode(ReadSetting<?> setting) {
-			this.setting = setting;
+		public CyclicDependencyNode(List<ReadSetting<?>> cyclicReferences) {
+			this.placeholders = cyclicReferences;
 		}
 		
-		public CyclicDependencyNode() {
-			this(null);
-		}
-
 		@Override
 		public void visit(Path path) {
 			super.visit(path);
-			path.visited.removeAll(dependencies);
-			path.next.add(setting);
+			path.visited.removeAll(getDependencies());
+			forceAddAllDependencies(path);
+		}
+
+		private void forceAddAllDependencies(Path path) {
+			for (ReadSetting<?> setting : placeholders) {
+				DependencyNode dep = settingDependencies.get(setting);
+				path.next.addAll(dep.getDependencies());
+				path.visited.removeAll(dep.getDependencies());
+			}
 		}
 	}
 	
@@ -49,12 +57,15 @@ final class DependencyGraph {
 		private final Set<ReadSetting<?>> next = new HashSet<>();
 		private final Set<ReadSetting<?>> visited = new HashSet<>();
 		private ReadSetting<?> current;
-		private final List<ReadSetting<?>> forcedUpdates;
 		
 		private Path(List<ReadSetting<?>> init) {
-			forcedUpdates = new ArrayList<>(init);
-			next.addAll(init);
-			for (ReadSetting<?> setting : init) {
+			List<ReadSetting<?>> expanded =
+				settings.stream().filter(s -> { 
+					return init.stream().anyMatch(i -> i.getId() == s.getId());
+				})
+				.collect(Collectors.toList());
+			next.addAll(expanded);
+			for (ReadSetting<?> setting : expanded) {
 				settingDependencies.get(setting).visit(this);
 			}
 			
@@ -68,15 +79,7 @@ final class DependencyGraph {
 		public boolean moveNext(boolean hasCurrentBeenModified) {
 			visited.add(current);
 			
-			Set<ReadSetting<?>> forced = 
-					forcedUpdates.stream()
-						.filter(s -> s.getId() == current.getId())
-						.collect(Collectors.toSet());
-			if (!forced.isEmpty()) {
-				forcedUpdates.removeAll(forced);
-				settingDependencies.get(current).visit(this);
-			}
-			else if (hasCurrentBeenModified) {
+			if (hasCurrentBeenModified) {
 				settingDependencies.get(current).visit(this);
 			}
 			
@@ -136,22 +139,25 @@ final class DependencyGraph {
 			Map<ReadSetting<?>, List<Placeholder<?>>> settingToPlaceholder) {
 		for (ReadSetting<?> setting : settings) {
 			if (!Placeholder.isPlaceholder(setting)) {
-				if (settingToPlaceholder.containsKey(setting) 
-						&& settingToPlaceholder.get(setting).stream().anyMatch(s -> s.getType() == PlaceholderType.Cyclic)) {
-					settingDependencies.put(setting, new CyclicDependencyNode());
+				if (settingToPlaceholder.containsKey(setting)) {
+					List<ReadSetting<?>> cyclicReferences =
+							settingToPlaceholder.get(setting)
+							.stream()
+							.filter(s -> s.getType() == PlaceholderType.Cyclic)
+							.collect(Collectors.toList());
+					if (!cyclicReferences.isEmpty()) {
+						settingDependencies.put(setting, new CyclicDependencyNode(cyclicReferences));
+					}
+					else {
+						settingDependencies.put(setting, new DependencyNode());
+					}
 				}
 				else {
 					settingDependencies.put(setting, new DependencyNode());
 				}
 			}
 			else {
-				Placeholder<?> placeholder = (Placeholder<?>)setting;
-				if (placeholder.getType() == PlaceholderType.Linear) {
-					settingDependencies.put(setting, new DependencyNode());
-				}
-				else {
-					settingDependencies.put(setting, new CyclicDependencyNode(setting));
-				}
+				settingDependencies.put(setting, new DependencyNode());
 			}
 		}
 	}
