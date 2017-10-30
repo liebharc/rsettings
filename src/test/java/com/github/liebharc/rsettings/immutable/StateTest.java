@@ -271,4 +271,16 @@ public class StateTest {
 				+ "Missing dependencies are of type: "
 				+ "com.github.liebharc.rsettingsexample.immutable.DistanceInM");
 	}
+	
+	@Test
+	public void undoChangeInATransactionTest() throws CheckFailedException {
+		Register reg = new Register();
+		DistanceInM m = reg.add(new DistanceInM());
+		State state = new State(reg);
+		state = state.change()
+				.set(m, 5.0)
+				.set(m, m.getDefaultValue())
+				.build();
+		assertThat(state.hasChanged(m)).isFalse();
+	}
 }

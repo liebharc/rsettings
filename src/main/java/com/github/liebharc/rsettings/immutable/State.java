@@ -91,6 +91,12 @@ public final class State {
 		
 		private List<ReadSetting<?>> propagateChanges(Values.Builder values) throws CheckFailedException {
 			List<ReadSetting<?>> directChanges = allChanges.build();
+			
+			directChanges = 
+					directChanges.stream()
+					.filter(s -> !ObjectHelper.NullSafeEquals(prevValues.get(s).getValue(), values.get(s).getValue()))
+					.collect(Collectors.toList());
+			
 			if (directChanges.isEmpty()) {
 				return directChanges;
 			}
