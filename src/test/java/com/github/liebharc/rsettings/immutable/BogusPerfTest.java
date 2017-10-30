@@ -44,7 +44,7 @@ public class BogusPerfTest {
 		System.out.println("Average set all time [ms]: " +  setAllAverage);
 		System.out.println("Average set one time [ms]: " +  setOneAverage);
 		assertThat(initAverage).isLessThan(10.0);
-		assertThat(setAllAverage).isLessThan(20.0);
+		assertThat(setAllAverage).isLessThan(10.0);
 		assertThat(setOneAverage).isLessThan(2.0);
 	}
 	

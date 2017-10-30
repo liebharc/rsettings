@@ -46,6 +46,7 @@ final class DependencyGraph {
 				DependencyNode dep = settingDependencies.get(setting);
 				path.next.addAll(dep.getDependencies());
 				path.visited.removeAll(dep.getDependencies());
+				path.nextHint = 0;
 			}
 		}
 	}
@@ -57,6 +58,7 @@ final class DependencyGraph {
 		private final Set<ReadSetting<?>> next = new HashSet<>();
 		private final Set<ReadSetting<?>> visited = new HashSet<>();
 		private ReadSetting<?> current;
+		private int nextHint = 0;
 		
 		private Path(List<ReadSetting<?>> init) {
 			List<ReadSetting<?>> expanded =
@@ -88,9 +90,24 @@ final class DependencyGraph {
 		}
 		
 		private void selectCurrent() {
-			current = settings.stream()
-					.filter(s -> next.contains(s) && !visited.contains(s))
-					.findFirst().orElseGet(() -> null);
+			if (next.size() == 1) {
+				ReadSetting<?> onlySetting = next.iterator().next();
+				if (!visited.contains(onlySetting)) {
+					current = onlySetting;
+					return;
+				}
+			}
+			
+			for (int i = nextHint; i < settings.size(); i++) {
+				ReadSetting<?> setting = settings.get(i);
+				if (next.contains(setting) && !visited.contains(setting)) {
+					current = setting;
+					nextHint = i + 1;
+					return;
+				}
+			}
+			
+			current = null;
 		}
 		
 		 List<ReadSetting<?>> getVisited() {
