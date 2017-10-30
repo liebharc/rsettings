@@ -37,7 +37,6 @@ final class DependencyGraph {
 		@Override
 		public void visit(Path path) {
 			super.visit(path);
-			path.visited.removeAll(getDependencies());
 			forceAddAllDependencies(path);
 		}
 
@@ -45,7 +44,6 @@ final class DependencyGraph {
 			for (ReadSetting<?> setting : placeholders) {
 				DependencyNode dep = settingDependencies.get(setting);
 				path.next.addAll(dep.getDependencies());
-				path.visited.removeAll(dep.getDependencies());
 				path.nextHint = 0;
 			}
 		}
@@ -80,6 +78,7 @@ final class DependencyGraph {
 		
 		public boolean moveNext(boolean hasCurrentBeenModified) {
 			visited.add(current);
+			next.remove(current);
 			
 			if (hasCurrentBeenModified) {
 				settingDependencies.get(current).visit(this);
@@ -90,17 +89,9 @@ final class DependencyGraph {
 		}
 		
 		private void selectCurrent() {
-			if (next.size() == 1) {
-				ReadSetting<?> onlySetting = next.iterator().next();
-				if (!visited.contains(onlySetting)) {
-					current = onlySetting;
-					return;
-				}
-			}
-			
 			for (int i = nextHint; i < settings.size(); i++) {
 				ReadSetting<?> setting = settings.get(i);
-				if (next.contains(setting) && !visited.contains(setting)) {
+				if (next.contains(setting)) {
 					current = setting;
 					nextHint = i + 1;
 					return;
