@@ -2,7 +2,6 @@ package com.github.liebharc.rsettings.immutable;
 
 import java.util.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.liebharc.rsettings.CheckFailedException;
